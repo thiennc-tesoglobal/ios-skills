@@ -1,6 +1,6 @@
 ---
 name: swift-architecture
-description: "Selects, reviews, and migrates Apple-platform app architectures across MV with Observation, MVVM, MVI, TCA, Clean Architecture, Coordinator, and legacy VIPER. Use when choosing module and dependency boundaries, escalating a feature beyond simple SwiftUI MV, planning incremental architecture migration, or auditing state ownership and test seams."
+description: "Choose, review, or migrate Apple-platform architecture and module boundaries. Use when feature complexity may justify MVVM, MVI, TCA, Clean Architecture, a Coordinator, or an incremental migration beyond straightforward SwiftUI MV."
 ---
 
 # Swift Architecture
@@ -22,6 +22,8 @@ Choose the smallest architecture that makes state ownership, dependencies, side 
 ## Scope Boundary
 
 This skill owns pattern selection, module boundaries, dependency direction, migration strategy, and architecture-level test seams. Route SwiftUI property-wrapper wiring and view composition to `swiftui-patterns`, navigation APIs and route models to `swiftui-navigation`, isolation diagnostics to `swift-concurrency`, and test syntax/fixtures to `swift-testing`.
+
+Inspect the existing project conventions, deployment target, Swift mode, dependencies, and tests before proposing a pattern. Preserve the established architecture when it remains coherent; do not introduce a framework or project-wide migration unless the request and observed complexity justify it.
 
 ## Decision Workflow
 
@@ -131,4 +133,4 @@ For `ObservableObject` to Observation, preserve the same owner and mutation isol
 
 - Detailed pattern structures: [references/architecture-patterns.md](references/architecture-patterns.md)
 - Apple: [Observation](https://sosumi.ai/documentation/observation) · [Migrating from ObservableObject to Observable](https://sosumi.ai/documentation/swiftui/migrating-from-the-observable-object-protocol-to-the-observable-macro)
-- TCA: [ComposableArchitecture](https://sosumi.ai/external/https://swiftpackageindex.com/pointfreeco/swift-composable-architecture/main/documentation/composablearchitecture)
+- TCA: [ComposableArchitecture](https://swiftpackageindex.com/pointfreeco/swift-composable-architecture/main/documentation/composablearchitecture)

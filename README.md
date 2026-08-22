@@ -10,7 +10,9 @@
 [![License: PolyForm Perimeter](https://img.shields.io/badge/License-PolyForm%20Perimeter%201.0.0-blue.svg)](LICENSE)
 
 
-86 agent skills optimized for **iOS 26+** development with Swift 6.3 and modern Apple frameworks. All code examples, patterns, and guidance target the latest APIs -- Liquid Glass, approachable concurrency, Foundation Models, StoreKit 2, SwiftData, async/await URLSession, and more. No deprecated patterns.
+> Community contribution fork of [dpearson2699/swift-ios-skills](https://github.com/dpearson2699/swift-ios-skills). It preserves the original license and required copyright notice while developing changes for review.
+
+87 agent skills optimized for **iOS 26+** development with Swift 6.3 and modern Apple frameworks. All code examples, patterns, and guidance target the latest APIs -- Liquid Glass, approachable concurrency, Foundation Models, StoreKit 2, SwiftData, async/await URLSession, and more. No deprecated patterns.
 
 Compatible with [Claude Code](https://claude.ai/code), [OpenAI Codex](https://developers.openai.com/codex), [Cursor](https://cursor.com), [GitHub Copilot](https://github.com/features/copilot), and [40+ other agents](https://skills.sh). Follows the open [Agent Skills](https://agentskills.io) standard.
 
@@ -28,6 +30,7 @@ Release history: [CHANGELOG.md](CHANGELOG.md).
   - [ChatGPT](#chatgpt)
 - [Plugin Bundles](#plugin-bundles-claude-code)
 - [Skills](#skills)
+  - [App Delivery](#app-delivery)
   - [SwiftUI](#swiftui)
   - [Core Swift](#core-swift)
   - [App Experience Frameworks](#app-experience-frameworks)
@@ -63,7 +66,7 @@ Install everything for any coding agent:
 npx skills add dpearson2699/swift-ios-skills --all
 ```
 
-Use `--all` when you want the full set of 86 skills installed automatically for any coding agent.
+Use `--all` when you want the full set of 87 skills installed automatically for any coding agent.
 
 Install specific skills directly:
 
@@ -140,19 +143,25 @@ $skill-installer install https://github.com/dpearson2699/swift-ios-skills/tree/m
 
 | Plugin | Skills included |
 |--------|----------------|
-| **all-ios-skills** | All 86 skills |
+| **all-ios-skills** | All 87 skills |
 | **apple-kit-skills** | 39 skills spanning Apple Kit frameworks plus CarPlay |
 | **swiftui-skills** | focus-engine, swiftui-animation, swiftui-gestures, swiftui-layout-components, swiftui-liquid-glass, swiftui-navigation, swiftui-patterns, swiftui-performance, swiftui-uikit-interop, swiftui-webkit |
 | **swift-core-skills** | core-data, swift-api-design-guidelines, swift-architecture, swift-codable, swift-charts, swift-concurrency, swift-formatstyle, swift-language, swift-testing, swiftdata |
 | **ios-app-framework-skills** | activitykit, adattributionkit, alarmkit, app-clips, app-intents, avkit, carplay, mapkit, paperkit, pdfkit, photokit, push-notifications, storekit, tipkit, widgetkit |
 | **ios-data-framework-skills** | cloudkit, contacts-framework, eventkit, financekit, healthkit, musickit, passkit, weatherkit |
 | **ios-ai-ml-skills** | apple-on-device-ai, coreml, natural-language, speech-recognition, vision-framework |
-| **ios-engineering-skills** | app-store-optimization, app-store-review, authentication, background-processing, cryptokit, debugging-instruments, device-integrity, ios-accessibility, ios-ettrace-performance, ios-localization, ios-memgraph-analysis, ios-networking, swift-security, swiftlint, ios-simulator, metrickit |
+| **ios-engineering-skills** | app-store-optimization, app-store-review, authentication, background-processing, cryptokit, debugging-instruments, device-integrity, ios-accessibility, ios-app-workflow, ios-ettrace-performance, ios-localization, ios-memgraph-analysis, ios-networking, swift-security, swiftlint, ios-simulator, metrickit |
 | **ios-hardware-skills** | accessorysetupkit, core-bluetooth, core-motion, core-nfc, dockkit, pencilkit, realitykit, sensorkit |
 | **ios-platform-skills** | appmigrationkit, audioaccessorykit, browserenginekit, callkit, cryptotokenkit, energykit, homekit, permissionkit, relevancekit, shareplay-activities |
 | **ios-gaming-skills** | gamekit, scenekit, spritekit, tabletopkit |
 
 ## Skills
+
+### App Delivery
+
+| Skill | What it covers |
+|-------|---------------|
+| [ios-app-workflow](skills/ios-app-workflow/) | End-to-end iOS app and feature delivery: preflight, specialist routing, project structure, implementation, and verification |
 
 ### SwiftUI
 

@@ -6,7 +6,7 @@
       "prompt": "I need a concise profiling plan for an iOS app that has a slow feed refresh, battery-drain complaints, and a CI job that should collect a Time Profiler trace with xctrace. Include the Instruments templates or instruments to use, and show both the basic xctrace launch command and the command shape if we add Allocations to the same Time Profiler recording.",
       "expected_output": "A source-grounded Instruments plan that chooses current template names, profiles on device, uses Power Profiler for battery work, shows xctrace launch syntax with the required -- separator, and uses --instrument for adding Allocations to a Time Profiler recording.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Recommends Time Profiler for CPU or slow interaction triage.",
         "Recommends Power Profiler, not Energy Log, for battery or energy-impact analysis.",
         "Mentions profiling on a physical device for realistic measurements.",
@@ -20,7 +20,7 @@
       "prompt": "Review this debugging plan: use the Leaks template to prove every retain cycle, run leaks --atExit -- ./MyApp.app/MyApp for our iOS build, call any 250 ms main-thread pause a severe hang, and enable Thread Sanitizer on a real iPhone test run. Correct the plan.",
       "expected_output": "A correction-focused review that narrows leak, hang, Memory Graph, and Thread Sanitizer guidance using Apple-documented behavior.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Explains that Leaks detects leaked allocations or isolated cycles but not every still-reachable retain cycle.",
         "Recommends Memory Graph Debugger and Allocations generation marks for iOS retain-cycle or growth triage.",
         "Uses exported .memgraph files with leaks for CLI memory-graph inspection instead of presenting --atExit as the default iOS app workflow.",
@@ -35,7 +35,7 @@
       "prompt": "My SwiftUI screen stutters while scrolling and I also want production hang telemetry in MetricKit plus a new Swift Testing benchmark. What should this debugging skill handle directly, and what should move to adjacent skills?",
       "expected_output": "A boundary-aware answer that keeps Instruments and LLDB guidance in debugging-instruments while routing SwiftUI remediation, MetricKit ingestion, and Swift Testing test design to sibling skills.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Keeps Instruments capture guidance in scope, such as SwiftUI or Animation Hitches with Time Profiler on device.",
         "Routes SwiftUI code-level remediation patterns to the swiftui-performance skill.",
         "Routes MetricManager report-sequence setup, DiagnosticReport processing, or HangDiagnostic ingestion details to the metrickit skill, including legacy compatibility when required.",

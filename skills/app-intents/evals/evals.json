@@ -7,7 +7,7 @@
       "prompt": "Review this App Intents Spotlight plan for an iOS 26 recipe app. We will conform RecipeEntity to IndexedEntity, put title and summary into attributeSet, call CSSearchableIndex.default().indexAppEntities from app launch, and also keep our old CSSearchableItem indexing path for the same recipes. What should we change before implementation?",
       "expected_output": "A correction-focused review that uses current App Intents and Core Spotlight guidance for IndexedEntity, indexing keys, named indexes, default attributes, duplicate indexing, and opening search results.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Recommends `@Property(indexingKey:)` or `@ComputedProperty(indexingKey:)` with key paths for entity metadata that is already exposed on the AppEntity.",
         "Says app entities still need to be indexed with `CSSearchableIndex(name: ...).indexAppEntities(...)` and recommends a named index rather than the default index for production.",
         "Warns that a custom `attributeSet` replaces the default attribute set unless `defaultAttributeSet` contents are included.",
@@ -21,7 +21,7 @@
       "prompt": "I need to expose my shopping app to Visual Intelligence on iOS 26. Sketch the App Intents pieces for returning matching ProductEntity and StoreEntity results from onscreen/camera input, and call out the main API constraints so another engineer does not create two competing visual queries.",
       "expected_output": "An implementation outline that models Visual Intelligence with IntentValueQuery, SemanticContentDescriptor, AppEntity results, optional UnionValue, and handoff/opening behavior.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Uses `IntentValueQuery.values(for input: SemanticContentDescriptor)` for Visual Intelligence matching.",
         "Uses `input.pixelBuffer` and/or descriptor labels appropriately, and keeps matching work quick and bounded.",
         "States that only one `IntentValueQuery` can take `SemanticContentDescriptor` and recommends `@UnionValue` when one query must return multiple AppEntity result types.",
@@ -35,7 +35,7 @@
       "prompt": "We are adding a configurable widget, a Control Center toggle, and an interactive Siri snippet for a smart-home app. Write the App Intents review checklist for which protocols belong to each surface and the pitfalls around optional parameters, snippets, and shared actions.",
       "expected_output": "A boundary-aware checklist that distinguishes WidgetConfigurationIntent, ControlConfigurationIntent, action AppIntent, and SnippetIntent responsibilities without drifting into WidgetKit layout detail.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Uses `WidgetConfigurationIntent` for configurable widget parameters and `ControlConfigurationIntent` for Control Center or Lock Screen control configuration.",
         "States that a `ControlConfigurationIntent` parameter without a default value must be optional so the system can preview the control before configuration.",
         "Separates reusable action intents from configuration intents, uses `SetValueIntent` with the system-supplied Boolean `value` for the toggle, and notes that configuration intents do not need `perform()` unless reused as actions.",
@@ -49,7 +49,7 @@
       "prompt": "We have a grocery app with Browse, Cart, and Checkout screens. Design the first App Intents we should ship. Users often add a previous item again, check the current cart total, and resume a checkout that needs payment confirmation. Explain which actions should finish inline versus open the app, and how to avoid duplicating business logic or navigation side effects.",
       "expected_output": "An action-first App Intents design that starts from high-value work outside the app, chooses a justified inline confirmation/authentication flow or a specific checkout handoff for payment based on security, required UI, provider constraints, and completion semantics, shares domain services, and centralizes the execution boundary before selecting protocols or system surfaces.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Selects a small set of user actions rather than mapping the Browse, Cart, and Checkout screen hierarchy directly to intents.",
         "Treats adding a previous item and checking the cart total as candidates for inline completion or results when authentication and confirmation requirements allow.",
         "Justifies the payment boundary: accepts either supported inline confirmation/authentication when payment can complete safely without required provider UI, or an app handoff to a specific checkout destination when UI or provider constraints require it, and explains completion semantics.",
@@ -64,7 +64,7 @@
       "prompt": "A configurable project widget has Workspace and Project AppEntity parameters. Project choices must be limited to the selected workspace, and the current workspace's recent project may be suggested as a default. Design the EntityQuery behavior, including what happens before Workspace has a value.",
       "expected_output": "A current App Intents design using IntentParameterDependency in the project query, deliberately handling a missing upstream workspace, resolving identifiers correctly, and implementing defaultResult only for a stable useful recent-project default.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Uses `@IntentParameterDependency` in the project query or options provider to read the workspace parameter.",
         "Handles the dependency being nil before Workspace is configured instead of force-unwrapping it.",
         "Scopes suggested project entities to the selected workspace while keeping identifier resolution correct.",
@@ -78,7 +78,7 @@
       "prompt": "An iOS 26 widget configuration must let a person select exactly three FavoriteEntity values. A review says every App Intents entity-array size initializer is deprecated, so the parameter should be an unconstrained array and reject the count only in perform(). Correct the design.",
       "expected_output": "A current App Intents parameter that uses the supported iOS 18+ size overload to express the three-item UI constraint and also validates the count at execution, while distinguishing deprecated iOS 17 overloads from their replacements.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Uses the current `@Parameter(..., size: .init(exactly: 3))` form, or an equivalent `IntentCollectionSize`, for the fixed-size entity array.",
         "Explains that Apple deprecated older iOS 17 overloads but provides supported iOS 18+ replacements with `size:`.",
         "Keeps a count check in `perform()` as execution-boundary validation instead of relying only on system UI.",

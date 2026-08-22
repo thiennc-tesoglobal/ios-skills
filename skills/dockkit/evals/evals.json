@@ -6,7 +6,7 @@
       "prompt": "I'm building an iOS camera app that should work with a DockKit stand. Sketch the setup and control flow for system tracking, tap-to-track, framing or region-of-interest controls, manual pan/tilt mode, and hardware button events. Include the privacy/setup caveats that matter.",
       "expected_output": "A DockKit camera-app implementation outline that uses DockAccessoryManager, handles dock/undock, keeps DockKit-specific setup distinct from normal camera privacy, uses current framing and ROI guidance, and handles iOS 17.4+ accessory events with throwing async sequences.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "States that DockKit itself has no special entitlement or DockKit-specific Info.plist key while camera capture still needs normal camera privacy such as NSCameraUsageDescription.",
         "Uses DockAccessoryManager.shared.accessoryStateChanges to obtain a DockAccessory and handle both docked and undocked states.",
         "Enables or disables system tracking with setSystemTrackingEnabled(_:) and does not claim the setting persists across app lifecycle events.",
@@ -22,7 +22,7 @@
       "prompt": "Review this DockKit custom tracking plan: keep system tracking on, run Vision at 5 fps, create DockAccessory.Observation rectangles in UIKit view coordinates, call track once per second with an optional CVPixelBuffer when convenient, and animate the dock repeatedly in a tight loop until the subject is centered.",
       "expected_output": "A correction-focused review that disables system tracking before custom tracking, uses normalized lower-left observation coordinates, sends track() data at 10-30 fps, describes the actual image overloads, and separates track() frame-rate limits from animate/setOrientation call-rate limits.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Explains that custom DockAccessory.track calls require disabling system tracking first.",
         "Corrects the 5 fps or 1 fps cadence to the supported 10-30 fps range for track(_:cameraInformation:).",
         "Corrects UIKit view coordinates to normalized observation rectangles with DockKit/Vision lower-left origin coordinates.",
@@ -37,7 +37,7 @@
       "prompt": "I want a feature that follows whichever person is speaking, shows the dock battery in my SwiftUI UI, reacts to the dock zoom and shutter buttons, and also pairs a new BLE camera accessory if none is connected. What belongs in DockKit, what availability checks should I use, and what should move to another skill?",
       "expected_output": "A boundary-aware DockKit answer that uses iOS 18 trackingStates and batteryStates for intelligent tracking and status, iOS 17.4 accessoryEvents for buttons, and routes BLE accessory onboarding to AccessorySetupKit or Core Bluetooth rather than expanding DockKit scope.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Uses trackingStates on iOS 18+ to read trackedSubjects and selectSubjects(_:) for speaker or saliency-driven selection.",
         "Treats trackingStates as a throwing async sequence and uses person fields such as speakingConfidence, lookingAtCameraConfidence, saliencyRank, rect, and identifier accurately.",
         "Uses batteryStates on iOS 18+ as a throwing async sequence and reads batteryLevel, chargeState, lowBattery, and name.",

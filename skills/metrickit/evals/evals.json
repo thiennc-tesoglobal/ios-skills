@@ -6,7 +6,7 @@
       "prompt": "Review this telemetry plan for an app built with the iOS 27 SDK that still deploys to iOS 26: MetricManager is created in a SwiftUI dashboard, only metricReports is consumed, each report is uploaded before saving, and the plan assumes MetricManager.pastPayloads can recover missed reports. Give corrected guidance with concise Swift where useful.",
       "expected_output": "A source-grounded iOS 27 MetricManager ingestion plan with a separate iOS 26 MXMetricManager compatibility branch, durable-first handling of both modern report sequences, and no invented modern backfill API.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Creates and retains one long-lived MetricManager at app launch for the iOS 27 branch.",
         "Starts exactly one consumer for metricReports and one for diagnosticReports, then fans out reports after receipt rather than competing over either sequence.",
         "Encodes each MetricReport and DiagnosticReport and durably enqueues it before parsing, symbolication, or upload.",
@@ -21,7 +21,7 @@
       "prompt": "Correct this iOS 27 MetricKit guidance: it creates a log with MXMetricManager.makeLogHandle, invents MXSignpostIntervalData.makeSignpostID, passes that ID to mxSignpost, looks for MXMetricPayload.signpostMetrics, and manually pairs extendLaunchMeasurement with finishExtendedLaunchMeasurement. Show the current pattern and identify what belongs only in an iOS 26 compatibility branch.",
       "expected_output": "A correction-focused answer using the iOS 27 MetricManager log handle, basic mxSignpost begin/end calls, MetricResult.signpostInterval, and trackLaunchTask while isolating legacy MX APIs.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Uses the retained MetricManager instance and manager.logHandle(category:) in the iOS 27 branch.",
         "Uses mxSignpost(.begin/.end, log:name:) without inventing or passing a signpost ID for the basic MetricKit pattern.",
         "States that iOS 27 custom MetricKit intervals appear as MetricResult.signpostInterval.",
@@ -36,7 +36,7 @@
       "prompt": "My SwiftUI feed stutters in development, Instruments shows a hot body update, and product wants iOS 27 production hang/crash telemetry in our analytics backend while still supporting iOS 26. What should the MetricKit skill handle directly, and what should be routed to adjacent skills?",
       "expected_output": "A boundary-aware answer that keeps modern and compatibility MetricKit ingestion in scope while routing SwiftUI code remediation and local Instruments profiling details to sibling skills.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Keeps iOS 27 MetricManager setup, MetricReport and DiagnosticReport ingestion, HangDiagnostic or CrashDiagnostic processing, durable export, and the isolated iOS 26 MXMetricManager compatibility path in MetricKit scope.",
         "Routes SwiftUI view invalidation, body cost, identity, and remediation patterns to the swiftui-performance skill.",
         "Routes local Instruments capture, LLDB, Memory Graph, and xctrace workflow details to the debugging-instruments skill.",

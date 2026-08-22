@@ -114,9 +114,9 @@
     {
       "name": "ios-engineering-skills",
       "source": "./",
-      "description": "iOS engineering: networking, security, auth, accessibility, debugging, ETTrace performance, memgraph analysis, diagnostics, linting, and App Store optimization",
+      "description": "iOS engineering: end-to-end app delivery, networking, security, accessibility, debugging, diagnostics, linting, and App Store optimization",
       "version": "3.9.1",
-      "keywords": ["ios", "networking", "security", "authentication", "accessibility", "localization", "debugging", "instruments", "ettrace", "memgraph", "memory", "metrickit", "cryptokit", "app-store", "aso", "swiftlint", "linting"],
+      "keywords": ["ios", "app-workflow", "delivery", "networking", "security", "authentication", "accessibility", "localization", "debugging", "instruments", "ettrace", "memgraph", "memory", "metrickit", "cryptokit", "app-store", "aso", "swiftlint", "linting"],
       "category": "development",
       "strict": false,
       "skills": [
@@ -128,6 +128,7 @@
         "./skills/debugging-instruments",
         "./skills/device-integrity",
         "./skills/ios-accessibility",
+        "./skills/ios-app-workflow",
         "./skills/ios-ettrace-performance",
         "./skills/ios-localization",
         "./skills/ios-memgraph-analysis",
@@ -246,7 +247,7 @@
     {
       "name": "all-ios-skills",
       "source": "./",
-      "description": "All 86 iOS and Swift development skills in one plugin",
+      "description": "All 87 iOS and Swift development skills in one plugin",
       "version": "3.9.1",
       "keywords": ["swift", "ios", "swiftui", "complete"],
       "category": "development",
@@ -289,6 +290,7 @@
         "./skills/healthkit",
         "./skills/homekit",
         "./skills/ios-accessibility",
+        "./skills/ios-app-workflow",
         "./skills/ios-ettrace-performance",
         "./skills/ios-localization",
         "./skills/ios-memgraph-analysis",
