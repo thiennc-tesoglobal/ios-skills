@@ -50,6 +50,7 @@ body:
         - healthkit
         - homekit
         - ios-accessibility
+        - ios-app-workflow
         - ios-ettrace-performance
         - ios-localization
         - ios-memgraph-analysis
