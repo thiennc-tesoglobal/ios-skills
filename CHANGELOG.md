@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — Community fork
+## v1.0.0-community
 
 ### New skills
 
@@ -15,6 +15,7 @@
 ### Repository
 
 - Register the new workflow in `ios-engineering-skills` and `all-ios-skills`, and update the public catalog count to 87.
+- Publish community marketplace and Tessl metadata under Thien Ngo and `thiennc-tesoglobal/swift-ios-skills-community`.
 - Preserve the original PolyForm Perimeter license and required copyright notice.
 
 ## v3.9.1
