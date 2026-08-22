@@ -1,12 +1,12 @@
 # Swift iOS Skills Community
 
-[![GitHub stars](https://img.shields.io/github/stars/thiennc-tesoglobal/swift-ios-skills-community)](https://github.com/thiennc-tesoglobal/swift-ios-skills-community)
+[![GitHub stars](https://img.shields.io/github/stars/thiennc-tesoglobal/ios-skills)](https://github.com/thiennc-tesoglobal/ios-skills)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-87-2ea44f)](skills/)
 [![Swift](https://img.shields.io/badge/Swift-6.3-F05138?logo=swift&logoColor=white)](https://swift.org)
 [![Apple platforms](https://img.shields.io/badge/Apple%20Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-black?logo=apple)](https://developer.apple.com)
 [![Specification](https://img.shields.io/badge/Agent%20Skills-compatible-6f42c1)](https://agentskills.io)
 [![License](https://img.shields.io/badge/License-PolyForm%20Perimeter-blue)](LICENSE)
-[![Validation](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/actions/workflows/validate-repository.yml/badge.svg)](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/actions/workflows/validate-repository.yml)
+[![Validation](https://github.com/thiennc-tesoglobal/ios-skills/actions/workflows/validate-repository.yml/badge.svg)](https://github.com/thiennc-tesoglobal/ios-skills/actions/workflows/validate-repository.yml)
 
 A practical Agent Skills toolkit for building complete Swift and Apple-platform applications with coding agents.
 
@@ -67,13 +67,13 @@ For a narrow task, use the matching specialist directly. Examples:
 Choose skills interactively:
 
 ```sh
-npx skills add thiennc-tesoglobal/swift-ios-skills-community
+npx skills add thiennc-tesoglobal/ios-skills
 ```
 
 Install the complete collection when you genuinely need broad framework coverage:
 
 ```sh
-npx skills add thiennc-tesoglobal/swift-ios-skills-community --all
+npx skills add thiennc-tesoglobal/ios-skills --all
 ```
 
 For most projects, prefer interactive selection or a focused bundle. Smaller installations give agents a cheaper, more precise discovery surface.
@@ -81,14 +81,14 @@ For most projects, prefer interactive selection or a focused bundle. Smaller ins
 Install only the end-to-end workflow:
 
 ```sh
-npx skills add thiennc-tesoglobal/swift-ios-skills-community \
+npx skills add thiennc-tesoglobal/ios-skills \
   --skill ios-app-workflow
 ```
 
 Install a practical SwiftUI app set:
 
 ```sh
-npx skills add thiennc-tesoglobal/swift-ios-skills-community \
+npx skills add thiennc-tesoglobal/ios-skills \
   --skill ios-app-workflow \
   --skill swiftui-patterns \
   --skill swiftui-layout-components \
@@ -107,21 +107,21 @@ The repository follows the open [Agent Skills specification](https://agentskills
 Add the marketplace:
 
 ```sh
-/plugin marketplace add thiennc-tesoglobal/swift-ios-skills-community
+/plugin marketplace add thiennc-tesoglobal/ios-skills
 ```
 
 Install all skills:
 
 ```sh
-/plugin install all-ios-skills@swift-ios-skills-community
+/plugin install all-ios-skills@ios-skills
 ```
 
 Or install a focused bundle:
 
 ```sh
-/plugin install swiftui-skills@swift-ios-skills-community
-/plugin install swift-core-skills@swift-ios-skills-community
-/plugin install ios-engineering-skills@swift-ios-skills-community
+/plugin install swiftui-skills@ios-skills
+/plugin install swift-core-skills@ios-skills
+/plugin install ios-engineering-skills@ios-skills
 ```
 
 ### Manual installation
@@ -175,7 +175,7 @@ Browse the complete catalog in [`skills/`](skills/).
 ## Repository structure
 
 ```text
-swift-ios-skills-community/
+ios-skills/
 ├── skills/
 │   ├── ios-app-workflow/
 │   │   ├── SKILL.md
@@ -244,7 +244,7 @@ When contributing:
 5. Add or update evaluation assertions when behavior changes.
 6. Avoid unrelated rewrites in the same pull request.
 
-Use [Issues](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/issues) for bugs and proposals, or [Discussions](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/discussions) for broader ideas and roadmap conversations.
+Use [Issues](https://github.com/thiennc-tesoglobal/ios-skills/issues) for bugs and proposals, or [Discussions](https://github.com/thiennc-tesoglobal/ios-skills/discussions) for broader ideas and roadmap conversations.
 
 ## License
 

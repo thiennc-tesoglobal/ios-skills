@@ -165,7 +165,7 @@ This returns a clean JSON object with just the post content and comments.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **swift-ios-skills-community** (8713 symbols, 8971 relationships, 8 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **ios-skills** (8713 symbols, 8971 relationships, 8 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -189,10 +189,10 @@ This project is indexed by GitNexus as **swift-ios-skills-community** (8713 symb
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/swift-ios-skills-community/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/swift-ios-skills-community/clusters` | All functional areas |
-| `gitnexus://repo/swift-ios-skills-community/processes` | All execution flows |
-| `gitnexus://repo/swift-ios-skills-community/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/ios-skills/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/ios-skills/clusters` | All functional areas |
+| `gitnexus://repo/ios-skills/processes` | All execution flows |
+| `gitnexus://repo/ios-skills/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

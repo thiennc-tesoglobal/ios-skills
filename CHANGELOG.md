@@ -29,6 +29,6 @@ Initial community release.
 
 ### Project identity
 
-- Publish Claude marketplace and Tessl metadata under `swift-ios-skills-community`.
+- Publish Claude marketplace and Tessl metadata under `ios-skills`.
 - Point installation, Discussions, Funding, issue assignment, and contribution links to this repository.
 - Preserve the PolyForm Perimeter license and all legally required notices.

@@ -1,9 +1,9 @@
 {
-  "name": "thiennc-tesoglobal/swift-ios-skills-community",
+  "name": "thiennc-tesoglobal/ios-skills",
   "version": "1.0.0",
   "description": "Community-maintained Agent Skills for complete Swift and Apple-platform app delivery.",
   "private": false,
-  "repository": "https://github.com/thiennc-tesoglobal/swift-ios-skills-community",
+  "repository": "https://github.com/thiennc-tesoglobal/ios-skills",
   "skills": [
     "skills/accessorysetupkit",
     "skills/activitykit",

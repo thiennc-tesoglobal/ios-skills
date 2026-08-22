@@ -1,5 +1,5 @@
 {
-  "name": "thiennc-tesoglobal/swift-ios-skills-community",
+  "name": "thiennc-tesoglobal/ios-skills",
   "mode": "vendored",
   "dependencies": {
     "tessl-labs/tessl-skill-eval-scenarios": {
