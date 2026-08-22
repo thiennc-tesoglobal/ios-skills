@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "telemetry-plan-app-built-ios-27-sdk",
       "prompt": "Review this telemetry plan for an app built with the iOS 27 SDK that still deploys to iOS 26: MetricManager is created in a SwiftUI dashboard, only metricReports is consumed, each report is uploaded before saving, and the plan assumes MetricManager.pastPayloads can recover missed reports. Give corrected guidance with concise Swift where useful.",
       "expected_output": "A source-grounded iOS 27 MetricManager ingestion plan with a separate iOS 26 MXMetricManager compatibility branch, durable-first handling of both modern report sequences, and no invented modern backfill API.",
       "files": [],
@@ -18,6 +19,7 @@
     },
     {
       "id": 1,
+      "name": "correct-ios-27-metrickit-guidance-creates-log",
       "prompt": "Correct this iOS 27 MetricKit guidance: it creates a log with MXMetricManager.makeLogHandle, invents MXSignpostIntervalData.makeSignpostID, passes that ID to mxSignpost, looks for MXMetricPayload.signpostMetrics, and manually pairs extendLaunchMeasurement with finishExtendedLaunchMeasurement. Show the current pattern and identify what belongs only in an iOS 26 compatibility branch.",
       "expected_output": "A correction-focused answer using the iOS 27 MetricManager log handle, basic mxSignpost begin/end calls, MetricResult.signpostInterval, and trackLaunchTask while isolating legacy MX APIs.",
       "files": [],
@@ -33,6 +35,7 @@
     },
     {
       "id": 2,
+      "name": "swiftui-feed-stutters-development-instruments-shows-hot",
       "prompt": "My SwiftUI feed stutters in development, Instruments shows a hot body update, and product wants iOS 27 production hang/crash telemetry in our analytics backend while still supporting iOS 26. What should the MetricKit skill handle directly, and what should be routed to adjacent skills?",
       "expected_output": "A boundary-aware answer that keeps modern and compatibility MetricKit ingestion in scope while routing SwiftUI code remediation and local Instruments profiling details to sibling skills.",
       "files": [],

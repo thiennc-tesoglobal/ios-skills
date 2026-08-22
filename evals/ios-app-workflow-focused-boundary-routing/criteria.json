@@ -1,0 +1,21 @@
+{
+  "context": "Tests that the app workflow does not absorb a narrow Swift concurrency diagnostic.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Correct boundary",
+      "description": "Treats the request as a focused diagnostic and routes it to Swift concurrency guidance.",
+      "max_score": 40
+    },
+    {
+      "name": "Minimal change",
+      "description": "Preserves behavior and applies the smallest data-race-safe correction.",
+      "max_score": 35
+    },
+    {
+      "name": "No scope expansion",
+      "description": "Does not reorganize files, add unrelated UI, or load the entire iOS skill set.",
+      "max_score": 25
+    }
+  ]
+}

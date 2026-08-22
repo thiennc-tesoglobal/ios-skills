@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "focused-swift-snippets-watchos-26-smart-stack",
       "prompt": "Build focused Swift snippets for a watchOS 26 Smart Stack widget that shows one card per upcoming meeting only when each meeting is relevant. Include the relevance provider, entry shape, widget configuration, preview handling, grouping or associated-kind guidance, and the availability annotations that matter.",
       "expected_output": "A RelevanceKit relevant-widget implementation plan that uses RelevanceConfiguration, RelevanceEntriesProvider, RelevanceEntry, WidgetRelevance, and RelevantContext.date with watchOS 26.0 availability, preview/placeholder handling, and priority-ordered relevance attributes.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 1,
+      "name": "relevancekit-plan-add-nslocationwheninuseusagedescription-widget-extension-request",
       "prompt": "Review this RelevanceKit plan: add `NSLocationWhenInUseUsageDescription` to the widget extension, request one broad HealthKit permission, create `RelevantContext.location(category: .cafe)!`, use `.fitness(.activityRingsIncomplete)`, and assume it will improve an iPhone Smart Stack too. Fix the plan.",
       "expected_output": "A correction-focused RelevanceKit review that separates app and widget location setup, handles optional point-of-interest relevance, maps fitness clues to exact HealthKit types, and states the watchOS-only effect of RelevanceKit clues.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 2,
+      "name": "team-wants-single-answer-covering-ios-home",
       "prompt": "A team wants a single answer covering an iOS Home Screen widget timeline, watchOS Smart Stack relevance, HealthKit workout recording, MapKit place search, and APNs widget push updates. Explain what belongs in RelevanceKit and what should be routed to sibling Apple framework skills.",
       "expected_output": "A boundary-aware routing memo that keeps RelevanceKit focused on watchOS Smart Stack relevance clues and relevant widgets, while routing general WidgetKit timelines/push updates, HealthKit workout recording, and MapKit place search to sibling skills.",
       "files": [],

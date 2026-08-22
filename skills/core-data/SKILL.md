@@ -1,6 +1,6 @@
 ---
 name: core-data
-description: "Build, review, or improve Core Data persistence in apps that have not adopted SwiftData. Use when working with NSManagedObject subclasses, NSFetchedResultsController for list-driven UI, NSBatchInsertRequest / NSBatchDeleteRequest / NSBatchUpdateRequest for bulk operations, NSPersistentHistoryChangeRequest for persistent history tracking and multi-target sync, NSStagedMigrationManager for staged schema migrations (iOS 17+), NSCompositeAttributeDescription for composite attributes (iOS 17+), or when integrating Core Data threading with Swift Concurrency. For Core Data + SwiftData coexistence or migration, see the swiftdata skill instead."
+description: "Build or review persistence in apps that still use Core Data, including managed objects, fetched results, batch operations, persistent history, staged migration, and concurrency. Use for Core Data-only work; route SwiftData adoption or coexistence to swiftdata."
 ---
 
 # Core Data

@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "swiftui-focus-plan-ipados-form-command-menu",
       "prompt": "Review this SwiftUI focus plan for an iPadOS form and command menu: every TextField uses its own Bool @FocusState, two fields reuse the same enum case, the screen sets several defaultFocus modifiers, and toolbar commands read a selected document from global app state. Give concise corrected guidance with Swift where useful.",
       "expected_output": "A correction-focused answer that uses one optional Hashable focus state for multiple fields, avoids ambiguous focus bindings, picks one default target or scoped default, and uses focused scene values for command/menu state.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 1,
+      "name": "tvos-swiftui-media-screen-has-left-sidebar",
       "prompt": "A tvOS SwiftUI media screen has a left sidebar, an uneven poster grid, and a row of custom card views. The team wants to handle Siri Remote swipes manually, make only the currently visible cards tappable by gestures, and add UIFocusGuide everywhere. Review the focus plan and suggest the right routing/debugging approach.",
       "expected_output": "A tvOS-focused review that relies on the focus engine, makes actions reachable via focus plus select, uses semantic controls and focusSection for uneven SwiftUI regions before UIKit guides, and reserves UIFocusGuide/UIFocusDebugger for custom UIKit routing/debugging.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 2,
+      "name": "making-visionos-realitykit-scene-gaze-move-swiftui",
       "prompt": "I'm making a visionOS RealityKit scene and want gaze to move SwiftUI focus between floating controls, while InputTargetComponent and HoverEffectComponent make 3D entities part of the focus system. What should I change, and where should accessibility-specific focus guidance go?",
       "expected_output": "A boundary-aware visionOS answer that separates connected-device focus from gaze hover, frames RealityKit input and hover components as interaction affordances rather than focus-system APIs, and routes VoiceOver/Switch Control details to ios-accessibility.",
       "files": [],

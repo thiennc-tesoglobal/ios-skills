@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "swift-6-3-xcode-26-concurrency-settings",
       "prompt": "Review this Swift 6.3/Xcode 26 concurrency build-settings plan: the team says Approachable Concurrency alone makes the whole module MainActor, strict concurrency should start at Targeted in Swift 6 mode, and CPU-heavy image decoding can stay on MainActor because nonisolated async functions now hop to a background executor. Correct the plan and give the smallest build-setting and code-level recommendations.",
       "expected_output": "A source-grounded settings review that separates Approachable Concurrency from Default Actor Isolation, states that Swift 6 mode uses complete strict concurrency with errors, and recommends @concurrent/nonisolated offloading for CPU-heavy work instead of blocking MainActor.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 1,
+      "name": "swiftui-app-default-actor-isolation-set-mainactor",
       "prompt": "A SwiftUI app with Default Actor Isolation set to MainActor has errors around a @Observable StickerModel conforming to Exportable, a PhotoProcessor async method, and a legacy SDK imported with @preconcurrency. Give a diagnostic remediation plan that preserves behavior, avoids unchecked Sendable unless truly justified, and explains which fixes belong in swift-concurrency rather than architecture or navigation skills.",
       "expected_output": "A diagnostic remediation plan that uses @MainActor or isolated conformances for UI-bound state, explains nonisolated(nonsending) and @concurrent tradeoffs for PhotoProcessor work, treats @preconcurrency as temporary, and keeps architecture/navigation details as sibling handoffs.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 2,
+      "name": "synchronization-plan-swift-6-3-app-actor",
       "prompt": "Review this synchronization plan for a Swift 6.3 app: use an actor for a synchronous metrics counter called from C callbacks, put NSLock inside an actor for cache mutation, hold a Mutex while awaiting a network fetch, and ban NSLock because it is not Sendable. Replace it with a modern concurrency-safe plan for iOS 16 through iOS 26.",
       "expected_output": "A synchronization review that chooses actors for async shared state, Mutex or OSAllocatedUnfairLock for synchronous state depending on deployment target, Atomic for simple counters or flags, avoids locks inside actors or across await, and corrects the NSLock Sendable claim without recommending it first.",
       "files": [],
@@ -42,6 +45,7 @@
     },
     {
       "id": 3,
+      "name": "team-swift-6-3-xcode-26-5",
       "prompt": "A team on Swift 6.3 / Xcode 26.5 wants to add async defer cleanup, wrap every cancellation path in withTaskCancellationShield, and fix a diagnostic from a closure with an explicit capture list passed to a nonisolated(nonsending) async parameter. Review the plan and give the smallest source-grounded correction.",
       "expected_output": "A version-gated concurrency review that says async defer and withTaskCancellationShield are Swift 6.4 / Xcode 27 beta-era APIs, explains that async defer does not suppress cancellation, uses cancellation shields only for short cleanup or rollback when available, and gives the two documented Xcode 26.5 explicit-capture closure workarounds.",
       "files": [],
@@ -55,6 +59,7 @@
     },
     {
       "id": 4,
+      "name": "swift-6-3-buffer-processing-plan-synchronous",
       "prompt": "Review this Swift 6.3 buffer-processing plan. A synchronous Core Image callback fills an output buffer with DispatchQueue.concurrentPerform while reading UnsafeBufferPointer inputs, but strict concurrency rejects the captures. The team proposes replacing it unconditionally with one TaskGroup child per element, or else marking the whole utility nonisolated(unsafe). Give the smallest safe correction, including the memory-safety proof and cancellation behavior.",
       "expected_output": "A source-grounded review that preserves concurrentPerform when a measured synchronous parallel-for is required, treats task groups as an async alternative rather than a drop-in replacement, confines any unsafe opt-out to audited local base-pointer bindings, and requires a concrete no-conflicting-access and lifetime proof.",
       "files": [],

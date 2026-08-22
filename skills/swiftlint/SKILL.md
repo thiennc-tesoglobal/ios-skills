@@ -1,6 +1,6 @@
 ---
 name: swiftlint
-description: "Configures and enforces SwiftLint in Swift projects using build tool plugins, run scripts, and CI. Covers .swiftlint.yml configuration, disabled_rules, opt_in_rules, only_rules, analyzer_rules, baselines, autocorrect, swiftlint:disable suppressions, reporter formats (sarif, json, checkstyle), strict and lenient modes, SwiftLintBuildToolPlugin via SimplyDanny/SwiftLintPlugins, swift package plugin swiftlint, Xcode run script phases, CI integration, multiple configuration files, and rollout strategies for existing codebases. Use when setting up SwiftLint, configuring lint rules, suppressing warnings, creating baselines, choosing between build tool plugin and run script, or integrating SwiftLint into CI."
+description: "Configure and enforce SwiftLint through build-tool plugins, Xcode scripts, Swift Package plugins, or CI. Use for rule configuration, suppressions, baselines, autocorrection, reporters, strictness, multi-config setups, and staged rollout in existing Swift projects."
 ---
 
 # SwiftLint

@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "pdfkit-page-navigation-code-ios-if-let",
       "prompt": "Review this PDFKit page-navigation code for iOS: `if let page = document.page(at: selectedIndex) { pdfView.go(to: page) }`, plus remove/exchange buttons that call `removePage(at:)` and `exchangePage(at:withPageAt:)` directly. What should change?",
       "expected_output": "A concise PDFKit review that explains zero-based page indices, guards page access and page mutations before calling PDFDocument APIs, and supplies corrected Swift snippets.",
       "files": [],
@@ -15,6 +16,7 @@
     },
     {
       "id": 2,
+      "name": "adding-pencilkit-style-drawing-layer-over-pdfview",
       "prompt": "I'm adding a PencilKit-style drawing layer over a PDFView using PDFPageOverlayViewProvider. Sketch the PDFKit-side structure for provider ownership, visible-page lifecycle, and saving the edits back into the PDF.",
       "expected_output": "A PDFKit overlay plan that keeps the overlay provider strongly owned, uses PDFPageOverlayViewProvider lifecycle callbacks to persist per-page overlay state, and explains that overlay views must be converted to PDF annotations or burned in before saving.",
       "files": [],
@@ -28,6 +30,7 @@
     },
     {
       "id": 3,
+      "name": "which-skill-should-handle-feature-displays-pdf",
       "prompt": "Which skill should handle a feature that displays a PDF, fills text and checkbox fields, shows thumbnails, and wraps the view in SwiftUI? Mention any sibling-skill handoffs for broader SwiftUI or drawing behavior.",
       "expected_output": "A boundary-aware answer that activates PDFKit for PDFView, PDFDocument, widget annotations, thumbnails, and PDF-specific SwiftUI wrapping while routing broad interop and drawing-tool concerns to sibling skills.",
       "files": [],

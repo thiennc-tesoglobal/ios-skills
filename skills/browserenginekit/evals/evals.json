@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "proposed-ios-alternative-browser-engine-setup-app",
       "prompt": "Review this proposed iOS alternative browser engine setup: the app has only com.apple.developer.web-browser-engine.host, three generic extensions with no type-specific entitlements, no UIRequiredDeviceCapabilities entry, and it launches a content process before connecting networking/rendering. Write a concise setup review with corrected entitlements, Info.plist/build settings, and process-bootstrap guidance.",
       "expected_output": "A BrowserEngineKit setup review that names the host and extension entitlements, required device capability and arm64e distribution settings, and the host-brokered XPC bootstrap sequence.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "fix-these-browserenginekit-snippets-ios-26-webcontentextension",
       "prompt": "Fix these BrowserEngineKit snippets for iOS 26: a WebContentExtension is declared as `final class MyWebContentExtension: WebContentExtension { override func handle(...) }`; the XPC handler calls xpc_connection_resume; file access sends a .withSecurityScope bookmark and calls startAccessingSecurityScopedResource; memory transfer entitlements are set to true; and rendering enables .coreML without availability checks.",
       "expected_output": "A correction review that updates extension conformance, XPC activation, file bookmark handling, memory attribution entitlement values, and Core ML feature availability.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "product-team-asks-whether-they-should-browserenginekit",
       "prompt": "A product team asks whether they should use BrowserEngineKit for an ordinary SwiftUI in-app help center that renders bundled HTML, intercepts app links, and supports OAuth sign-in. They are not building a browser engine. Give routing guidance and say which Apple APIs or sibling skills are more appropriate.",
       "expected_output": "Boundary guidance that avoids BrowserEngineKit for ordinary embedded web content, points to SwiftUI WebKit or authentication APIs, and keeps BrowserEngineKit scoped to approved alternative browser engines.",
       "files": [],

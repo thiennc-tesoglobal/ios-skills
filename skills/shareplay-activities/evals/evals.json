@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "adding-shareplay-swiftui-movie-app-group-activities",
       "prompt": "I'm adding SharePlay to a SwiftUI movie app. Show the Group Activities setup, the activity type and metadata, how to start the activity from the app, how to listen for sessions, and how to sync AVPlayer playback. Keep custom messages only where they are actually needed.",
       "expected_output": "A source-grounded SharePlay media implementation plan that uses the Group Activities capability, a codable GroupActivity, prepareForActivation/activate or GroupActivitySharingController, long-lived session observation with join/leave cleanup, and AVPlaybackCoordinator for player rate/time sync.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 2,
+      "name": "collaborative-whiteboard-shareplay-design-every-stroke-sent",
       "prompt": "Review this collaborative whiteboard SharePlay design: every stroke is sent reliably, image drops are sent through GroupSessionMessenger as Data, late joiners rebuild from whatever messages they happen to receive, and the sessions() listener is in a SwiftUI view task. Fix the architecture.",
       "expected_output": "A correction-focused SharePlay architecture that separates reliable and unreliable message streams, uses GroupSessionJournal for large Transferable attachments, sends state snapshots to late joiners, and moves session observation into a retained manager.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 3,
+      "name": "shareplay-launch-path-works-normal-swiftui-share",
       "prompt": "I want a SharePlay launch path that works from a normal SwiftUI share button, over AirDrop when people are nearby, and from a custom UIKit button when no FaceTime call is active. Also call out what belongs in GameKit, TabletopKit, or AVKit instead of this SharePlay layer.",
       "expected_output": "A boundary-aware SharePlay UI plan that uses Transferable for ShareLink/AirDrop/share sheets, GroupActivitySharingController for no active conversation, and keeps Game Center services, TabletopKit board mechanics, and AVKit playback UI or media player details in sibling framework domains.",
       "files": [],

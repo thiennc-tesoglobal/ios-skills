@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "audit-proposed-ios-video-player-setup-calls",
       "prompt": "Audit this proposed iOS video player setup: it calls AVAudioSession.setCategory(.playback, mode: .moviePlayback) and setActive(true) in app launch, adds no background modes, and expects Picture in Picture and AirPlay to work automatically. Write a concise review with corrected Swift and Info.plist guidance.",
       "expected_output": "A review that corrects the audio session and background mode setup for an iOS AVKit playback app, recommends deferring setActive until playback begins, and avoids unsupported claims.",
       "files": [],
@@ -15,6 +16,7 @@
     },
     {
       "id": 2,
+      "name": "implement-custom-ios-avplayerlayer-view-offers-picture",
       "prompt": "Implement a custom iOS AVPlayerLayer view that offers a Picture in Picture button. Include the important checks and delegate handling, but keep it as snippets rather than a full app.",
       "expected_output": "Swift snippets for custom AVPlayerLayer-based PiP that check device support and current PiP possibility, start PiP only from user interaction, configure the delegate, and restore UI correctly.",
       "files": [],
@@ -28,6 +30,7 @@
     },
     {
       "id": 3,
+      "name": "ios-avkit-implementation-uses-playervc-isskipforwardenabled-playervc",
       "prompt": "Review an iOS AVKit implementation that uses playerVC.isSkipForwardEnabled, playerVC.isSkipBackwardEnabled, playerVC.skippingBehavior = .skipItem, playerVC.allowedSubtitleOptionLanguages, playerVC.requiresFullSubtitles, and playerItem.interstitialTimeRanges = [...] to support skip buttons, subtitle restrictions, and ad breaks. Explain what should change for iOS 26.",
       "expected_output": "A review that flags tvOS-only skipping and subtitle-restriction APIs, recommends iOS-safe seeking or standard controls, and uses stream-defined interstitial ranges or AVPlayerInterstitialEventController instead of direct interstitialTimeRanges assignment as the iOS recipe.",
       "files": [],
@@ -41,6 +44,7 @@
     },
     {
       "id": 4,
+      "name": "swiftui-avkit-snippet-ios-videoplayer-player-player",
       "prompt": "Review this SwiftUI AVKit snippet for iOS: VideoPlayer(player: player) { Button(\"Buy\") { purchase() } } plus player.usesExternalPlaybackWhileExternalScreenIsActive = true. Explain whether the overlay can be interactive and when to set the external playback properties.",
       "expected_output": "A review that accurately explains VideoPlayer overlay event handling and keeps AirPlay/external-screen guidance narrow.",
       "files": [],

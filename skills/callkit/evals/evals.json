@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "updating-ios-26-voip-app-latest-pushkit",
       "prompt": "I'm updating an iOS 26 VoIP app for the latest PushKit behavior. Sketch the PushKit + CallKit incoming-call path for iOS 26.4 and earlier iOS 26.x, including when I can ignore a VoIP push, when I must report to CallKit, and the APNs server settings that matter.",
       "expected_output": "A source-grounded CallKit/PushKit implementation outline that prefers the iOS 26.4 metadata delegate, respects mustReport, keeps the older delegate as fallback, reports required calls before PushKit completion, and notes short VoIP push expiration.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 1,
+      "name": "callkit-plan-mistakes-when-user-taps-answer",
       "prompt": "Review this CallKit plan for mistakes: when the user taps Answer, call action.fulfill() right away and then connect WebRTC; start the audio engine before provider(_:didActivate:); send another VoIP push if the caller hangs up; for encrypted payloads, always use CXProvider.reportNewIncomingVoIPPushPayload from a notification service extension.",
       "expected_output": "A correction-focused review that defers answer fulfillment until connection succeeds, waits for CallKit audio activation, uses the app-server connection after the initial push, and limits reportNewIncomingVoIPPushPayload to Apple's documented encrypted-metadata case.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 2,
+      "name": "caller-id-call-blocking-spam-filter-plus",
       "prompt": "I need caller ID and call blocking for a spam filter, plus iOS 26 call translation and normal APNs auth-key rotation. Can the Call Directory extension look up each caller from my API as calls arrive? What belongs in CallKit and what should move to another skill?",
       "expected_output": "A boundary-aware answer that keeps Call Directory and CallKit call-translation behavior in scope, rejects per-call lookup, uses sorted country-code phone numbers and settings/status APIs, and routes generic APNs auth-key rotation to push notification guidance.",
       "files": [],

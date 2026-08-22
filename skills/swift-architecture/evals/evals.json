@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "small-swiftui-travel-app-has-three-crud",
       "prompt": "A small SwiftUI travel app has three CRUD screens, async loading from a service, simple search, and one edit sheet. The team wants to start with TCA because it sounds more testable. Review the architecture choice for Swift 6.3 and recommend the smallest pattern that still keeps the code testable.",
       "expected_output": "A scope-aware architecture review that recommends MV with @Observable as the default starting point, explains when MVVM or TCA would become justified, and keeps detailed SwiftUI state wiring out of scope except for handoff notes.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 1,
+      "name": "re-migrating-ios-16-uikit-heavy-app",
       "prompt": "We're migrating an iOS 16 UIKit-heavy app that uses Coordinators, ObservableObject view models, and a few VIPER modules. New features are SwiftUI, but the old modules are still shipping. Write a migration plan that modernizes Observation without forcing one architecture everywhere.",
       "expected_output": "An incremental migration plan that replaces ObservableObject with @Observable where iOS 17+ is available, preserves Coordinator or VIPER boundaries for legacy UIKit modules, and allows different modules to adopt MV, MVVM, or TCA where justified.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 2,
+      "name": "product-lead-asks-one-architecture-memo-covering",
       "prompt": "A product lead asks for one architecture memo covering SwiftUI state ownership, deep links and tab routing, actor isolation errors, app-wide module boundaries, and test strategy. Split what belongs in swift-architecture versus adjacent skills, then give the architecture-level recommendations.",
       "expected_output": "A boundary-routing memo that keeps architecture selection, module boundaries, dependency direction, and migration strategy in swift-architecture while routing detailed SwiftUI state, navigation, concurrency, and test harness mechanics to sibling skills.",
       "files": [],

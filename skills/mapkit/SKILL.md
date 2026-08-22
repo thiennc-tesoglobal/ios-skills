@@ -1,6 +1,6 @@
 ---
 name: mapkit
-description: "Implement, review, or improve maps and location features in iOS/macOS apps using MapKit and CoreLocation. Use when working with Map views, annotations, markers, polylines, user location tracking, geocoding, reverse geocoding, search/autocomplete, directions and routes, geofencing, region monitoring, CLLocationUpdate async streams, or location authorization flows. Also use when working with maps, coordinates, addresses, places, directions, distance calculations, or location-based features in Swift apps."
+description: "Build or review maps and location features with MapKit and Core Location. Use for map views, annotations, overlays, user location, geocoding, place search, directions, geofencing, region monitoring, location authorization, or coordinate-based app behavior."
 ---
 
 # MapKit

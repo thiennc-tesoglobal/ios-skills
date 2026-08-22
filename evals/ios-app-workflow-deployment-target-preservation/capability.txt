@@ -1,0 +1,1 @@
+Availability-aware adoption of newer Apple APIs without raising the deployment target

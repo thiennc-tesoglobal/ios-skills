@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "swiftui-explore-screen-uses-vstack-500-media",
       "prompt": "Review a SwiftUI Explore screen that uses a VStack of 500 media cards, a custom search field, and a floating toast. Recommend a modern iOS 26 layout approach without rewriting unrelated app architecture.",
       "expected_output": "Focused layout guidance that chooses lazy containers, native search, and overlay patterns while staying out of navigation and state-architecture rewrites.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "settings-heavy-swiftui-screen-uses-list-sections",
       "prompt": "A settings-heavy SwiftUI screen uses List sections and needs a jump-to-section control plus rows whose expanded descriptions animate smoothly. What layout guidance should I follow?",
       "expected_output": "Explains the List scroll-target and dynamic row-height caveats, then recommends the appropriate List or ScrollView plus lazy-stack structure for the requirements.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "swiftui-onboarding-flow-full-screen-modal-routing",
       "prompt": "I need a SwiftUI onboarding flow with full-screen modal routing, sheet detents, deep links into steps, and a few forms. Which parts should this layout skill own?",
       "expected_output": "Clear boundary guidance that keeps forms and controls in this skill while handing modal routing, sheets, full-screen presentation policy, and deep links to swiftui-navigation.",
       "files": [],
@@ -41,6 +44,7 @@
     },
     {
       "id": 4,
+      "name": "design-layout-behavior-ios-26-swiftui-editor",
       "prompt": "Design the layout behavior for an iOS 26 SwiftUI editor whose primary canvas pages vertically into a secondary detail surface. The scroll offset should progressively fade and scale the canvas, reveal a toolbar, and update an affordance. The current prototype also tracks three reveal booleans plus a duplicate DragGesture, fires haptics from per-frame geometry, and fights scrolling while zooming or cropping. Keep the answer within layout/component scope.",
       "expected_output": "A modern scroll-driven reveal pattern that uses ScrollPosition and paging, derives one clamped normalized progress value through a narrow onScrollGeometryChange transform, drives all continuous effects from it, reserves visibility/settled callbacks for deduplicated discrete effects, disables scrolling during conflicting interactions, and avoids geometry feedback loops and broad per-frame invalidation.",
       "files": [],

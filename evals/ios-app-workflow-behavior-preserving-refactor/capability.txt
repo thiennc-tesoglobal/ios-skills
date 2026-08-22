@@ -1,0 +1,1 @@
+Behavior-preserving multi-file SwiftUI refactoring with equivalent verification

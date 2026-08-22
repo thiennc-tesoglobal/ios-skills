@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "swiftui-storekit-2-paywall-ios-26-app",
       "prompt": "Build a SwiftUI StoreKit 2 paywall for an iOS 26 app with monthly and yearly subscriptions. Include product loading, purchase handling, entitlement checks, restore purchases, transaction updates, and what to do for Ask to Buy or refunds.",
       "expected_output": "A current StoreKit 2 subscription paywall plan that uses StoreKit views or PurchaseAction, verifies transactions, starts Transaction.updates at launch, handles current entitlements correctly, and exposes restore and policy links.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "storekit-subscription-offer-code-plan-product-subscriptioninfo",
       "prompt": "Review this StoreKit subscription-offer code plan: use `Product.SubscriptionInfo.Status.status(for:)`, show every `winBackOffers` entry to cancelled users, use `.subscriptionPromotionalOffer(offer: signature:)`, and inspect `transaction.offerType` / `transaction.offerID` on purchase. Correct the API and eligibility mistakes.",
       "expected_output": "A correction-focused answer that updates stale StoreKit offer APIs, filters win-back offers through renewal eligibility, and verifies applied offers through the current transaction offer model.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "storekit-guidance-ios-app-sells-premium-app",
       "prompt": "Use StoreKit guidance to review an iOS app that sells premium app features, has a reader-account sign-up link, and also wants App Store keywords and privacy manifest checks. Keep the answer scoped: what belongs in StoreKit, what belongs in App Store Review or ASO, and what IAP compliance caveats should be called out?",
       "expected_output": "A boundary-aware response that keeps StoreKit focused on IAP implementation, routes broader submission and metadata work to sibling skills, and states current IAP/external-link rules without overclaiming.",
       "files": [],

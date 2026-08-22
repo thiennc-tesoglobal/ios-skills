@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "adding-setup-ble-environmental-sensor-ios-18",
       "prompt": "I'm adding setup for our BLE environmental sensor on iOS 18+. It advertises service UUID 12345678-1234-1234-1234-123456789ABC and name prefix EnviroTag. Show the Info.plist entries, ASDiscoveryDescriptor, picker presentation, and what to do after the user picks the accessory without triggering broad Bluetooth permission.",
       "expected_output": "Guidance uses AccessorySetupKit for the picker, declares matching Info.plist Bluetooth support/service/name values, creates an ASDiscoveryDescriptor with the service UUID and name substring, activates ASAccessorySession before showPicker, handles accessoryAdded/pickerDidDismiss ordering, and uses the ASAccessory.bluetoothIdentifier with CoreBluetooth after selection.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "accessory-setup-plan-crash-risks-one-asdiscoverydescriptor",
       "prompt": "Review this accessory setup plan for crash risks: one ASDiscoveryDescriptor sets ssid = \"ThermoHub-123\" and ssidPrefix = \"ThermoHub-\"; another Bluetooth descriptor uses manufacturer data mask bytes but no company identifier; the plist only declares Bluetooth support, not Wi-Fi. What should change?",
       "expected_output": "Review flags invalid Wi-Fi descriptor configuration, missing Wi-Fi support declaration, and incomplete Bluetooth manufacturer-data matching. It recommends choosing either ssid or ssidPrefix, declaring WiFi in NSAccessorySetupSupports when discovering Wi-Fi, declaring matching Bluetooth identifiers in Info.plist, and pairing manufacturer data with a company identifier plus same-length blob/mask.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "smart-home-matter-onboarding-flow-adds-lights",
       "prompt": "I'm building a smart-home Matter onboarding flow that adds lights to rooms, reads HMAccessory characteristics, and creates automations. It mentions accessories, setup, and Bluetooth nearby discovery in a few places. Which skill/domain should own the implementation guidance, and what should AccessorySetupKit not try to cover?",
       "expected_output": "The answer routes smart-home/Matter/HomeKit implementation to the HomeKit/Matter domain, not AccessorySetupKit. It clearly limits AccessorySetupKit to privacy-scoped Bluetooth/Wi-Fi accessory discovery, authorization, picker/session events, and migration before communication through CoreBluetooth or NetworkExtension.",
       "files": [],

@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "starting-swift-6-3-visionos-tabletop-dice",
       "prompt": "I'm starting a Swift 6.3 visionOS tabletop dice game. Give me a concise implementation plan for TabletopKit setup, dice tossing, RealityKit rendering, and SharePlay multiplayer. Call out any availability traps I need to know before I target older visionOS 2.x devices.",
       "expected_output": "A source-grounded TabletopKit implementation plan that uses core TabletopKit types, dice toss APIs, RealityKit rendering, and Group Activities while distinguishing core visionOS 2.0 APIs from visionOS 2.2 and visionOS 26-only APIs.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "tabletopkit-idea-app-support-visionos-2-0",
       "prompt": "Review this TabletopKit idea: I want my app to support visionOS 2.0 and use CustomAction plus CustomEquipmentState for a player inventory and coin collection. Is that safe? If not, what should I change?",
       "expected_output": "A correction-focused review that flags CustomAction and CustomEquipmentState as visionOS 26.0+ APIs, suggests safe alternatives or availability gates for visionOS 2.0, and explains deterministic custom-action rules if the target is raised.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "visionos-spatial-board-game-add-leaderboards-achievements",
       "prompt": "For my visionOS spatial board game, add leaderboards, achievements, matchmaking, and FaceTime table synchronization. Should TabletopKit own all of that, or should I split it across Apple frameworks?",
       "expected_output": "A boundary-aware answer that keeps TabletopKit focused on the spatial table/game-state layer, routes Game Center concerns to GameKit, and uses Group Activities/SharePlay for FaceTime synchronization.",
       "files": [],

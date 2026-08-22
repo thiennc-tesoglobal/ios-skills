@@ -1,6 +1,6 @@
 ---
 name: ios-localization
-description: "Implement, review, or improve localization and internationalization in iOS/macOS apps — String Catalogs (.xcstrings), generated localizable symbols, stable key naming, LocalizedStringKey, LocalizedStringResource, pluralization, FormatStyle for numbers/dates/measurements, right-to-left layout, Dynamic Type, and locale-aware formatting. Use when adding multi-language support, setting up String Catalogs, enabling generated symbols for compile-time-safe localization keys, handling plural forms, formatting dates/numbers/currencies for different locales, testing localizations, or making UI work correctly in RTL languages like Arabic and Hebrew."
+description: "Implement or review Apple-platform localization with String Catalogs, generated symbols, plurals, locale-aware formatting, package resources, and right-to-left layout. Use for multi-language UI, translation keys, localized values, or localization testing."
 ---
 
 # iOS Localization & Internationalization

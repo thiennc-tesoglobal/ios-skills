@@ -1,6 +1,6 @@
 ---
 name: push-notifications
-description: "Implement, review, or debug push notifications in iOS/macOS apps — local notifications, remote (APNs) notifications, rich notifications, notification actions, silent pushes, and notification service/content extensions. Use when working with UNUserNotificationCenter, registering for remote notifications, handling notification payloads, setting up notification categories and actions, creating rich notification content, or debugging notification delivery. Also use when working with alerts, badges, sounds, background pushes, or user notification permissions in Swift apps."
+description: "Implement or debug local and APNs notifications, permissions, payloads, categories, actions, silent pushes, and notification extensions. Use for alerts, badges, sounds, background delivery, rich content, registration, or delivery diagnosis; route Live Activity updates to activitykit."
 ---
 
 # Push Notifications

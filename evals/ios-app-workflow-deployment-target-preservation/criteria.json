@@ -1,0 +1,26 @@
+{
+  "context": "Tests deployment-target preservation while adopting a newer Apple-platform API.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Preserves deployment target",
+      "description": "Inspects and keeps the existing iOS 17 minimum deployment target.",
+      "max_score": 30
+    },
+    {
+      "name": "Availability gating",
+      "description": "Gates the iOS 26 API correctly and supplies a behaviorally appropriate fallback.",
+      "max_score": 30
+    },
+    {
+      "name": "Source verification",
+      "description": "Checks API availability against installed SDK evidence or primary documentation.",
+      "max_score": 20
+    },
+    {
+      "name": "Compatibility evidence",
+      "description": "Builds or otherwise verifies both modern and compatibility assumptions without unauthorized settings changes.",
+      "max_score": 20
+    }
+  ]
+}

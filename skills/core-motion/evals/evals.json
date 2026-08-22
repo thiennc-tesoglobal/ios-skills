@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "concise-swiftui-tilt-control-service-ios-game",
       "prompt": "Build a concise SwiftUI tilt-control service for an iOS game. It should read device motion at a reasonable rate, avoid wasting battery, and clean up correctly when the view disappears.",
       "expected_output": "A Core Motion implementation outline that uses one CMMotionManager, includes NSMotionUsageDescription, checks availability/reference frames, starts device-motion or accelerometer updates at a suitable interval, handles errors/queues, and stops updates on lifecycle exit.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 1,
+      "name": "plan-hiking-app-cmpedometer-daily-steps-cmmotionactivitymanager",
       "prompt": "Review this plan for a hiking app: use CMPedometer for daily steps, CMMotionActivityManager to switch walking/driving modes, and CMAltimeter for elevation. The team says absolute altitude is GPS-based, activity flags are mutually exclusive, and only activity recognition needs motion permission.",
       "expected_output": "A correction-focused review that covers NSMotionUsageDescription and authorization checks for pedometer/activity/altimeter, nonexclusive CMMotionActivity flags with confidence, and absolute altitude as sea-level altitude on supported hardware rather than GPS-based data.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 2,
+      "name": "advanced-motion-guidance-watchos-app-analyzes-golf",
       "prompt": "I need advanced motion guidance for a watchOS app that analyzes golf swings with batched accelerometer data, tracks AirPods head motion during coaching, and supports shallow dive depth on Apple Watch Series 10/Ultra. What setup and API pitfalls should I avoid?",
       "expected_output": "An advanced Core Motion guide that uses CMBatchedSensorManager safely without assigning read-only frequency properties, covers CMHeadphoneMotionManager privacy/connection behavior, and sets up CMWaterSubmersionManager with availability checks, motion usage text, Shallow Depth and Pressure or full entitlement, and underwater-depth background mode.",
       "files": [],

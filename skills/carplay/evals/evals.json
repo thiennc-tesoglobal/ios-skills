@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "adding-carplay-support-turn-by-turn-navigation",
       "prompt": "I'm adding CarPlay support to our turn-by-turn navigation app on iOS 26. Show the entitlement, Info.plist scene manifest, scene delegate, root template setup, map rendering boundary, and simulator test matrix.",
       "expected_output": "Guidance requests the navigation CarPlay entitlement, declares CPTemplateApplicationSceneSessionRoleApplication in UIApplicationSceneManifest, implements the navigation CPTemplateApplicationSceneDelegate didConnect method with CPWindow, renders only map content in the CPWindow root view controller, sets CPMapTemplate as the root template, and includes CarPlay Simulator sizes plus real-hardware locked-iPhone/Siri/audio caveats.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 2,
+      "name": "carplay-communication-code-ios-26-builds-cpmessagelistitem",
       "prompt": "Review this CarPlay communication code for iOS 26: it builds CPMessageListItem with CPMessageListItem.LeadingConfiguration, CPMessageListItem.TrailingConfiguration, trailingImage, and a custom selection handler that opens our message detail screen. What should change?",
       "expected_output": "Review flags stale or invalid CPMessageListItem API shapes, uses CPMessageListItemLeadingConfiguration and CPMessageListItemTrailingConfiguration with CPMessageLeadingItem/CPMessageTrailingItem values, explains that CPMessageListItem selection invokes Siri message flows instead of a custom handler, and keeps the advice within the communication entitlement domain.",
       "files": [],
@@ -30,6 +32,7 @@
     },
     {
       "id": 3,
+      "name": "delivery-app-s-live-activity-small-widget",
       "prompt": "We want our delivery app's Live Activity and a small widget to appear on the CarPlay Home Screen and CarPlay Ultra. Should the CarPlay skill own this, or should we build it with CarPlay templates?",
       "expected_output": "Answer routes Live Activities to ActivityKit and widgets to WidgetKit while explaining that the CarPlay skill owns CarPlay framework template apps, scenes, entitlements, and simulator testing. It does not invent a CarPlay template implementation for widgets or Live Activities, and it mentions CarPlay-specific validation only as a handoff concern.",
       "files": [],

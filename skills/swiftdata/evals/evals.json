@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "swiftdata-cloudkit-schema-ios-26-app-profile",
       "prompt": "Review this SwiftData CloudKit schema for an iOS 26 app: Profile uses @Attribute(.unique) on email, has a required @Relationship(deleteRule: .deny) owner, stores avatarData as Data, and a reviewer says every scalar property must become optional for sync. Give concise corrected guidance with a model sketch.",
       "expected_output": "A review that flags SwiftData CloudKit schema incompatibilities, keeps scalar optionality precise, and covers CloudKit capability and schema rollout concerns.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 2,
+      "name": "swiftdata-list-slow-filters-trips-by-destination",
       "prompt": "A SwiftData list is slow. It filters trips by destination, sorts by startDate, and uses #Predicate with Date.now directly plus a helper method call on the model. The draft fix adds indexes to every property and says adding indexes never needs migration testing. Review the plan and give corrected predicate and indexing guidance.",
       "expected_output": "A review that fixes predicate capture and unsupported-call risks, recommends targeted #Index usage for frequent filters/sorts, and avoids unsourced migration guarantees.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 3,
+      "name": "core-data-app-wants-add-swiftdata-screens",
       "prompt": "A Core Data app wants to add SwiftData screens against the existing SQLite store while keeping the old stack alive. The model includes a Codable Address struct and a renamed persisted field. Explain how to route the work and what boundary guidance matters, without turning the answer into a full Core Data tutorial.",
       "expected_output": "A boundary answer that treats Core Data + SwiftData coexistence or migration as SwiftData-owned, avoids unsupported Codable availability claims, and preserves store/schema alignment guidance.",
       "files": [],

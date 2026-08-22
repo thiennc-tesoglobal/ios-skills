@@ -1,0 +1,31 @@
+{
+  "context": "Tests structure-only refactoring with explicit behavior preservation and verification.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Refactor contract",
+      "description": "Records layout, navigation, identity, accessibility, persistence, animation, and side-effect behavior that must remain stable.",
+      "max_score": 25
+    },
+    {
+      "name": "Meaningful boundaries",
+      "description": "Extracts dedicated views with real responsibilities rather than arbitrary fragments or extensions only.",
+      "max_score": 25
+    },
+    {
+      "name": "Discoverable naming",
+      "description": "Matches filenames to primary types and uses product, domain, and role names.",
+      "max_score": 20
+    },
+    {
+      "name": "State and timing preservation",
+      "description": "Preserves state ownership, identity, animation, task, and side-effect timing.",
+      "max_score": 15
+    },
+    {
+      "name": "Equivalent verification",
+      "description": "Builds and exercises the refactored screen against the same fixture used before the refactor.",
+      "max_score": 15
+    }
+  ]
+}

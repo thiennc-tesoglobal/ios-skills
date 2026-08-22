@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "ios-camera-app-should-work-dockkit-stand",
       "prompt": "I'm building an iOS camera app that should work with a DockKit stand. Sketch the setup and control flow for system tracking, tap-to-track, framing or region-of-interest controls, manual pan/tilt mode, and hardware button events. Include the privacy/setup caveats that matter.",
       "expected_output": "A DockKit camera-app implementation outline that uses DockAccessoryManager, handles dock/undock, keeps DockKit-specific setup distinct from normal camera privacy, uses current framing and ROI guidance, and handles iOS 17.4+ accessory events with throwing async sequences.",
       "files": [],
@@ -19,6 +20,7 @@
     },
     {
       "id": 1,
+      "name": "dockkit-custom-tracking-plan-keep-system-tracking",
       "prompt": "Review this DockKit custom tracking plan: keep system tracking on, run Vision at 5 fps, create DockAccessory.Observation rectangles in UIKit view coordinates, call track once per second with an optional CVPixelBuffer when convenient, and animate the dock repeatedly in a tight loop until the subject is centered.",
       "expected_output": "A correction-focused review that disables system tracking before custom tracking, uses normalized lower-left observation coordinates, sends track() data at 10-30 fps, describes the actual image overloads, and separates track() frame-rate limits from animate/setOrientation call-rate limits.",
       "files": [],
@@ -34,6 +36,7 @@
     },
     {
       "id": 2,
+      "name": "feature-follows-whichever-person-speaking-shows-dock",
       "prompt": "I want a feature that follows whichever person is speaking, shows the dock battery in my SwiftUI UI, reacts to the dock zoom and shutter buttons, and also pairs a new BLE camera accessory if none is connected. What belongs in DockKit, what availability checks should I use, and what should move to another skill?",
       "expected_output": "A boundary-aware DockKit answer that uses iOS 18 trackingStates and batteryStates for intelligent tracking and status, iOS 17.4 accessoryEvents for buttons, and routes BLE accessory onboarding to AccessorySetupKit or Core Bluetooth rather than expanding DockKit scope.",
       "files": [],

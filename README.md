@@ -6,6 +6,7 @@
 [![Apple platforms](https://img.shields.io/badge/Apple%20Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-black?logo=apple)](https://developer.apple.com)
 [![Specification](https://img.shields.io/badge/Agent%20Skills-compatible-6f42c1)](https://agentskills.io)
 [![License](https://img.shields.io/badge/License-PolyForm%20Perimeter-blue)](LICENSE)
+[![Validation](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/actions/workflows/validate-repository.yml/badge.svg)](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/actions/workflows/validate-repository.yml)
 
 A practical Agent Skills toolkit for building complete Swift and Apple-platform applications with coding agents.
 
@@ -69,11 +70,13 @@ Choose skills interactively:
 npx skills add thiennc-tesoglobal/swift-ios-skills-community
 ```
 
-Install the complete collection:
+Install the complete collection when you genuinely need broad framework coverage:
 
 ```sh
 npx skills add thiennc-tesoglobal/swift-ios-skills-community --all
 ```
+
+For most projects, prefer interactive selection or a focused bundle. Smaller installations give agents a cheaper, more precise discovery surface.
 
 Install only the end-to-end workflow:
 
@@ -208,10 +211,12 @@ Changes should preserve:
 - meaningful evaluation assertions for behavior changes
 - compatibility of the complete 87-skill bundle
 
-Run the repository tests with:
+Pull requests run structural validation, repository tests, and an Agent Skills discovery smoke test. Run the same checks locally with:
 
 ```sh
+python3 .github/scripts/validate_repository.py
 python3 -m unittest discover -s tests -v
+npx skills add . --list
 ```
 
 ## Updating installed skills

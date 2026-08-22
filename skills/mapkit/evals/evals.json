@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "swiftui-store-locator-ios-18-sketch-mapkit",
       "prompt": "I'm building a SwiftUI store locator for iOS 18. Sketch the MapKit implementation for a searchable map with autocomplete, markers for results, marker selection that shows details, a route overlay to the selected store, and a user-location button. Include the privacy and cancellation details that matter.",
       "expected_output": "A SwiftUI MapKit implementation plan that uses Map, Marker or Annotation, MapCameraPosition, MKLocalSearchCompleter plus MKLocalSearch, Map selection tags, MKDirections and MapPolyline, UserAnnotation or MapUserLocationButton, and CoreLocation authorization/task cancellation guidance.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 1,
+      "name": "location-feature-plan-create-clmonitor-every-time",
       "prompt": "Review this location feature plan: create a CLMonitor every time the view appears, monitor 45 circular regions for coupons, request Always location on launch, start liveUpdates forever, and use background location without a Live Activity or CLBackgroundActivitySession. What should I change for iOS 18+?",
       "expected_output": "A correction-focused CoreLocation review that uses CLServiceSession only for active user-facing features, limits CLMonitor conditions, keeps monitor/event subscriptions stable, uses CLLocationUpdate.liveUpdates with filtering and cancellation, and explains the background-location requirements.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 2,
+      "name": "navigation-experience-shows-map-inside-carplay-opens",
       "prompt": "I need a navigation experience that shows a map inside CarPlay, opens a small App Clip from a place card, and pairs a BLE beacon when the user enters a geofence. Which parts belong in this MapKit skill, and where should the other pieces go?",
       "expected_output": "A boundary-aware answer that keeps MapKit/CoreLocation responsibilities in scope while routing CarPlay templates, App Clip invocation, and BLE accessory setup to the appropriate sibling skills or frameworks.",
       "files": [],

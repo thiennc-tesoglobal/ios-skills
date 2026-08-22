@@ -1,6 +1,6 @@
 ---
 name: app-store-optimization
-description: "Optimize App Store product pages for search visibility and conversion. Use for App Store Optimization (ASO), keyword research, app name/subtitle/keyword-field strategy, conversion-focused descriptions and promotional text, screenshot captions and ordering, Custom Product Pages with assigned search keywords, In-App Events, Product Page Optimization tests, localized metadata, ratings/review strategy, and in-app review prompt timing with RequestReviewAction or AppStore.requestReview. Also use when routing ASO vs App Store review, privacy/ATT, or StoreKit implementation boundaries."
+description: "Optimize App Store product pages for search visibility and conversion. Use for keywords, names, subtitles, descriptions, screenshots, localization, Custom Product Pages, In-App Events, product-page tests, and review-prompt strategy; route submission compliance to app-store-review."
 ---
 
 # App Store Optimization (ASO)

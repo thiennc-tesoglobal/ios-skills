@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "concise-ios-26-spritekit-setup-note-swiftui",
       "prompt": "Build a concise iOS 26 SpriteKit setup note for a SwiftUI mini-game. It needs an SKScene with player/enemy sprites, SpriteView integration, physics contacts for hits, a camera/HUD, and texture atlas preloading. Keep it as snippets and review checklist guidance, not a full Xcode project.",
       "expected_output": "A SpriteKit implementation note that uses a retained SpriteView scene, configures SKScene/SKView rendering, sets physics masks and contact delegate correctly, queues contact effects until update, uses SKCameraNode for camera/HUD, and preloads texture atlases with current SpriteKit APIs.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 2,
+      "name": "spritekit-advanced-effects-plan-withcheckedcontinuation-around-sktextureatlas",
       "prompt": "Review this SpriteKit advanced-effects plan: use withCheckedContinuation around SKTextureAtlas.preloadTextureAtlases, document u_sprite_size as a SpriteKit built-in shader variable, create one SKShader per enemy every spawn, and remove physics bodies from didBegin(_:) as soon as contacts happen. Correct the plan for current SpriteKit.",
       "expected_output": "A correction-focused review that uses SpriteKit's native async texture-atlas preload APIs, distinguishes SpriteKit built-in shader symbols from app-defined uniforms or attributes, recommends shader reuse and launch-time shader creation, and defers physics-world mutations out of contact callbacks.",
       "files": [],
@@ -30,6 +32,7 @@
     },
     {
       "id": 3,
+      "name": "one-ios-game-architecture-note-covering-spritekit",
       "prompt": "I want one iOS game architecture note covering SpriteKit gameplay rendering, Game Center sign-in and leaderboards, SceneKit 3D cutscenes, TabletopKit board rules, and SharePlay voice chat. What belongs in SpriteKit and what should be handed to sibling frameworks?",
       "expected_output": "A boundary-aware architecture note that keeps SpriteKit focused on 2D rendering, animation, physics, particles, tile maps, camera, input, audio nodes, and SpriteView integration while handing Game Center, 3D SceneKit content, TabletopKit board/rules logic, and SharePlay sessions to sibling framework guidance.",
       "files": [],

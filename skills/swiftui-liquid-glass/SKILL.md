@@ -1,6 +1,6 @@
 ---
 name: swiftui-liquid-glass
-description: "Implement, review, or improve SwiftUI Liquid Glass effects for iOS 26+. Covers glassEffect modifier, GlassEffectContainer, glass button styles, glass toolbar/tab bar, static status badges vs interactive controls, morphing transitions, tinting, interactive glass, ToolbarSpacer, scrollEdgeEffectStyle, backgroundExtensionEffect, and availability gating. Use when asked about Liquid Glass, glass buttons, glassEffect, GlassEffectTransition, glassEffectID, glassEffectUnion, scroll edge effects, or adopting iOS 26 design."
+description: "Implement or review SwiftUI Liquid Glass for iOS 26+, including glass effects and containers, controls, toolbars, tab bars, morphing transitions, tinting, scroll edges, background extension, and availability fallbacks. Use when adopting the Liquid Glass visual system."
 ---
 
 # SwiftUI Liquid Glass

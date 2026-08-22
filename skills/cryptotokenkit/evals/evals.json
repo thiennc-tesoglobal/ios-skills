@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "macos-smart-card-login-extension-plan-create",
       "prompt": "Review this macOS smart-card login extension plan: create an iOS token driver target with TKTokenDriver, put com.apple.ctk.driver-class at the top level of Info.plist, share one PIN-authenticated state across token sessions, and register it by launching the normal app as the current user.",
       "expected_output": "A correction-focused CryptoTokenKit review that keeps system smart-card authentication on macOS, uses the smart-card token extension classes and Info.plist nesting, registers through _securityagent, and preserves per-session authentication state.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 1,
+      "name": "ios-26-app-reads-contactless-piv-smart",
       "prompt": "I'm building an iOS 26 app that reads a contactless PIV smart card over NFC and wants to keep a token-backed keychain reference for later signing. What CryptoTokenKit APIs and availability checks should I use?",
       "expected_output": "An iOS 26 CryptoTokenKit plan that uses TKSmartCardSlotManager NFC sessions, TKSmartCard APDU communication, TKSmartCardTokenRegistrationManager, kSecAttrTokenID keychain queries, persistent-reference handling, and explicit availability/access guards.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 2,
+      "name": "add-hardware-token-certificate-auth-passkeys-secure",
       "prompt": "I need to add hardware-token certificate auth, passkeys, Secure Enclave key generation, and certificate pinning to an iOS app. Which parts belong in CryptoTokenKit, and what should move to sibling skills?",
       "expected_output": "A boundary-aware routing answer that keeps CryptoTokenKit focused on token-backed smart-card/keychain workflows, routes passkeys and user-facing account auth to authentication, and routes Secure Enclave, CryptoKit, Keychain storage architecture, and certificate pinning to swift-security.",
       "files": [],

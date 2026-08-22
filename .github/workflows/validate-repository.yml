@@ -1,0 +1,30 @@
+name: Validate Repository
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-repository-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Repository Validation
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate skills, evals, links, and bundles
+        run: python3 .github/scripts/validate_repository.py
+
+      - name: Run repository tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Smoke-test Agent Skills discovery
+        run: npx --yes skills@1.5.23 add . --list

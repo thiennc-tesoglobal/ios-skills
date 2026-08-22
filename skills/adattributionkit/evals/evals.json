@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "wiring-custom-rendered-install-ad-publisher-app",
       "prompt": "I'm wiring a custom-rendered install ad in a publisher app. Show the AdAttributionKit flow from signed JWS to AppImpression, UIEventAttributionView placement, click handling, fallback if the impression is stale, and how this differs from StoreKit-rendered ads.",
       "expected_output": "A source-grounded custom ad flow that creates a fresh AppImpression from compact JWS, places one UIEventAttributionView per tappable ad/control, handles handleTap within its 15-minute limit, checks AppImpression.isSupported, and distinguishes custom-rendered ads from StoreKit overlay/product-view behavior.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "skadnetwork-migration-note-adattributionkit-replaces-skadnetwork-so",
       "prompt": "Review this SKAdNetwork migration note: 'AdAttributionKit replaces SKAdNetwork, so delete SKAN update calls. SKAdNetwork automatically bridges all conversion values into AdAttributionKit, so one update API is enough. Keep only .skadnetwork IDs in the publisher app.' What should we correct?",
       "expected_output": "A correction-focused migration review that preserves coexistence, explains when to call AdAttributionKit and SKAdNetwork update APIs, avoids overclaiming automatic bridging, notes shared ID compatibility, and keeps attribution winner behavior accurate.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "configuring-advertised-app-server-side-adattributionkit-postback",
       "prompt": "I'm configuring the advertised app server side for AdAttributionKit postback copies and re-engagement. Give me the Info.plist keys, endpoint path rules, first conversion update timing, postback window basics, and the JSON spelling I should expect for re-engagement conversion type.",
       "expected_output": "Advertised-app setup guidance that nests postback copy keys under AdAttributionKit, derives the well-known endpoint from the registrable domain, calls a conversion update on first launch, summarizes conversion/postback windows, and uses the correct re-engagement JSON payload spelling.",
       "files": [],

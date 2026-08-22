@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "ios-26-vision-helper-uses-detectbarcodesrequest-vnbarcodesymbology",
       "prompt": "Review this iOS 26 Vision helper: it uses `DetectBarcodesRequest` with `[VNBarcodeSymbology]`, stores modern Vision bounding boxes as `CGRect`, converts them with `VNImageRectForNormalizedRect`, starts object tracking with `TrackObjectRequest(observation:)`, sets `trackingLevel`, and calls `generateMask(forInstances:)` on `InstanceMaskObservation`. Provide corrected Swift snippets and explain the API generation boundary.",
       "expected_output": "A concise correction that uses modern Swift Vision APIs for iOS 18+ while preserving legacy VNRequest guidance only where needed.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "swiftui-live-scanner-text-qr-codes-visionkit",
       "prompt": "Build a SwiftUI live scanner for text and QR codes using VisionKit. Include permission and availability handling, the wrapper shape, barcode symbology types, and when scanning should start.",
       "expected_output": "A SwiftUI DataScannerViewController integration that is safe to present and uses VisionKit-specific types correctly.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "implement-image-analysis-feature-reads-text-detects",
       "prompt": "Implement an image-analysis feature that reads text, detects barcodes, estimates horizon angle, finds saliency regions, and optionally runs a custom Core ML classifier through Vision. Keep Core ML conversion and deployment out of scope.",
       "expected_output": "A Vision-focused design that uses the correct result shapes for modern requests, treats any Core ML classifier as already prepared, and keeps Core ML conversion and deployment outside the Vision implementation.",
       "files": [],

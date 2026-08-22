@@ -1,0 +1,31 @@
+{
+  "context": "Tests complete app delivery, focused specialist routing, maintainable structure, and runtime proof.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Project preflight",
+      "description": "Inspects the project, target, deployment version, architecture, and Git state before broad edits.",
+      "max_score": 20
+    },
+    {
+      "name": "Focused routing",
+      "description": "Uses only relevant SwiftUI, persistence, accessibility, testing, and Simulator guidance.",
+      "max_score": 20
+    },
+    {
+      "name": "Maintainable structure",
+      "description": "Uses product and feature naming with meaningful file boundaries instead of one generic view file.",
+      "max_score": 20
+    },
+    {
+      "name": "Build and runtime proof",
+      "description": "Builds the actual target and exercises the primary flow in an explicitly selected Simulator.",
+      "max_score": 20
+    },
+    {
+      "name": "Behavior verification",
+      "description": "Checks persistence across relaunch plus accessibility and Reduce Motion behavior.",
+      "max_score": 20
+    }
+  ]
+}

@@ -52,7 +52,7 @@ The rules below are a repo-specific reminder, not a replacement for those source
 
 ## Skill audit and evaluation workflow
 
-For full Apple skill audits, eval generation, Tessl scenarios, and publish-readiness checks, use the repo-local `apple-skill-audit` skill in `.agents/skills/apple-skill-audit/`. Keep detailed workflow steps there so this file remains focused on durable repo policy.
+For full Apple skill audits, eval generation, Tessl scenarios, and publish-readiness checks, follow [the maintainer audit workflow](.github/maintainer/apple-skill-audit.md). Keep detailed workflow steps there so this file remains focused on durable repo policy.
 
 ## Ground Apple claims in official sources
 
@@ -165,33 +165,34 @@ This returns a clean JSON object with just the post content and comments.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **swift-ios-skills** (8387 symbols, 8528 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **swift-ios-skills-community** (8713 symbols, 8971 relationships, 8 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+> Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
 ## Always Do
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
+- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
+- **MUST run `detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows. For regression review, compare against the default branch: `detect_changes({scope: "compare", base_ref: "main"})`.
 - **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+- When exploring unfamiliar code, use `query({search_query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
+- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `context({name: "symbolName"})`.
+- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
 
 ## Never Do
 
-- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
+- NEVER edit a function, class, or method without first running `impact` on it.
 - NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
-- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
+- NEVER rename symbols with find-and-replace — use `rename` which understands the call graph.
+- NEVER commit changes without running `detect_changes()` to check affected scope.
 
 ## Resources
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/swift-ios-skills/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/swift-ios-skills/clusters` | All functional areas |
-| `gitnexus://repo/swift-ios-skills/processes` | All execution flows |
-| `gitnexus://repo/swift-ios-skills/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/swift-ios-skills-community/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/swift-ios-skills-community/clusters` | All functional areas |
+| `gitnexus://repo/swift-ios-skills-community/processes` | All execution flows |
+| `gitnexus://repo/swift-ios-skills-community/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "swiftui-drawing-screen-ipad-apple-pencil-optional",
       "prompt": "I'm building a SwiftUI drawing screen for iPad with Apple Pencil and optional finger drawing. Sketch the PencilKit wrapper, tool picker setup, save/load path, and the lifecycle details that prevent stale tools or update loops.",
       "expected_output": "A SwiftUI PencilKit implementation plan that wraps PKCanvasView, retains and observes PKToolPicker, chooses an appropriate drawingPolicy, serializes PKDrawing with dataRepresentation()/PKDrawing(data:), and avoids binding update loops.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 1,
+      "name": "pencilkit-compatibility-plan-let-users-pick-watercolor",
       "prompt": "Review this PencilKit compatibility plan: let users pick watercolor, crayon, and reed, save the PKDrawing bytes to CloudKit, and set canvasView.maximumSupportedContentVersion = .version2 so iPadOS 16 clients can open every drawing. What should change?",
       "expected_output": "A correction-focused review that explains PencilKit content versions, unsupported-ink load failures, the need to set maximumSupportedContentVersion on both canvas and tool picker, and the version boundary for iPadOS 17 and iOS 26 inks.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 2,
+      "name": "annotation-experience-freehand-apple-pencil-signatures-movable",
       "prompt": "I need an annotation experience with freehand Apple Pencil signatures, movable text boxes, arrows, image stickers, and a standard markup toolbar. Which parts should stay in PencilKit and when should I switch to PaperKit?",
       "expected_output": "A boundary-aware answer that keeps freeform drawing, tool picker, stroke inspection, image export, and PKDrawing serialization in PencilKit while routing structured markup and toolbar needs to PaperKit.",
       "files": [],

@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "ios-26-cloudkit-sync-plan-cksyncengine-configured",
       "prompt": "Review this iOS 26 CloudKit sync plan: a CKSyncEngine is configured against the public database, the app only enables iCloud + CloudKit, handleEvent and nextRecordZoneChangeBatch are implemented synchronously, nextRecordZoneChangeBatch returns every pending record-zone change, and the team expects automatic sync to run immediately after each local edit. Write concise corrected guidance with Swift snippets where useful.",
       "expected_output": "A review that corrects CKSyncEngine database scope, Remote notifications setup, async delegate signatures, context-scoped change batches, state persistence, and automatic sync timing.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 2,
+      "name": "swiftdata-model-cloudkit-sync-uses-unique-email",
       "prompt": "Review this SwiftData model for CloudKit sync: it uses @Unique on an email field, has a nonoptional @Relationship(deleteRule: .deny) to Owner, stores a large image Data property without .externalStorage, and the reviewer says every scalar property must be optional. Explain what should change and what should not be overcorrected.",
       "expected_output": "A review that flags SwiftData CloudKit schema incompatibilities without incorrectly requiring every scalar property to become optional.",
       "files": [],
@@ -31,6 +33,7 @@
     },
     {
       "id": 3,
+      "name": "cloudkit-data-query-plan-app-stores-sensitive",
       "prompt": "Review this CloudKit data/query plan: the app stores sensitive profile fields in record.encryptedValues in the public database, adds a new encrypted field to an already-deployed field name, sorts and filters CKQuery results by that encrypted field, uses title CONTAINS 'road' for substring search, and stores image files as CKAsset. Give corrected guidance.",
       "expected_output": "A review that corrects encrypted field limits, query predicate semantics, and CKAsset handling.",
       "files": [],

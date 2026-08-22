@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "audit-ios-app-s-app-store-submission",
       "prompt": "Audit this iOS app's App Store submission readiness: it has subscriptions, a third-party analytics SDK, ads that may track users across apps, iPhone and iPad support, and a PrivacyInfo.xcprivacy file that only declares UserDefaults with CA92.1. Give the highest-risk rejection issues and the exact checks the team should run before upload.",
       "expected_output": "A source-grounded App Review readiness audit covering IAP/subscription display, ATT, privacy manifests and SDK manifests, Xcode/SDK upload requirements, screenshot requirements, metadata, and reviewer access.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "proposed-privacyinfo-xcprivacy-plan-app-uses-userdefaults",
       "prompt": "Review this proposed PrivacyInfo.xcprivacy plan: the app uses UserDefaults for settings, checks free disk space before downloading offline videos, reads file modification dates for files picked through UIDocumentPickerViewController, and includes an SDK that wraps UserDefaults for the app. Which required-reason API categories and reason codes should be declared, and where should the app versus SDK declarations live?",
       "expected_output": "A privacy-manifest reason-code review that selects current approved reason codes and correctly separates app manifest declarations from SDK manifest declarations.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "better-app-store-keywords-screenshot-captions-habit",
       "prompt": "I want better App Store keywords and screenshot captions for my habit tracker, but I also don't want a metadata rejection. Give me the compliance guardrails only, and call out which parts belong in an ASO strategy pass rather than an App Review pass.",
       "expected_output": "A boundary-aware answer that keeps app-store-review focused on metadata compliance and routes keyword strategy and conversion optimization to the ASO skill.",
       "files": [],

@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "adding-apple-pay-checkout-swiftui-store-physical",
       "prompt": "I'm adding Apple Pay checkout to a SwiftUI store for physical products. Show the capability setup, availability check, Apple Pay button, PKPaymentRequest with shipping, payment presentation, and authorization delegate shape. Include App Review boundary notes for StoreKit.",
       "expected_output": "A source-grounded PassKit checkout plan that uses Apple Pay for physical goods, builds a valid payment request, handles authorization through a retained controller/delegate, and keeps StoreKit for digital goods.",
       "files": [],
@@ -19,6 +20,7 @@
     },
     {
       "id": 2,
+      "name": "wallet-pass-plan-load-pkpass-normal-swiftui",
       "prompt": "Review this Wallet pass plan: load a pkpass, show a normal SwiftUI Button that says Add to Wallet, use PKPassLibrary.isPassLibraryAvailable to decide if the device can add it, list all Wallet passes with passes(), and update the pass later with a new serial number. Fix it.",
       "expected_output": "A correction-focused Wallet pass answer that uses system Add to Wallet UI, signed-pass checks, correct add-pass availability, pass-library access limits, and stable pass identifiers for updates.",
       "files": [],
@@ -34,6 +36,7 @@
     },
     {
       "id": 3,
+      "name": "advanced-apple-pay-support-travel-marketplace-recurring",
       "prompt": "I need advanced Apple Pay support for a travel marketplace: recurring service membership, coupon entry in the payment sheet, two end merchants that need separate tokens, and a hotel preauthorization charged later. Outline the PassKit APIs and gotchas without drifting into FinanceKit or StoreKit implementation.",
       "expected_output": "An advanced PassKit outline using the optional request types and update callbacks correctly, with decimal amounts, management URLs, coupon update details, multi-token contexts, and sibling-skill boundaries.",
       "files": [],

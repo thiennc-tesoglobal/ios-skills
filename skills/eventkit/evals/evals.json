@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "ios-26-calendar-integration-plan-app-asks",
       "prompt": "Review this iOS 26 calendar integration plan: the app asks for `NSCalendarsUsageDescription`, calls `requestAccess(to: .event)`, requests write-only access, then fetches the user's existing events to avoid conflicts before saving a booking. The team also wants an Add to Calendar button where the user can edit the event in the system sheet. Give corrected guidance with Swift API names where useful.",
       "expected_output": "A review that fixes iOS 17+ calendar authorization, Info.plist keys, write-only read limitations, full-access requirements for fetching, and EventKitUI no-authorization creation.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "create-reminders-when-someone-enters-job-site",
       "prompt": "We need to create reminders when someone enters a job site. The draft code creates an `EKReminder`, assigns a `CLLocation` to `EKStructuredLocation`, adds a blank `EKAlarm()`, skips reminder authorization, and assumes `defaultCalendarForNewReminders()` is always non-nil. What should be fixed?",
       "expected_output": "A correction that covers reminder full access, required title/calendar/default-list handling, location-based alarm setup, save behavior, and Core Location privacy only when current location is used.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "teammate-wants-push-notifications-layer-all-calendar",
       "prompt": "A teammate wants to use the push notifications layer for all calendar alerts: every event and reminder should schedule a `UNNotificationRequest`, and EventKit should only store title/start/end dates. Review the boundary and recommend the right approach.",
       "expected_output": "A boundary answer that keeps Calendar/Reminders alarms in EventKit, hands app-owned notification workflows to push notifications, and avoids expanding EventKit into APNs guidance.",
       "files": [],

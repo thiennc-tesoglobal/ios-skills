@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "core-ml-prediction-service-ios-26-loads",
       "prompt": "Review this Core ML prediction service for iOS 26: it loads a compiled model with MLModel(contentsOf:), calls `try await model.prediction(from:)`, uses `model.predictions(from: batchProvider)`, and says async prediction is available on iOS 17. Provide corrected Swift snippets and availability notes without turning this into model conversion guidance.",
       "expected_output": "A concise review that keeps model loading asynchronous, corrects prediction and batch prediction API usage, and preserves the Swift integration boundary.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "implement-snippets-stateful-audio-core-ml-model",
       "prompt": "Implement snippets for a stateful audio Core ML model that uses MLState and MLTensor preprocessing on iOS 18+. Include the concurrency rules and materialization step. Avoid unsupported tensor APIs.",
       "expected_output": "Swift snippets that use MLState correctly, serialize stateful predictions, and use source-grounded MLTensor materialization and operations.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "write-deployment-note-600-mb-core-ml",
       "prompt": "Write a deployment note for a 600 MB Core ML model in an iOS app. Compare bundling, Background Assets, On-Demand Resources, and server delivery; include memory/background compute guidance and App Store size caveats.",
       "expected_output": "A deployment note that prefers current asset-delivery guidance, avoids stale download-limit claims, and keeps background compute guidance conservative.",
       "files": [],

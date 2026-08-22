@@ -1,8 +1,8 @@
 # Changelog
 
-## v1.0.0-community
+## v1.0.0
 
-First community release maintained by Thien Ngo.
+Initial community release.
 
 ### Collection
 
@@ -17,10 +17,18 @@ First community release maintained by Thien Ngo.
 - Add project-structure and file-naming guidance to `swiftui-patterns`.
 - Use progressive disclosure so detailed patterns load only when relevant.
 - Standardize local skill eval files on the documented `assertions` field.
+- Normalize stable names across all 274 local eval cases.
+- Add published end-to-end scenarios for `ios-app-workflow`.
+
+### Quality infrastructure
+
+- Add repository-wide validation for skill metadata, links, references, evals, and distribution bundles.
+- Add CI tests and an Agent Skills installation smoke test.
+- Add a maintainer audit workflow for focused, collection, and release audits.
+- Reduce high-cost discovery descriptions while preserving specialist routing boundaries.
 
 ### Project identity
 
 - Publish Claude marketplace and Tessl metadata under `swift-ios-skills-community`.
-- Set Thien Ngo and `thiennc-tesoglobal` as the project maintainer identity.
 - Point installation, Discussions, Funding, issue assignment, and contribution links to this repository.
 - Preserve the PolyForm Perimeter license and all legally required notices.

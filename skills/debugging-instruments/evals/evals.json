@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 0,
+      "name": "concise-profiling-plan-ios-app-has-slow",
       "prompt": "I need a concise profiling plan for an iOS app that has a slow feed refresh, battery-drain complaints, and a CI job that should collect a Time Profiler trace with xctrace. Include the Instruments templates or instruments to use, and show both the basic xctrace launch command and the command shape if we add Allocations to the same Time Profiler recording.",
       "expected_output": "A source-grounded Instruments plan that chooses current template names, profiles on device, uses Power Profiler for battery work, shows xctrace launch syntax with the required -- separator, and uses --instrument for adding Allocations to a Time Profiler recording.",
       "files": [],
@@ -17,6 +18,7 @@
     },
     {
       "id": 1,
+      "name": "debugging-plan-leaks-template-prove-every-retain",
       "prompt": "Review this debugging plan: use the Leaks template to prove every retain cycle, run leaks --atExit -- ./MyApp.app/MyApp for our iOS build, call any 250 ms main-thread pause a severe hang, and enable Thread Sanitizer on a real iPhone test run. Correct the plan.",
       "expected_output": "A correction-focused review that narrows leak, hang, Memory Graph, and Thread Sanitizer guidance using Apple-documented behavior.",
       "files": [],
@@ -32,6 +34,7 @@
     },
     {
       "id": 2,
+      "name": "swiftui-screen-stutters-while-scrolling-also-production",
       "prompt": "My SwiftUI screen stutters while scrolling and I also want production hang telemetry in MetricKit plus a new Swift Testing benchmark. What should this debugging skill handle directly, and what should move to adjacent skills?",
       "expected_output": "A boundary-aware answer that keeps Instruments and LLDB guidance in debugging-instruments while routing SwiftUI remediation, MetricKit ingestion, and Swift Testing test design to sibling skills.",
       "files": [],

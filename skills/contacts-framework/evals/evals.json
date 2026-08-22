@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "updating-ios-26-swiftui-contacts-screen-currently",
       "prompt": "I'm updating an iOS 26 SwiftUI contacts screen. It currently treats only CNAuthorizationStatus.authorized as usable and hides the list for .limited. Review the approach and show the authorization handling I should use, including how someone can add more contacts later.",
       "expected_output": "Guidance that treats .authorized and .limited as usable Contacts API states, explains limited-access restrictions, and uses ContactsUI limited-access controls.",
       "files": [],
@@ -15,6 +16,7 @@
     },
     {
       "id": 2,
+      "name": "contacts-fetch-plan-cncontactcompletenamekey-displayed-name-include",
       "prompt": "Review this Contacts fetch plan: use CNContactCompleteNameKey for the displayed name, include CNContactImageDataKey by default for avatars, and fetch CNContactNoteKey so the app can show notes. What should change before I ship?",
       "expected_output": "A source-grounded correction that uses valid name descriptors, avoids over-fetching images, and narrows the notes entitlement requirement.",
       "files": [],
@@ -27,6 +29,7 @@
     },
     {
       "id": 3,
+      "name": "no-permission-contact-picker-email-selection-incremental",
       "prompt": "I want a no-permission contact picker for email selection and an incremental Contacts sync. The draft uses CNContactPickerViewController plus store.enumerateChanges(matching: CNChangeHistoryFetchRequest()). Review the API boundaries and give iOS Swift-safe guidance.",
       "expected_output": "Guidance that keeps picker selection scoped to the user's final choice and rejects unsupported Swift change-history examples.",
       "files": [],

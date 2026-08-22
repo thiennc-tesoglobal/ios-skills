@@ -1,6 +1,6 @@
 ---
 name: core-bluetooth
-description: "Build direct Bluetooth Low Energy workflows with Core Bluetooth. Use when implementing BLE central or peripheral GATT communication, scanning or connecting with CBCentralManager, discovering services and characteristics, reading/writing/subscribing with CBPeripheral, publishing local services with CBPeripheralManager, handling Bluetooth authorization, background BLE modes, state restoration, write flow control, or CBUUID-based workflows. For privacy-preserving accessory setup/picker flows, use accessorysetupkit first and return here for post-setup GATT communication."
+description: "Build direct Bluetooth Low Energy central or peripheral workflows with Core Bluetooth, including GATT discovery, reads, writes, subscriptions, background modes, and restoration. Use for BLE communication; use accessorysetupkit first for privacy-preserving system setup and picker flows."
 ---
 
 # Core Bluetooth

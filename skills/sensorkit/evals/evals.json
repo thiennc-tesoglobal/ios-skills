@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "draft-setup-checklist-approved-sleep-research-app",
       "prompt": "Draft a setup checklist for an approved sleep research app that uses SensorKit ambient light, keyboard metrics, wrist temperature, ECG, and PPG. Include entitlement values, Info.plist usage-detail keys, authorization flow, and fetch timing constraints.",
       "expected_output": "A SensorKit setup checklist grounded in Apple requirements for approved research studies, with correct entitlement and Info.plist details and the 24-hour hold.",
       "files": [],
@@ -15,6 +16,7 @@
     },
     {
       "id": 2,
+      "name": "sensorkit-fetch-handler-design-sample-type-mistakes",
       "prompt": "Review this SensorKit fetch handler design for sample-type mistakes: it casts accelerometer to CMAccelerometerData, rotation rate to CMGyroData, wristTemperature to SRWristTemperature, ECG to SRElectrocardiogramSample, and PPG to SRPhotoplethysmogramSample. Return corrected sample shapes and delegate callbacks that should be implemented.",
       "expected_output": "A correction note that identifies the wrong casts and names the required SRSensorReaderDelegate callbacks.",
       "files": [],
@@ -27,6 +29,7 @@
     },
     {
       "id": 3,
+      "name": "fitness-app-without-research-study-wants-live",
       "prompt": "A fitness app without a research study wants live step counts, workout heart-rate summaries, and an Apple Watch motion interaction. Explain whether SensorKit is the right framework and where each responsibility should be routed.",
       "expected_output": "A boundary memo that refuses to use SensorKit for ordinary fitness features and routes work to CoreMotion and HealthKit.",
       "files": [],

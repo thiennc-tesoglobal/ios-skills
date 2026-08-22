@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "audit-proposed-musickit-setup-ios-26-app",
       "prompt": "Audit this proposed MusicKit setup for an iOS 26 app: the team adds a com.apple.developer.musickit entitlement in Xcode, skips NSAppleMusicUsageDescription, calls MusicAuthorization.request() during launch, and says authorization will crash when the entitlement is missing. Write a concise review with corrected setup and authorization guidance.",
       "expected_output": "A review that replaces the invented entitlement guidance with MusicKit App Service setup for an explicit bundle ID, requires NSAppleMusicUsageDescription, and explains authorization behavior without overstating crashes.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "implement-focused-swiftui-snippets-musickit-search-play",
       "prompt": "Implement focused SwiftUI snippets for a MusicKit search-and-play flow: search Apple Music songs, play a selected catalog song with ApplicationMusicPlayer, and offer Apple Music subscription signup when playback is unavailable.",
       "expected_output": "Swift snippets that separate catalog search from subscription playback, gate playback on MusicSubscription.current.canPlayCatalogContent, use ApplicationMusicPlayer, and present the Music subscription offer only when the user can become a subscriber.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "musickit-implementation-fetches-top-songs-musiccatalogchartsrequest-kinds",
       "prompt": "Review a MusicKit implementation that fetches top songs with MusicCatalogChartsRequest(kinds: [.mostPlayed], types: [Song.self]), adds songs and playlists to the user's library without checking cloud library state, and manually updates MPNowPlayingInfoCenter for Apple Music playback. Explain what should change.",
       "expected_output": "A review that uses the current chart request initializer shape, gates library writes on authorization and iCloud Music Library availability, and keeps Now Playing guidance scoped to custom audio versus MusicKit playback.",
       "files": [],

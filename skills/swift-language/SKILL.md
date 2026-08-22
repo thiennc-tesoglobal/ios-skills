@@ -1,6 +1,6 @@
 ---
 name: swift-language
-description: "Apply modern Swift language patterns and idioms for non-concurrency, non-SwiftUI code. Covers if/switch expressions (Swift 5.9+), typed throws (Swift 6+), result builders, property wrappers, opaque and existential types (some vs any), guard patterns, Never type, Regex builders (Swift 5.7+), basic Codable shaping (CodingKeys, custom decoding, nested containers), modern collection APIs (count(where:), contains(where:), replacing()), basic FormatStyle usage, and string interpolation patterns. Use when writing core Swift code involving generics, protocols, enums, closures, or modern language features; route deep Codable to swift-codable, detailed formatting/localization to swift-formatstyle, and API naming to swift-api-design-guidelines."
+description: "Apply modern Swift language patterns to non-SwiftUI, non-concurrency code, including expressions, typed throws, generics, protocols, result builders, property wrappers, opaque and existential types, regexes, and collections. Route concurrency, Codable, formatting, and API naming to their specialist skills."
 ---
 
 # Swift Language Patterns

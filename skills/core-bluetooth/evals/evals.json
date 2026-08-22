@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "ios-heart-rate-monitor-screen-scans-service",
       "prompt": "I'm building an iOS heart-rate monitor screen that scans for service 180D, connects, subscribes to 2A37, parses the BPM, and sends a small command to a writable characteristic. Show the Core Bluetooth manager code and the safety checks I should include.",
       "expected_output": "Guidance creates a CBCentralManager, waits for poweredOn, checks Bluetooth authorization, scans with service UUID 180D, retains the discovered peripheral, sets the peripheral delegate before discovery, subscribes to notify characteristics, parses heart-rate data with byte-count guards, and chooses write types using characteristic properties plus maximumWriteValueLength and canSendWriteWithoutResponse.",
       "files": [],
@@ -16,6 +17,7 @@
     },
     {
       "id": 2,
+      "name": "ble-background-plan-scan-all-peripherals-nil",
       "prompt": "Review this BLE background plan: scan for all peripherals with nil services while in the background, rely on allowDuplicates for live RSSI, advertise a local name from the phone, skip bluetooth-peripheral because the service was added before suspension, and restore only the peripheral identifier after relaunch.",
       "expected_output": "Review flags each background/state-restoration issue. It explains that background central scans require explicit service UUIDs and scan options have no effect; background peripheral advertising omits the local name and puts service UUIDs in overflow; published service contents are disabled without bluetooth-peripheral; and restoration should use Core Bluetooth restoration identifiers plus restored state dictionaries for peripherals, scan services/options, services, and advertisement data.",
       "files": [],
@@ -29,6 +31,7 @@
     },
     {
       "id": 3,
+      "name": "privacy-preserving-first-run-picker-ble-thermostat",
       "prompt": "We need a privacy-preserving first-run picker for a BLE thermostat, then after the user picks it we need to read and write GATT characteristics. Should this be handled entirely by Core Bluetooth, entirely by AccessorySetupKit, or split? Give the implementation boundary.",
       "expected_output": "The answer splits responsibility: AccessorySetupKit owns the privacy-preserving picker/discovery/authorization step, and Core Bluetooth owns post-setup GATT communication using the selected accessory identifier. It avoids broadening Core Bluetooth into picker setup and avoids using AccessorySetupKit for characteristic read/write logic.",
       "files": [],

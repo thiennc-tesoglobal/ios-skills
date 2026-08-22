@@ -1,6 +1,6 @@
 ---
 name: focus-engine
-description: "Implements keyboard, directional, and scene-level focus behavior across SwiftUI and UIKit. Use when managing @FocusState, defaultFocus, focused values, focusable interactions, focus sections, tvOS geometric focus and Siri Remote navigation, watchOS Digital Crown input, visionOS connected-device focus versus gaze hover/input targets, macOS key view loop and Full Keyboard Access, focus restoration after presentation changes, custom focus routing with UIFocusGuide, or debugging focus with UIFocusDebugger."
+description: "Implement or debug keyboard, directional, and scene-level focus across SwiftUI and UIKit. Use for FocusState, focus restoration and routing, tvOS remote navigation, watchOS crown focus, visionOS input focus, macOS key loops, UIFocusGuide, or UIFocusDebugger."
 ---
 
 # Focus Engine

@@ -3,6 +3,7 @@
   "evals": [
     {
       "id": 1,
+      "name": "adding-financekit-budgeting-app-outline-entitlement-info",
       "prompt": "I'm adding FinanceKit to a budgeting app. Outline the entitlement and Info.plist setup, U.S./U.K. availability checks, authorization flow, and a Swift snippet that queries recent transactions for one selected account.",
       "expected_output": "A source-grounded FinanceKit setup and query outline that covers managed entitlement eligibility, region/platform support, data availability, authorization, and transaction query details without treating amounts as signed values.",
       "files": [],
@@ -18,6 +19,7 @@
     },
     {
       "id": 2,
+      "name": "import-plan-transactionpicker-expense-reports-store-selected",
       "prompt": "Review this import plan: use TransactionPicker for expense reports, store the selected Transaction IDs forever, then use those IDs later to keep syncing updates. If users want full-budgeting sync, ask for all accounts and fetch complete snapshots every launch.",
       "expected_output": "A correction-focused answer that keeps TransactionPicker as ephemeral selective access, uses FinanceKit authorization plus history tokens for persistent sync, handles deletions/token invalidation, and avoids over-querying.",
       "files": [],
@@ -33,6 +35,7 @@
     },
     {
       "id": 3,
+      "name": "ios-26-widget-update-spending-totals-when",
       "prompt": "I want an iOS 26 widget to update spending totals when Wallet financial data changes in the background. Show the background delivery extension shape, registration calls, shared-storage requirements, and anything that should remain outside FinanceKit.",
       "expected_output": "An iOS 26 background delivery plan that uses the current synchronous registration APIs, implements BackgroundDeliveryExtension entry points, shares data through App Groups, inherits app authorization, and routes unrelated widget UI/payment work to the right domains.",
       "files": [],
