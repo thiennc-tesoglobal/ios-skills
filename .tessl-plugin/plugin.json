@@ -1,9 +1,9 @@
 {
-  "name": "dpearson2699/swift-ios-skills",
-  "version": "3.9.1",
-  "description": "Agent skills for iOS, iPadOS, Swift, SwiftUI, and modern Apple framework development.",
+  "name": "thiennc-tesoglobal/swift-ios-skills-community",
+  "version": "1.0.0",
+  "description": "Community-maintained Agent Skills for complete Swift and Apple-platform app delivery.",
   "private": false,
-  "repository": "https://github.com/dpearson2699/swift-ios-skills",
+  "repository": "https://github.com/thiennc-tesoglobal/swift-ios-skills-community",
   "skills": [
     "skills/accessorysetupkit",
     "skills/activitykit",
@@ -42,6 +42,7 @@
     "skills/healthkit",
     "skills/homekit",
     "skills/ios-accessibility",
+    "skills/ios-app-workflow",
     "skills/ios-ettrace-performance",
     "skills/ios-localization",
     "skills/ios-memgraph-analysis",
