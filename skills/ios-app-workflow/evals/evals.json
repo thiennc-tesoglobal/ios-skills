@@ -1,0 +1,57 @@
+{
+  "skill_name": "ios-app-workflow",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-swiftui-app-delivery",
+      "prompt": "Build a polished SwiftUI todo app in this existing Xcode project. It should persist tasks, animate smoothly, support accessibility, and run in Simulator.",
+      "expected_output": "An end-to-end implementation that inspects the project first, selects only relevant specialist skills, uses clear product/domain naming and feature boundaries, preserves project settings, and verifies build, persistence, accessibility, motion, and Simulator behavior.",
+      "files": [],
+      "assertions": [
+        "Inspects the existing project, target, deployment version, architecture, and Git state before broad edits.",
+        "Loads only relevant SwiftUI, persistence, accessibility, testing, and Simulator guidance rather than all installed skills.",
+        "Uses discoverable app/feature naming and avoids leaving the app in one generic ContentView file.",
+        "Builds the actual target and exercises the primary flow in Simulator.",
+        "Verifies persistence across relaunch and provides Reduce Motion/accessibility behavior."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "focused-concurrency-boundary",
+      "prompt": "Fix this one Swift 6 Sendable compiler error in my networking callback.",
+      "expected_output": "A boundary-aware response that routes to swift-concurrency and does not invoke a broad app-delivery refactor.",
+      "files": [],
+      "assertions": [
+        "Treats the request as a focused diagnostic rather than an end-to-end app workflow.",
+        "Does not reorganize project files, add unrelated UI, or load the full iOS skill set.",
+        "Preserves behavior and applies the smallest concurrency-safe fix."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "behavior-preserving-refactor",
+      "prompt": "Refactor a 500-line SwiftUI dashboard into sensible files without changing how it looks or behaves.",
+      "expected_output": "A structure-only refactor that pins behavior, uses role-based filenames and real View boundaries, preserves state and side-effect timing, and compares the same build/preview/simulator fixture afterward.",
+      "files": [],
+      "assertions": [
+        "Records layout, navigation, identity, accessibility, persistence, animation, and side-effect behavior as the refactor contract.",
+        "Extracts meaningful dedicated views rather than only computed properties, extensions, or arbitrary one-line files.",
+        "Matches filenames to primary types and uses product/domain-role naming.",
+        "Builds and visually exercises the refactored screen using the same fixture."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "deployment-target-preservation",
+      "prompt": "Add an iOS 26 visual effect to an app whose minimum deployment target is iOS 17.",
+      "expected_output": "An availability-aware implementation that keeps iOS 17 support, verifies the API against the installed SDK or primary sources, and provides an appropriate fallback instead of silently raising the target.",
+      "files": [],
+      "assertions": [
+        "Inspects and preserves the existing iOS 17 deployment target.",
+        "Gates the iOS 26 API and supplies a behaviorally appropriate fallback.",
+        "Does not change project-wide platform settings without explicit authorization.",
+        "Builds or otherwise verifies both the modern path and compatibility assumptions."
+      ]
+    }
+  ]
+}

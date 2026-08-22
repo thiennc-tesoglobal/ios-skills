@@ -7,7 +7,7 @@
       "prompt": "EditorViewModel should deallocate after I dismiss an editor, but memory keeps growing. Design a Simulator memgraph investigation that proves the app-owned ownership path and verifies the eventual fix. I have two Simulators booted.",
       "expected_output": "A lifetime-driven memgraph workflow that requires an explicit Simulator, captures one exact app process, preserves raw evidence, follows an app-owned type/path, and repeats the same flow after one ownership fix.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Defines dismissal plus legitimate asynchronous cleanup as the expected EditorViewModel release boundary.",
         "Requires an explicit Simulator UDID because two devices are booted and rejects ambiguous process matches.",
         "Captures or exports a `.memgraph` after the release boundary and preserves the graph plus raw leaks output and manifest.",
@@ -22,7 +22,7 @@
       "prompt": "`leaks` reports zero, but every open/close cycle adds about 8 MB and it never falls. What should I do with baseline and post-flow memgraphs? Include how vmmap, heap, traceTree/referenceTree, and Malloc Stack Logging fit together.",
       "expected_output": "A correction-focused workflow that treats zero leaks as compatible with reachable growth, uses comparable pre/post graphs to locate and classify heap growth, and chooses ownership or allocation evidence based on Malloc Stack Logging availability.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "States that zero unreachable leaks does not rule out reachable but abandoned objects, caches, buffers, or heap regressions.",
         "Uses matching baseline and post-flow graphs and `vmmap -summary` to locate the growing memory region.",
         "Uses `heap --diffFrom=<baseline.memgraph> <post.memgraph>` to identify object types present in the post-flow heap but not the baseline.",
@@ -37,7 +37,7 @@
       "prompt": "I added `[weak self]` everywhere. The new graph file is smaller, RSS is down, and leaks reports 12 instead of 19 entries, so the retain-cycle bug is fixed. Review that conclusion and give me a proof standard.",
       "expected_output": "A skeptical review that rejects aggregate metrics as ownership proof, requires a defined lifetime and app-owned path, evaluates weak/unowned semantics, and specifies same-flow repeated verification.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Rejects graph file size, one RSS reading, and aggregate leak count as sufficient proof.",
         "Requires naming the object, expected release event, and original app-owned ownership path or isolated cycle.",
         "Warns that blanket `[weak self]` can hide lifecycle reasoning and may change required work semantics.",

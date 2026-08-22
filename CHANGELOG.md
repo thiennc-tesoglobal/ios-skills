@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased — Community fork
+
+### New skills
+
+- Add `ios-app-workflow` for end-to-end app and feature delivery with scoped specialist routing, behavior-preserving structure guidance, and evidence-based verification.
+
+### Skill updates
+
+- Streamline ten core Swift, SwiftUI, persistence, accessibility, testing, and Simulator entrypoints around clear scope boundaries and progressive disclosure.
+- Add project-structure and file-naming guidance to `swiftui-patterns`.
+- Standardize local Agent Skills eval files on the documented `assertions` field.
+
+### Repository
+
+- Register the new workflow in `ios-engineering-skills` and `all-ios-skills`, and update the public catalog count to 87.
+- Preserve the original PolyForm Perimeter license and required copyright notice.
+
 ## v3.9.1
 
 ### Repository

@@ -1,385 +1,75 @@
 ---
 name: swiftdata
-description: "Implement, review, or improve data persistence using SwiftData. Use when defining @Model classes with @Attribute, @Relationship, @Transient, #Unique, or #Index; when querying with @Query, #Predicate, FetchDescriptor, or SortDescriptor; when configuring ModelContainer and ModelContext for SwiftUI or background work with @ModelActor; when planning schema migrations with VersionedSchema and SchemaMigrationPlan; when setting up CloudKit sync with ModelConfiguration; or when coexisting with or migrating from Core Data."
+description: "Implement or review SwiftData models, containers, queries, relationships, migrations, CloudKit configuration, and background persistence work. Use for SwiftData-backed storage; route legacy Core Data-only work to core-data."
 ---
 
 # SwiftData
 
-Persist, query, and manage structured data in iOS 26+ apps using SwiftData
-with Swift 6.3.
-
-## Contents
-
-- [Model Definition](#model-definition)
-- [ModelContainer Setup](#modelcontainer-setup)
-- [CloudKit Sync](#cloudkit-sync)
-- [CRUD Operations](#crud-operations)
-- [`@Query in SwiftUI`](#query-in-swiftui)
-- [#Predicate](#predicate)
-- [FetchDescriptor](#fetchdescriptor)
-- [Schema Versioning and Migration](#schema-versioning-and-migration)
-- [Core Data Coexistence Boundary](#core-data-coexistence-boundary)
-- [Concurrency (`@ModelActor`)](#concurrency-modelactor)
-- [SwiftUI Integration](#swiftui-integration)
-- [Common Mistakes](#common-mistakes)
-- [Review Checklist](#review-checklist)
-- [References](#references)
-
-## Model Definition
-
-Apply `@Model` to a **class** (not struct). It synthesizes `PersistentModel`
-conformance. Model instances remain context/actor-bound; pass their
-`PersistentIdentifier`, not the instance, across actors.
-
-```swift
-@Model
-class Trip {
-    var name: String
-    var destination: String
-    var startDate: Date
-    var endDate: Date
-    var isFavorite: Bool = false
-    @Attribute(.externalStorage) var imageData: Data?
-    @Relationship(deleteRule: .cascade, inverse: \LivingAccommodation.trip)
-    var accommodation: LivingAccommodation?
-    @Transient var isSelected: Bool = false  // Always provide default
-
-    init(name: String, destination: String, startDate: Date, endDate: Date) {
-        self.name = name; self.destination = destination
-        self.startDate = startDate; self.endDate = endDate
-    }
-}
-```
-
-**`@Attribute` options**: `.externalStorage`, `.unique`, `.spotlight`, `.allowsCloudEncryption`, `.preserveValueOnDeletion`, `.ephemeral`, `.transformable(by:)`. Rename: `@Attribute(originalName: "old_name")`.
-
-**`@Relationship`**: `deleteRule:` `.cascade`/`.nullify`(default)/`.deny`/`.noAction`. Specify `inverse:` for reliable behavior. Unidirectional (iOS 18+): `inverse: nil`.
-
-**#Unique (iOS 18+)**: `#Unique<Person>([\.firstName, \.lastName])` -- compound uniqueness.
-
-**Inheritance (iOS 26+)**: `@Model class BusinessTrip: Trip { var company: String }`.
-
-Supported types: `Bool`, `Int`/`UInt` variants, `Float`, `Double`, `String`, `Date`, `Data`, `URL`, `UUID`, `Decimal`, `Array`, `Dictionary`, `Set`, `Codable` enums, `Codable` structs and other compatible `Codable` value types, and relationships to `@Model` classes.
-
-## ModelContainer Setup
-
-```swift
-// Basic
-let container = try ModelContainer(for: Trip.self, LivingAccommodation.self)
-
-// Configured
-let config = ModelConfiguration("Store", isStoredInMemoryOnly: false,
-    groupContainer: .identifier("group.com.example.app"),
-    cloudKitDatabase: .private("iCloud.com.example.app"))
-let container = try ModelContainer(for: Trip.self, configurations: config)
-
-// With migration plan
-let container = try ModelContainer(for: SchemaV2.Trip.self,
-    migrationPlan: TripMigrationPlan.self)
-
-// In-memory (previews/tests)
-let container = try ModelContainer(for: Trip.self,
-    configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-```
-
-## CloudKit Sync
-
-`ModelConfiguration(..., cloudKitDatabase:)` opts a SwiftData store into
-automatic CloudKit sync, but app entitlements still gate sync.
-
-For any SwiftData CloudKit setup or schema-review task, include a separate
-**Capabilities** verdict before schema findings:
-
-- **Capabilities**: Xcode target has the iCloud capability with CloudKit enabled
-  and the intended container selected, plus Background Modes > Remote
-  notifications. Without these entitlements, automatic sync is not fully
-  configured even if `cloudKitDatabase` is set.
-- **Schema compatibility**: no `@Attribute(.unique)` or `#Unique`;
-  relationships are optional, have explicit inverses where needed, and avoid
-  `.deny`; large `Data` uses `@Attribute(.externalStorage)`.
-- **Scalar attributes**: do not make every scalar optional just for CloudKit.
-  Keep required scalars nonoptional when initializers, defaults, or migrations
-  provide valid values.
-- **Schema rollout**: initialize the development schema only in nonproduction
-  builds, verify it in CloudKit Dashboard, promote before release, and treat
-  production changes as additive only.
-
-## CRUD Operations
-
-For destructive batches and migrations, first run the exact predicate or
-version hop against a disposable copy and record affected identifiers/counts.
-Execute with explicit transaction/save semantics, refetch, and verify values,
-relationships, counts, and invariants. On failure, fix the predicate/schema and
-restore a pristine fixture before retrying; never blindly replay a destructive
-operation.
-
-```swift
-// CREATE
-let trip = Trip(name: "Summer", destination: "Paris", startDate: .now, endDate: .now + 86400*7)
-modelContext.insert(trip)
-try modelContext.save()  // or rely on autosave
-
-// READ
-let trips = try modelContext.fetch(FetchDescriptor<Trip>(
-    predicate: #Predicate { $0.destination == "Paris" },
-    sortBy: [SortDescriptor(\.startDate)]))
-
-// UPDATE -- modify properties directly; autosave handles persistence
-trip.destination = "Rome"
-
-// DELETE
-modelContext.delete(trip)
-try modelContext.delete(model: Trip.self, where: #Predicate { $0.isFavorite == false })
-
-// TRANSACTION (atomic)
-try modelContext.transaction {
-    modelContext.insert(trip); trip.isFavorite = true
-}
-```
-
-## `@Query` in SwiftUI
-
-```swift
-struct TripListView: View {
-    @Query(filter: #Predicate<Trip> { $0.isFavorite == true },
-           sort: \.startDate, order: .reverse)
-    private var favorites: [Trip]
-
-    var body: some View { List(favorites) { trip in Text(trip.name) } }
-}
-
-// Dynamic query via init
-struct SearchView: View {
-    @Query private var trips: [Trip]
-    init(search: String) {
-        _trips = Query(filter: #Predicate<Trip> { trip in
-            search.isEmpty || trip.name.localizedStandardContains(search)
-        }, sort: [SortDescriptor(\.name)])
-    }
-    var body: some View { List(trips) { trip in Text(trip.name) } }
-}
-
-// FetchDescriptor query
-struct RecentView: View {
-    static var desc: FetchDescriptor<Trip> {
-        var d = FetchDescriptor<Trip>(sortBy: [SortDescriptor(\.startDate)])
-        d.fetchLimit = 5; return d
-    }
-    @Query(RecentView.desc) private var recent: [Trip]
-    var body: some View { List(recent) { trip in Text(trip.name) } }
-}
-```
-
-## #Predicate
-
-```swift
-#Predicate<Trip> { $0.destination.localizedStandardContains("paris") }  // String
-let now = Date()
-#Predicate<Trip> { $0.startDate > now }                                 // Date
-#Predicate<Trip> { $0.isFavorite && $0.destination != "Unknown" }       // Compound
-#Predicate<Trip> { $0.accommodation?.name != nil }                      // Optional
-#Predicate<Trip> { $0.tags.contains { $0.name == "adventure" } }        // Collection
-```
-
-Supported: `==`, `!=`, `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`, `contains()`, `allSatisfy()`, `filter()`, `starts(with:)`, `localizedStandardContains()`, `caseInsensitiveCompare()`, arithmetic, conditional expressions, optional chaining and binding, nil coalescing, type casting. **Avoid**: loops, nested declarations, mutations, and arbitrary unsupported method calls.
-
-## FetchDescriptor
-
-```swift
-var d = FetchDescriptor<Trip>(predicate: ..., sortBy: [...])
-d.fetchLimit = 20; d.fetchOffset = 0
-d.includePendingChanges = true
-d.propertiesToFetch = [\.name, \.startDate]
-d.relationshipKeyPathsForPrefetching = [\.accommodation]
-let trips = try modelContext.fetch(d)
-let count = try modelContext.fetchCount(d)
-let ids = try modelContext.fetchIdentifiers(d)
-try modelContext.enumerate(d, batchSize: 1000) { trip in trip.isProcessed = true }
-```
-
-## Schema Versioning and Migration
-
-```swift
-enum SchemaV1: VersionedSchema {
-    static var versionIdentifier = Schema.Version(1, 0, 0)
-    static var models: [any PersistentModel.Type] { [Trip.self] }
-    @Model class Trip { var name: String; init(name: String) { self.name = name } }
-}
-
-enum SchemaV2: VersionedSchema {
-    static var versionIdentifier = Schema.Version(2, 0, 0)
-    static var models: [any PersistentModel.Type] { [Trip.self] }
-    @Model class Trip {
-        var name: String; var startDate: Date?  // New property
-        init(name: String) { self.name = name }
-    }
-}
-
-enum TripMigrationPlan: SchemaMigrationPlan {
-    static var schemas: [any VersionedSchema.Type] { [SchemaV1.self, SchemaV2.self] }
-    static var stages: [MigrationStage] { [migrateV1toV2] }
-    static let migrateV1toV2 = MigrationStage.lightweight(
-        fromVersion: SchemaV1.self, toVersion: SchemaV2.self)
-}
-
-// Custom migration for data transformation
-static let migrateV2toV3 = MigrationStage.custom(
-    fromVersion: SchemaV2.self, toVersion: SchemaV3.self,
-    willMigrate: nil,
-    didMigrate: { context in
-        let trips = try context.fetch(FetchDescriptor<SchemaV3.Trip>())
-        for trip in trips { trip.displayName = trip.name.capitalized }
-        try context.save()
-    })
-```
-
-Lightweight handles: adding optional/defaulted properties, renaming (`originalName`), removing properties, adding model types.
-Verify the stage list covers every supported version hop, then migrate a fresh
-copy of each old store and assert post-migration data before release.
-
-## Core Data Coexistence Boundary
-
-Use this skill when the work is to run SwiftData alongside an existing Core
-Data store or migrate screens from Core Data to SwiftData over time. Keep pure
-Core Data stack setup, `NSManagedObjectContext`, `NSFetchRequest`, and batch
-Core Data operations in the sibling `core-data` skill.
-
-For coexistence, give boundary guidance before detailed migration advice:
-
-- Point SwiftData and Core Data at the same SQLite store URL.
-- Match Core Data entity names, property names, types, and relationship shapes
-  in the SwiftData `@Model` definitions.
-- Use `@Attribute(originalName:)` for SwiftData properties whose persisted Core
-  Data names differ from the Swift names.
-- Do not write the same entity from both stacks at the same time; assign one
-  stack as the writer for each entity during migration.
-
-## Concurrency (`@ModelActor`)
-
-```swift
-@ModelActor
-actor DataHandler {
-    func importTrips(_ records: [TripRecord]) throws {
-        for r in records {
-            modelContext.insert(Trip(name: r.name, destination: r.dest,
-                                    startDate: r.start, endDate: r.end))
-        }
-        try modelContext.save()  // Always save explicitly in @ModelActor
-    }
-
-    func process(tripID: PersistentIdentifier) throws {
-        guard let trip = self[tripID, as: Trip.self] else { return }
-        trip.isProcessed = true; try modelContext.save()
-    }
-}
-
-let handler = DataHandler(modelContainer: container)
-try await handler.importTrips(records)
-```
-
-**Rules**: `ModelContainer` is `Sendable`. `ModelContext` is NOT -- use on its creating actor. Pass `PersistentIdentifier` (Sendable) across boundaries. Never pass `@Model` objects across actors.
-
-## SwiftUI Integration
-
-```swift
-@main
-struct MyApp: App {
-    var body: some Scene {
-        WindowGroup { ContentView() }
-            .modelContainer(for: [Trip.self, LivingAccommodation.self])
-    }
-}
-
-struct DetailView: View {
-    @Environment(\.modelContext) private var modelContext
-    let trip: Trip
-    var body: some View {
-        Text(trip.name)
-        Button("Delete") { modelContext.delete(trip) }
-    }
-}
-
-#Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Trip.self, configurations: config)
-    container.mainContext.insert(Trip(name: "Preview", destination: "London",
-        startDate: .now, endDate: .now + 86400))
-    return TripListView().modelContainer(container)
-}
-```
-
-## Common Mistakes
-
-**1. `@Model` on struct** -- Use class. `@Model` requires reference semantics.
-
-**2. `@Transient` without default** -- Always provide default: `@Transient var x: Bool = false`.
-
-**3. Missing .modelContainer** -- `@Query` returns empty without a container on the view hierarchy.
-
-**4. Passing model objects across actors:**
-```swift
-// WRONG: await handler.process(trip: trip)
-// CORRECT: await handler.process(tripID: trip.persistentModelID)
-```
-
-**5. ModelContext on wrong actor:**
-```swift
-// WRONG: Task.detached { context.fetch(...) }
-// CORRECT: Use @ModelActor for background work
-```
-
-**6. Unsupported #Predicate expressions:**
-```swift
-// WRONG: #Predicate<Trip> { $0.name.uppercased() == "PARIS" }
-// CORRECT: #Predicate<Trip> { $0.name.localizedStandardContains("paris") }
-```
-
-**7. Flow control in #Predicate:**
-```swift
-// WRONG: #Predicate<Trip> { for tag in $0.tags { ... } }
-// CORRECT: #Predicate<Trip> { $0.tags.contains { $0.name == "x" } }
-```
-
-**8. No save in `@ModelActor`** -- Always call `try modelContext.save()` explicitly.
-
-**9. ObservableObject with `@Model`** -- Never use `ObservableObject`/`@Published`. `@Model` generates `Observable`. Use `@Query` in views.
-
-**10. Non-optional relationship without default:**
-```swift
-// WRONG: var accommodation: LivingAccommodation  // crashes on reconstitution
-// CORRECT: var accommodation: LivingAccommodation?
-```
-
-**11. Cascade without inverse** -- Specify `inverse:` for reliable cascade delete behavior.
-
-**12. DispatchQueue for background data work:**
-```swift
-// WRONG: DispatchQueue.global().async { ModelContext(container).fetch(...) }
-// CORRECT: @ModelActor actor Handler { func fetch() throws { ... } }
-```
+Design persistence so model identity, relationships, query cost, migration, and context ownership remain explicit.
+
+## Scope and Compatibility
+
+This skill owns `@Model`, `ModelContainer`, `ModelContext`, `@Query`, predicates, fetch descriptors, schema migration, `@ModelActor`, and SwiftData/CloudKit constraints. Route pure Core Data work to `core-data`, UI state wiring to `swiftui-patterns`, and general actor diagnostics to `swift-concurrency`.
+
+Inspect deployment target, Xcode/Swift toolchain, enabled capabilities, and the existing schema before recommending APIs. Preserve the current store and migration path unless the user explicitly authorizes a reset. Verify availability and CloudKit constraints against SDK headers and primary Apple documentation.
+
+## Workflow
+
+1. Inventory models, unique identity, relationships, delete rules, constraints, indexes, and current store configuration.
+2. Identify context ownership and every write path.
+3. Choose query and mutation APIs based on data size, UI liveness, and isolation.
+4. If the schema changes, define a migration and test it with a copy of representative data.
+5. Build and verify create, fetch, update, delete, relaunch persistence, failure handling, and any sync behavior in scope.
+
+## Models and Relationships
+
+- Keep durable domain values persistable and give identity stable semantics.
+- Model both sides of important relationships and choose delete rules deliberately.
+- Avoid adding uniqueness, indexes, or nonoptional properties to an existing store without a migration plan.
+- Keep computed/transient presentation data out of the persisted schema unless persistence has product value.
+- Use transformable or external storage only after considering queryability, migration, CloudKit, and file-lifecycle costs.
+
+Read [SwiftData Advanced](references/swiftdata-advanced.md) for relationships, schema versions, migrations, CloudKit, and advanced container configuration. Read [Indexing](references/indexing.md) before adding indexes or compound uniqueness.
+
+## Containers and Contexts
+
+Install one deliberate root container for an app/scene unless isolation or testing requires another. Inject it into SwiftUI and use in-memory or temporary configurations for previews and tests.
+
+`ModelContext` is not a general-purpose cross-actor value. Keep UI writes on the UI-owned context. Use `@ModelActor` or another context created for background persistence work, and pass stable identifiers or `PersistentIdentifier` values across isolation boundaries rather than live model objects.
+
+Save behavior must be explicit enough for the feature: decide whether a user action saves immediately, a transaction batches changes, or autosave is sufficient. Do not silently swallow persistence errors in production paths where data loss matters.
+
+## Queries
+
+Use `@Query` when a SwiftUI view owns a live query whose predicate and sort shape are suitable for property-wrapper construction. Use `FetchDescriptor` for imperative, reusable, paginated, or actor-owned fetches.
+
+Push filtering and sorting into the store when practical. In-memory filtering is acceptable for a proven small dataset or UI-only transformation, not as a default workaround for predicate limitations.
+
+Read [Queries](references/swiftdata-queries.md) for `@Query`, `FetchDescriptor`, sorting, pagination, and dynamic query patterns. Read [Predicate Pitfalls](references/predicate-pitfalls.md) before debugging optional relationships, captured values, enums, or unsupported expressions.
+
+## Migration and Coexistence
+
+Treat schema evolution as a product-data change. Test lightweight and custom stages from the actual previous schema, including failure and rollback/recovery expectations. Never delete the user's store merely to make a migration pass unless the user has explicitly accepted data loss.
+
+Read [Core Data Coexistence](references/core-data-coexistence.md) when both frameworks share a product or when planning an incremental migration.
 
 ## Review Checklist
 
-- [ ] Every `@Model` is a class with a designated initializer
-- [ ] All `@Transient` properties have default values
-- [ ] Relationships specify `deleteRule` and `inverse`
-- [ ] `.modelContainer` attached at scene/root view level
-- [ ] `@Query` used for reactive data display in SwiftUI
-- [ ] `#Predicate` uses only supported operators
-- [ ] Background work uses `@ModelActor`
-- [ ] `PersistentIdentifier` used across actor boundaries
-- [ ] Schema changes have `VersionedSchema` + `SchemaMigrationPlan`
-- [ ] Large data uses `@Attribute(.externalStorage)`
-- [ ] CloudKit models avoid uniqueness, use optional relationships, avoid `.deny`, and do not blanket-optionalize scalars
-- [ ] CloudKit sync has iCloud + CloudKit, Remote notifications, and production schema rollout checked
-- [ ] Explicit `save()` in `@ModelActor` methods
-- [ ] Previews use `ModelConfiguration(isStoredInMemoryOnly: true)`
-- [ ] `@Model` classes accessed from SwiftUI views are on `@MainActor` via `@ModelActor` or MainActor isolation
+- [ ] Stable identity, relationships, inverses, and delete rules are intentional
+- [ ] Container and context ownership are explicit
+- [ ] No live model object crosses actors unsafely
+- [ ] Query work is performed by the store when practical
+- [ ] Save and error behavior matches product expectations
+- [ ] Schema changes include a tested migration path
+- [ ] CloudKit-compatible schema/configuration is verified when sync is enabled
+- [ ] Previews and tests use isolated stores
+- [ ] CRUD and relaunch persistence are verified
+- [ ] Destructive store resets require explicit authorization
 
 ## References
 
-- [references/swiftdata-advanced.md](references/swiftdata-advanced.md) — custom data stores, history tracking, CloudKit, composite attributes, model inheritance, undo/redo, performance
-- [references/swiftdata-queries.md](references/swiftdata-queries.md) — `@Query` variants, FetchDescriptor deep dive, sectioned queries, dynamic queries, background fetch
-- [references/core-data-coexistence.md](references/core-data-coexistence.md) — Core Data + SwiftData coexistence and migration boundaries
-- [references/predicate-pitfalls.md](references/predicate-pitfalls.md) — #Predicate runtime crashes, unsupported expressions, safe patterns
-- [references/indexing.md](references/indexing.md) — #Index macro, compound indexes, when to index, migration
+- [Advanced models, relationships, migrations, and CloudKit](references/swiftdata-advanced.md)
+- [Queries and fetch descriptors](references/swiftdata-queries.md)
+- [Predicate pitfalls](references/predicate-pitfalls.md)
+- [Indexing and uniqueness](references/indexing.md)
+- [Core Data coexistence and migration](references/core-data-coexistence.md)

@@ -6,7 +6,7 @@
       "prompt": "Review a SwiftUI Explore screen that uses a VStack of 500 media cards, a custom search field, and a floating toast. Recommend a modern iOS 26 layout approach without rewriting unrelated app architecture.",
       "expected_output": "Focused layout guidance that chooses lazy containers, native search, and overlay patterns while staying out of navigation and state-architecture rewrites.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Recommends a lazy container such as LazyVStack or LazyVGrid for the large card collection.",
         "Mentions stable item identity for ForEach rather than array-index IDs.",
         "Recommends native .searchable with debounced async work or .task(id:) for search.",
@@ -19,7 +19,7 @@
       "prompt": "A settings-heavy SwiftUI screen uses List sections and needs a jump-to-section control plus rows whose expanded descriptions animate smoothly. What layout guidance should I follow?",
       "expected_output": "Explains the List scroll-target and dynamic row-height caveats, then recommends the appropriate List or ScrollView plus lazy-stack structure for the requirements.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Distinguishes simple edge scrolling in List from reliable item or section jump-to-id behavior.",
         "Recommends ScrollView plus LazyVStack with scrollTargetLayout for reliable item or section jump-to-id behavior.",
         "Calls out dynamic List row-height snapping or jumping as a practical runtime gotcha.",
@@ -32,7 +32,7 @@
       "prompt": "I need a SwiftUI onboarding flow with full-screen modal routing, sheet detents, deep links into steps, and a few forms. Which parts should this layout skill own?",
       "expected_output": "Clear boundary guidance that keeps forms and controls in this skill while handing modal routing, sheets, full-screen presentation policy, and deep links to swiftui-navigation.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Identifies Form, Section, Toggle, Picker, Slider, TextField, and FocusState guidance as in-scope for this skill.",
         "Hands full-screen presentation, sheet detents, modal routing, and deep links to the swiftui-navigation skill.",
         "Does not provide detailed NavigationStack routing or deep-link implementation as if owned by this skill.",
@@ -44,7 +44,7 @@
       "prompt": "Design the layout behavior for an iOS 26 SwiftUI editor whose primary canvas pages vertically into a secondary detail surface. The scroll offset should progressively fade and scale the canvas, reveal a toolbar, and update an affordance. The current prototype also tracks three reveal booleans plus a duplicate DragGesture, fires haptics from per-frame geometry, and fights scrolling while zooming or cropping. Keep the answer within layout/component scope.",
       "expected_output": "A modern scroll-driven reveal pattern that uses ScrollPosition and paging, derives one clamped normalized progress value through a narrow onScrollGeometryChange transform, drives all continuous effects from it, reserves visibility/settled callbacks for deduplicated discrete effects, disables scrolling during conflicting interactions, and avoids geometry feedback loops and broad per-frame invalidation.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Prefers `ScrollPosition` for the iOS 26 baseline without falsely claiming `ScrollViewReader` is deprecated.",
         "Derives one clamped normalized progress value from scroll offset with a small `Equatable` `onScrollGeometryChange` transform.",
         "Drives opacity, offset, scale, blur, toolbar treatment, and affordances from the shared progress rather than duplicated booleans.",
