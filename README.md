@@ -9,15 +9,15 @@
 
 A practical collection of **87 Agent Skills** for building modern Swift and Apple-platform apps with Codex, Claude Code, Cursor, GitHub Copilot, and other Agent Skills-compatible tools.
 
-Maintained by [Thien Ngo](https://github.com/thiennc-tesoglobal). This is a community fork of [dpearson2699/swift-ios-skills](https://github.com/dpearson2699/swift-ios-skills), customized around concise instructions, progressive disclosure, project structure, and complete build-to-Simulator delivery.
+Created and maintained by [Thien Ngo](https://github.com/thiennc-tesoglobal). The collection is designed around concise instructions, progressive disclosure, clear project structure, and complete build-to-Simulator delivery.
 
 > **Tiếng Việt:** Đây là bộ skill iOS community do Thien Ngo duy trì, hướng đến việc giúp AI agent làm app SwiftUI thực tế: biết tổ chức source code, chọn đúng skill chuyên môn, build, test và kiểm tra trên Simulator thay vì chỉ sinh một đoạn code rời rạc.
 
-## What this version is
+## What this project is
 
-This repository keeps the broad Apple-framework coverage of the upstream project and adds a more opinionated delivery layer for real projects.
+This repository combines broad Apple-framework coverage with an opinionated delivery layer for real projects.
 
-| Focus | This community version |
+| Focus | Our approach |
 |---|---|
 | End-to-end delivery | Adds `ios-app-workflow` to coordinate project preflight, implementation, persistence, accessibility, testing, and Simulator verification. |
 | Context efficiency | Core skill entrypoints are shorter and route detailed material to focused references. |
@@ -26,7 +26,7 @@ This repository keeps the broad Apple-framework coverage of the upstream project
 | Evaluation | Uses the Agent Skills `assertions` format consistently across all 87 local eval files. |
 | Compatibility | Preserves the open Agent Skills directory format and Claude Code plugin bundles. |
 
-This is an independently maintained community fork, not an official Apple project and not an official release from the upstream maintainer.
+This is an independently maintained community project. It is not affiliated with or endorsed by Apple.
 
 ## Quick install
 
@@ -109,7 +109,7 @@ Or install a smaller bundle:
 
 ## Start with `ios-app-workflow`
 
-`ios-app-workflow` is the main addition in this fork. Use it when the request spans multiple parts of an app rather than one isolated API question.
+`ios-app-workflow` is the central delivery workflow in this collection. Use it when the request spans multiple parts of an app rather than one isolated API question.
 
 It coordinates:
 
@@ -172,7 +172,7 @@ The skills follow the [Agent Skills specification](https://agentskills.io). Main
 
 ## Quality checks
 
-Changes to this fork are checked for:
+Changes to this project are checked for:
 
 - valid Agent Skills frontmatter and folder naming
 - valid plugin and evaluation JSON
@@ -212,10 +212,10 @@ When contributing:
 - GitHub: [@thiennc-tesoglobal](https://github.com/thiennc-tesoglobal)
 - Email: [thienngo.tech@gmail.com](mailto:thienngo.tech@gmail.com)
 
-## Credits and license
+## Ownership and license
 
-This project is derived from [dpearson2699/swift-ios-skills](https://github.com/dpearson2699/swift-ios-skills) by Derek Pearson. Thank you to the upstream author and contributors for the original skill collection.
+Created and maintained by **Thien Ngo** and the `swift-ios-skills-community` contributors.
 
-Distributed under the [PolyForm Perimeter License 1.0.0](LICENSE). The original required copyright notice is preserved in the license file. PolyForm Perimeter includes a noncompete restriction, so review the license before redistributing or offering a competing product.
+Distributed under the [PolyForm Perimeter License 1.0.0](LICENSE). Required legal notices are preserved in the license file. PolyForm Perimeter includes a noncompete restriction, so review the license before redistributing or offering a competing product.
 
 Apple frameworks, APIs, documentation, session content, and trademarks belong to Apple Inc. This project is not affiliated with, endorsed by, or sponsored by Apple.
