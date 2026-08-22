@@ -9,9 +9,9 @@
 
 A practical collection of **87 Agent Skills** for building modern Swift and Apple-platform apps with Codex, Claude Code, Cursor, GitHub Copilot, and other Agent Skills-compatible tools.
 
-Created and maintained by [Thien Ngo](https://github.com/thiennc-tesoglobal). The collection is designed around concise instructions, progressive disclosure, clear project structure, and complete build-to-Simulator delivery.
+The collection is designed around concise instructions, progressive disclosure, clear project structure, and complete build-to-Simulator delivery.
 
-> **Tiếng Việt:** Đây là bộ skill iOS community do Thien Ngo duy trì, hướng đến việc giúp AI agent làm app SwiftUI thực tế: biết tổ chức source code, chọn đúng skill chuyên môn, build, test và kiểm tra trên Simulator thay vì chỉ sinh một đoạn code rời rạc.
+> **Tiếng Việt:** Đây là bộ skill iOS community giúp AI agent làm app SwiftUI thực tế: biết tổ chức source code, chọn đúng skill chuyên môn, build, test và kiểm tra trên Simulator thay vì chỉ sinh một đoạn code rời rạc.
 
 ## What this project is
 
@@ -206,15 +206,7 @@ When contributing:
 - keep the main `SKILL.md` concise and route conditional detail to references
 - add or update meaningful eval assertions for behavior changes
 
-## Maintainer
-
-- **Thien Ngo**
-- GitHub: [@thiennc-tesoglobal](https://github.com/thiennc-tesoglobal)
-- Email: [thienngo.tech@gmail.com](mailto:thienngo.tech@gmail.com)
-
-## Ownership and license
-
-Created and maintained by **Thien Ngo** and the `swift-ios-skills-community` contributors.
+## License
 
 Distributed under the [PolyForm Perimeter License 1.0.0](LICENSE). Required legal notices are preserved in the license file. PolyForm Perimeter includes a noncompete restriction, so review the license before redistributing or offering a competing product.
 
