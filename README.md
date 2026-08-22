@@ -1,44 +1,75 @@
 # Swift iOS Skills Community
 
 [![GitHub stars](https://img.shields.io/github/stars/thiennc-tesoglobal/swift-ios-skills-community)](https://github.com/thiennc-tesoglobal/swift-ios-skills-community)
-[![Skills](https://img.shields.io/badge/Agent%20Skills-87-2ea44f)](skills/)
+[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-87-2ea44f)](skills/)
 [![Swift](https://img.shields.io/badge/Swift-6.3-F05138?logo=swift&logoColor=white)](https://swift.org)
-[![Platform](https://img.shields.io/badge/Apple%20Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-black?logo=apple)](https://developer.apple.com)
-[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-6f42c1)](https://agentskills.io)
+[![Apple platforms](https://img.shields.io/badge/Apple%20Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-black?logo=apple)](https://developer.apple.com)
+[![Specification](https://img.shields.io/badge/Agent%20Skills-compatible-6f42c1)](https://agentskills.io)
 [![License](https://img.shields.io/badge/License-PolyForm%20Perimeter-blue)](LICENSE)
 
-A practical collection of **87 Agent Skills** for building modern Swift and Apple-platform apps with Codex, Claude Code, Cursor, GitHub Copilot, and other Agent Skills-compatible tools.
+A practical Agent Skills toolkit for building complete Swift and Apple-platform applications with coding agents.
 
-The collection is designed around concise instructions, progressive disclosure, clear project structure, and complete build-to-Simulator delivery.
+The repository contains **87 focused skills** covering Swift, SwiftUI, app architecture, Apple frameworks, testing, performance, accessibility, security, App Store delivery, and Simulator verification.
 
-> **Tiếng Việt:** Đây là bộ skill iOS community giúp AI agent làm app SwiftUI thực tế: biết tổ chức source code, chọn đúng skill chuyên môn, build, test và kiểm tra trên Simulator thay vì chỉ sinh một đoạn code rời rạc.
+> **Tiếng Việt:** Đây là bộ kỹ năng dành cho AI coding agent phát triển ứng dụng Swift và SwiftUI theo quy trình thực tế: hiểu dự án, chọn đúng chuyên môn, tổ chức source code, triển khai tính năng, build, test và kiểm tra trên Simulator.
 
 ## What this project is
 
-This repository combines broad Apple-framework coverage with an opinionated delivery layer for real projects.
+Swift iOS Skills Community is a reusable knowledge and delivery layer for AI coding agents. It is not an app template, a framework dependency, or a collection of copy-paste prompts.
 
-| Focus | Our approach |
+Each skill gives an agent focused instructions for one engineering area. The central [`ios-app-workflow`](skills/ios-app-workflow/) skill coordinates those specialists when a request spans an entire app or a substantial feature.
+
+The goal is simple: help agents move from a product request to a maintainable, verified implementation instead of stopping after generating an isolated code sample.
+
+## Development direction
+
+| Principle | Direction |
 |---|---|
-| End-to-end delivery | Adds `ios-app-workflow` to coordinate project preflight, implementation, persistence, accessibility, testing, and Simulator verification. |
-| Context efficiency | Core skill entrypoints are shorter and route detailed material to focused references. |
-| Project organization | Adds concrete SwiftUI folder, filename, composition-root, and refactor guidance. |
-| Skill boundaries | Encourages loading only the specialist skills needed for the current task. |
-| Evaluation | Uses the Agent Skills `assertions` format consistently across all 87 local eval files. |
-| Compatibility | Preserves the open Agent Skills directory format and Claude Code plugin bundles. |
+| Complete delivery | Cover the path from project discovery and architecture to implementation, tests, Simulator validation, and release readiness. |
+| Focused context | Load only the skills relevant to the current task instead of overwhelming the agent with the entire collection. |
+| Maintainable source | Encourage domain-based names, clear file boundaries, predictable state ownership, and architecture appropriate to the project size. |
+| Evidence over assumption | Require real build, test, runtime, accessibility, and persistence checks whenever the environment supports them. |
+| Modern Apple development | Track current Swift, SwiftUI, Xcode, SDK, concurrency, privacy, and platform conventions while respecting deployment targets. |
+| Community quality | Keep skills independently useful, reviewable, testable, and easy to improve through issues and pull requests. |
 
-This is an independently maintained community project. It is not affiliated with or endorsed by Apple.
+Near-term development focuses on strengthening the end-to-end workflow, improving the core SwiftUI and Swift engineering skills, expanding real-world evaluations, and keeping framework guidance aligned with current Apple platforms.
 
-## Quick install
+## How the collection works
 
-### Any supported agent
+For a complete app or a multi-file feature, start with `ios-app-workflow`. It performs project preflight, identifies the smallest set of specialist skills, guides implementation, and defines the evidence needed before the work is considered complete.
 
-Interactive selection:
+```text
+Product request
+    ↓
+ios-app-workflow
+    ↓
+Relevant specialist skills only
+    ↓
+Implementation in maintainable vertical slices
+    ↓
+Build → Test → Simulator verification
+```
+
+For a narrow task, use the matching specialist directly. Examples:
+
+- `swift-concurrency` for actor isolation, `Sendable`, and async code
+- `swiftdata` for models, queries, relationships, and migrations
+- `swiftui-animation` for transitions, springs, and Reduce Motion behavior
+- `ios-accessibility` for VoiceOver, Dynamic Type, and accessible interactions
+- `storekit` for purchases and subscriptions
+- `ios-simulator` for building, installing, launching, and verifying an app
+
+## Quick start
+
+### Install with the Agent Skills CLI
+
+Choose skills interactively:
 
 ```sh
 npx skills add thiennc-tesoglobal/swift-ios-skills-community
 ```
 
-Install all 87 skills:
+Install the complete collection:
 
 ```sh
 npx skills add thiennc-tesoglobal/swift-ios-skills-community --all
@@ -47,10 +78,11 @@ npx skills add thiennc-tesoglobal/swift-ios-skills-community --all
 Install only the end-to-end workflow:
 
 ```sh
-npx skills add thiennc-tesoglobal/swift-ios-skills-community --skill ios-app-workflow
+npx skills add thiennc-tesoglobal/swift-ios-skills-community \
+  --skill ios-app-workflow
 ```
 
-Recommended set for building a complete SwiftUI app:
+Install a practical SwiftUI app set:
 
 ```sh
 npx skills add thiennc-tesoglobal/swift-ios-skills-community \
@@ -65,35 +97,23 @@ npx skills add thiennc-tesoglobal/swift-ios-skills-community \
   --skill ios-simulator
 ```
 
-### OpenAI Codex
+The repository follows the open [Agent Skills specification](https://agentskills.io) and can be used by tools that support the same skill-directory format, including [Codex](https://learn.chatgpt.com/docs/build-skills) and other compatible coding agents.
 
-Install one skill directly:
+### Install as a Claude Code plugin
 
-```sh
-$skill-installer install https://github.com/thiennc-tesoglobal/swift-ios-skills-community/tree/main/skills/<skill-name>
-```
-
-Example:
-
-```sh
-$skill-installer install https://github.com/thiennc-tesoglobal/swift-ios-skills-community/tree/main/skills/ios-app-workflow
-```
-
-### Claude Code plugin
-
-Add this repository as a marketplace:
+Add the marketplace:
 
 ```sh
 /plugin marketplace add thiennc-tesoglobal/swift-ios-skills-community
 ```
 
-Install everything:
+Install all skills:
 
 ```sh
 /plugin install all-ios-skills@swift-ios-skills-community
 ```
 
-Or install a smaller bundle:
+Or install a focused bundle:
 
 ```sh
 /plugin install swiftui-skills@swift-ios-skills-community
@@ -101,26 +121,15 @@ Or install a smaller bundle:
 /plugin install ios-engineering-skills@swift-ios-skills-community
 ```
 
-### Claude Desktop and ChatGPT
+### Manual installation
 
-1. Download the desired folder from [`skills/`](skills/).
-2. Zip that individual skill folder.
-3. Open the product's Skills settings and upload the zip.
+Download or clone the repository, then copy the required folders from [`skills/`](skills/) into the skills directory supported by your agent. Keep each skill folder intact so its `SKILL.md`, references, scripts, and evaluations remain together.
 
-## Start with `ios-app-workflow`
+## Recommended usage
 
-`ios-app-workflow` is the central delivery workflow in this collection. Use it when the request spans multiple parts of an app rather than one isolated API question.
+Ask the agent to use a skill explicitly when you want deterministic routing.
 
-It coordinates:
-
-- project, target, deployment, architecture, and Git preflight
-- source structure and domain-based file naming
-- focused SwiftUI, persistence, accessibility, concurrency, and testing skills
-- build and test verification
-- explicit Simulator selection, launch, interaction, screenshots, and persistence checks
-- behavior-preserving multi-file refactors
-
-Example prompt:
+Build a complete app:
 
 ```text
 Use $ios-app-workflow to build a polished SwiftUI todo app with SwiftData,
@@ -128,86 +137,112 @@ accessible interactions, smooth reduced-motion-aware animations, tests,
 and verified Simulator behavior.
 ```
 
-For a narrow problem, use only the matching specialist skill—for example `swift-concurrency` for an isolation diagnostic or `swiftdata` for a migration issue.
+Handle one focused problem:
+
+```text
+Use $swift-concurrency to review this view model for isolation and Sendable issues.
+```
+
+Review release readiness:
+
+```text
+Use $app-store-review and $ios-accessibility to audit this app before submission.
+```
+
+Installing all skills does not mean every skill should be loaded for every request. The collection is designed for selective routing: one workflow skill plus only the specialists required by the actual task.
 
 ## Skill bundles
 
-| Bundle | Skills | Main coverage |
+| Bundle | Skills | Coverage |
 |---|---:|---|
 | `all-ios-skills` | 87 | Complete collection |
-| `swiftui-skills` | 10 | Views, layout, navigation, gestures, animation, Liquid Glass, performance, UIKit/WebKit interop |
-| `swift-core-skills` | 10 | Swift language, architecture, concurrency, data, testing, Codable, charts, formatting, API design |
-| `ios-app-framework-skills` | 15 | Widgets, Live Activities, StoreKit, App Intents, notifications, maps, media, CarPlay |
-| `ios-data-framework-skills` | 8 | CloudKit, HealthKit, EventKit, Contacts, MusicKit, PassKit, WeatherKit, FinanceKit |
-| `ios-ai-ml-skills` | 5 | Foundation Models, Core ML, Vision, Natural Language, speech recognition |
-| `ios-engineering-skills` | 17 | App workflow, networking, accessibility, security, diagnostics, Simulator, App Store readiness |
-| `ios-hardware-skills` | 8 | Bluetooth, NFC, motion, PencilKit, RealityKit, accessories and sensors |
-| `ios-platform-skills` | 10 | HomeKit, SharePlay, CallKit and specialized Apple integrations |
-| `ios-gaming-skills` | 4 | GameKit, SpriteKit, SceneKit and TabletopKit |
-| `apple-kit-skills` | 39 | Apple Kit framework-focused subset |
+| `swiftui-skills` | 10 | SwiftUI patterns, layout, navigation, gestures, animation, performance, Liquid Glass, UIKit, and WebKit interop |
+| `swift-core-skills` | 10 | Swift language, architecture, concurrency, data, testing, Codable, Charts, formatting, and API design |
+| `ios-app-framework-skills` | 15 | Widgets, Live Activities, StoreKit, App Intents, notifications, maps, media, PDFs, and CarPlay |
+| `ios-data-framework-skills` | 8 | CloudKit, HealthKit, EventKit, Contacts, MusicKit, PassKit, WeatherKit, and FinanceKit |
+| `ios-ai-ml-skills` | 5 | Foundation Models, Core ML, Vision, Natural Language, and speech recognition |
+| `ios-engineering-skills` | 17 | App workflow, networking, accessibility, security, diagnostics, Simulator, linting, and App Store readiness |
+| `ios-hardware-skills` | 8 | Bluetooth, NFC, motion, PencilKit, RealityKit, accessories, and sensors |
+| `ios-platform-skills` | 10 | HomeKit, SharePlay, CallKit, and specialized Apple-platform integrations |
+| `ios-gaming-skills` | 4 | GameKit, SpriteKit, SceneKit, and TabletopKit |
+| `apple-kit-skills` | 39 | Framework-focused Apple Kit subset |
 
-Browse every skill in [`skills/`](skills/). Each folder contains its own `SKILL.md`, optional references, and local evaluation cases.
+Browse the complete catalog in [`skills/`](skills/).
 
 ## Repository structure
 
 ```text
-skills/
-  ios-app-workflow/
-    SKILL.md
-    references/
-    evals/
-  swiftui-patterns/
-  swift-concurrency/
-  swiftdata/
-  ...
-
-.claude-plugin/
-  marketplace.json
-
-evals/
-tests/
+swift-ios-skills-community/
+├── skills/
+│   ├── ios-app-workflow/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── swiftui-patterns/
+│   ├── swift-concurrency/
+│   ├── swiftdata/
+│   └── ...
+├── evals/
+├── tests/
+├── .claude-plugin/
+├── .tessl-plugin/
+└── tessl.json
 ```
 
-The skills follow the [Agent Skills specification](https://agentskills.io). Main entrypoints stay focused; detailed API patterns and edge cases are loaded from references only when relevant.
+A skill may contain:
 
-## Quality checks
+- `SKILL.md` — concise routing and implementation guidance loaded by the agent
+- `references/` — detailed material loaded only when relevant
+- `scripts/` — reusable diagnostics or automation where appropriate
 
-Changes to this project are checked for:
+Repository-level cases in `evals/` contain scenarios and assertions that protect expected agent behavior.
 
-- valid Agent Skills frontmatter and folder naming
-- valid plugin and evaluation JSON
-- complete `all-ios-skills` bundle registration
-- valid local Markdown references
-- repository helper tests
-- concise `SKILL.md` entrypoints with progressively disclosed references
-- preserved Sosumi links for Apple documentation that agents can read
+## Quality standard
 
-See [CHANGELOG.md](CHANGELOG.md) for notable changes.
+Changes should preserve:
 
-## Update
+- valid skill names and frontmatter
+- clear trigger and boundary descriptions
+- concise primary instructions with progressive disclosure
+- accurate deployment-target and framework guidance
+- valid local references and plugin metadata
+- meaningful evaluation assertions for behavior changes
+- compatibility of the complete 87-skill bundle
 
-If installed with the skills CLI:
+Run the repository tests with:
+
+```sh
+python3 -m unittest discover -s tests -v
+```
+
+## Updating installed skills
+
+For installations managed by the Agent Skills CLI:
 
 ```sh
 npx skills update
 ```
 
-For Claude Code bundles, update the marketplace and reinstall the bundle when a new release is published.
+For Claude Code, update the marketplace and reinstall the selected bundle when a new version is released.
+
+Notable project changes are documented in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Contributing
 
-Issues and pull requests are welcome at [thiennc-tesoglobal/swift-ios-skills-community](https://github.com/thiennc-tesoglobal/swift-ios-skills-community).
+Issues and pull requests are welcome. A useful contribution should solve a concrete agent behavior problem and remain focused enough to review and evaluate.
 
 When contributing:
 
-- keep each skill independently usable
-- preserve deployment-target and toolchain accuracy
-- prefer official Apple/Swift sources and readable Sosumi links
-- keep the main `SKILL.md` concise and route conditional detail to references
-- add or update meaningful eval assertions for behavior changes
+1. Keep each skill independently usable.
+2. Define when the skill should and should not be selected.
+3. Prefer primary Apple and Swift documentation for technical claims.
+4. Move conditional or lengthy guidance into focused references.
+5. Add or update evaluation assertions when behavior changes.
+6. Avoid unrelated rewrites in the same pull request.
+
+Use [Issues](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/issues) for bugs and proposals, or [Discussions](https://github.com/thiennc-tesoglobal/swift-ios-skills-community/discussions) for broader ideas and roadmap conversations.
 
 ## License
 
-Distributed under the [PolyForm Perimeter License 1.0.0](LICENSE). Required legal notices are preserved in the license file. PolyForm Perimeter includes a noncompete restriction, so review the license before redistributing or offering a competing product.
+This is a source-available community project distributed under the [PolyForm Perimeter License 1.0.0](LICENSE). The license includes a noncompete restriction, so review its terms before redistributing the collection or offering a competing product.
 
-Apple frameworks, APIs, documentation, session content, and trademarks belong to Apple Inc. This project is not affiliated with, endorsed by, or sponsored by Apple.
+Apple frameworks, APIs, documentation, session content, and trademarks belong to Apple Inc. This project is independent and is not affiliated with, endorsed by, or sponsored by Apple.
