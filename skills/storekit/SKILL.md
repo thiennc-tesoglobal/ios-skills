@@ -5,486 +5,165 @@ description: "Implement or review in-app purchases and subscriptions with StoreK
 
 # StoreKit 2 In-App Purchases and Subscriptions
 
-Implement in-app purchases, subscriptions, paywalls, and StoreKit testing using
-StoreKit 2. Use the modern Swift-based `Product`, `Transaction`,
-`PurchaseAction`, `StoreView`, and `SubscriptionStoreView` APIs. Avoid original
-In-App Purchase APIs (`SKProduct`, `SKPaymentQueue`) unless legacy OS support
-requires them.
+Build, review, and debug digital-goods purchases with modern StoreKit. Preserve the project's deployment target and existing StoreKit abstraction. Use original `SKProduct`/`SKPaymentQueue` APIs only when legacy support or an existing migration boundary requires them.
 
-StoreKit views initiate purchases automatically. For custom controls, use
-`PurchaseAction` in SwiftUI, `purchase(confirmIn:options:)` in UIKit/AppKit, and
-`product.purchase(options:)` on watchOS.
+Route physical goods and real-world services to `passkit`; full submission/privacy/rejection audits to `app-store-review`; metadata and conversion work to `app-store-optimization`.
 
 ## Contents
 
-- [Product Types](#product-types)
-- [Loading Products](#loading-products)
-- [Purchase Flow](#purchase-flow)
-- [Transaction.updates Listener](#transactionupdates-listener)
-- [Entitlement Checking](#entitlement-checking)
-- [SubscriptionStoreView (iOS 17+)](#subscriptionstoreview-ios-17)
-- [StoreView (iOS 17+)](#storeview-ios-17)
-- [Subscription Status Checking](#subscription-status-checking)
-- [Restore Purchases](#restore-purchases)
-- [App Transaction (App Purchase Verification)](#app-transaction-app-purchase-verification)
-- [Purchase Options](#purchase-options)
-- [SwiftUI Purchase Callbacks](#swiftui-purchase-callbacks)
-- [Common Mistakes](#common-mistakes)
-- [Review Checklist](#review-checklist)
-- [References](#references)
+- [Route by task](#route-by-task)
+- [Core invariants](#core-invariants)
+- [Implementation workflow](#implementation-workflow)
+- [Choose the purchase surface](#choose-the-purchase-surface)
+- [Purchase and fulfillment](#purchase-and-fulfillment)
+- [Transaction updates and entitlements](#transaction-updates-and-entitlements)
+- [Subscriptions, restore, and recovery](#subscriptions-restore-and-recovery)
+- [Correction reviews](#correction-reviews)
+- [Common mistakes](#common-mistakes)
+- [Review checklist](#review-checklist)
 
-## Product Types
+## Route by task
 
-| Type | Enum Case | Behavior |
-|---|---|---|
-| **Consumable** | `.consumable` | Used once, can be repurchased (gems, coins) |
-| **Non-consumable** | `.nonConsumable` | Purchased once permanently (premium unlock) |
-| **Auto-renewable** | `.autoRenewable` | Recurring billing with automatic renewal |
-| **Non-renewing** | `.nonRenewing` | Time-limited access without automatic renewal |
+Read only the references required by the request:
 
-## Loading Products
+- For product loading, StoreKit views, `PurchaseAction`, direct purchases, options, AppTransaction, or durable content delivery, read [products, merchandising, and purchases](references/products-and-purchases.md).
+- For `Transaction.updates`, current entitlements, subscription status, revocation, Family Sharing, restore, or reconciliation, read [entitlements and subscription state](references/entitlements-and-subscriptions.md).
+- For view styles, introductory/promotional/win-back offers, offer codes, server verification, testing, refunds, billing recovery, Ask to Buy, or unfinished transactions, read [advanced StoreKit](references/storekit-advanced.md).
+- For digital-goods payment rules, reader/external-link boundaries, subscription disclosures, or IAP rejection risks, read [App Review IAP guidance](references/app-review-guidelines.md).
 
-Define product IDs as constants. Fetch products with `Product.products(for:)`.
+Do not load offer, compliance, or subscription material for a narrow consumable/non-consumable task.
 
-```swift
-import StoreKit
+## Core invariants
 
-enum ProductID {
-    static let premium = "com.myapp.premium"
-    static let gems100 = "com.myapp.gems100"
-    static let monthlyPlan = "com.myapp.monthly"
-    static let yearlyPlan = "com.myapp.yearly"
-    static let all: [String] = [premium, gems100, monthlyPlan, yearlyPlan]
-}
+1. Verify every `VerificationResult` before granting access or using signed transaction state.
+2. Deliver or persist fulfillment durably and idempotently before calling `transaction.finish()`.
+3. Start one retained `Transaction.updates` listener during app initialization, not when a paywall appears.
+4. Rebuild entitlement state from verified transaction sequences; don't use a local Boolean as purchase authority.
+5. Handle `.pending`, `.userCancelled`, errors, refunds/revocations, and recovery as distinct states.
+6. Use StoreKit-localized product names, descriptions, prices, and subscription terms.
+7. Call `AppStore.sync()` only from an explicit user restore action because it may prompt for authentication.
 
-let products = try await Product.products(for: ProductID.all)
-for product in products {
-    print("\(product.displayName): \(product.displayPrice)")
-}
-```
+## Implementation workflow
 
-## Purchase Flow
+1. Confirm the business model, product types, identifiers, subscription groups, App Store Connect state, platforms, and deployment target.
+2. Decide whether StoreKit views or a custom purchase surface best fits the product.
+3. Define one verified, idempotent fulfillment boundary shared by purchase completion and transaction updates.
+4. Start lifetime transaction observation and load current entitlement state.
+5. Implement purchase, pending/cancel/error UI, restore, and subscription recovery paths.
+6. Test with a StoreKit configuration, sandbox where needed, and realistic renewal/refund/revocation/Ask to Buy states.
+7. Verify the built paywall on the target platform with real localized product data before release.
 
-Prefer StoreKit views for standard paywalls because they initiate purchases,
-restore purchases, and display policy controls. For custom SwiftUI purchase
-buttons, prefer `PurchaseAction` from the environment. Use direct
-`product.purchase(options:)` for watchOS, and use `purchase(confirmIn:options:)`
-for UIKit or AppKit confirmation. Always handle every `PurchaseResult`, verify
-before access, deliver durably, then finish.
+## Choose the purchase surface
 
-```swift
-@Environment(\.purchase) private var purchase
+Prefer StoreKit views for standard merchandising:
 
-func purchaseProduct(_ product: Product) async throws {
-    let result = try await purchase(product, options: [
-        .appAccountToken(userAccountToken)
-    ])
-    switch result {
-    case .success(let verification):
-        let transaction = try checkVerified(verification)
-        await deliverContent(for: transaction)
-        await transaction.finish()
-    case .userCancelled:
-        break
-    case .pending:
-        // Ask to Buy or deferred approval: show pending UI, no unlock yet.
-        showPendingApprovalMessage()
-    @unknown default:
-        break
-    }
-}
+- `ProductView` for one product;
+- `StoreView` for a collection;
+- `SubscriptionStoreView` for auto-renewable subscriptions in one group.
 
-func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
-    switch result {
-    case .verified(let value): return value
-    case .unverified(_, let error): throw error
-    }
-}
-```
+They load localized product information and initiate purchases. Configure visible restore/redeem controls and policy destinations according to the product and platform.
 
-## Transaction.updates Listener
+For custom SwiftUI buttons, prefer `PurchaseAction`. Use `purchase(confirmIn:options:)` for UIKit/AppKit or lower-level `product.purchase(options:)` where the platform/custom flow requires it. Don't introduce a parallel purchasing abstraction when the project already centralizes verification and fulfillment correctly.
 
-Start at app launch, not when a paywall appears. Catches purchases from other
-devices, Family Sharing changes, renewals, Ask to Buy approvals, refunds,
-revocations, and unfinished transactions Apple emits once immediately after
-launch. Keep the task retained for the app lifetime.
-
-```swift
-@main
-struct MyApp: App {
-    private let transactionListener: Task<Void, Never>
-
-    init() {
-        transactionListener = Self.listenForTransactions()
-    }
-
-    var body: some Scene {
-        WindowGroup { ContentView() }
-    }
-
-    static func listenForTransactions() -> Task<Void, Never> {
-        Task(priority: .background) {
-            for await result in Transaction.updates {
-                guard case .verified(let transaction) = result else { continue }
-                await StoreManager.shared.updateEntitlements()
-                await transaction.finish()
-            }
-        }
-    }
-}
-```
-
-## Entitlement Checking
-
-`Transaction.currentEntitlements` emits non-consumables, active or grace-period
-auto-renewable subscriptions, and the latest non-renewing subscription
-transaction—including finished ones. It excludes consumables and refunded or
-revoked products. Track consumable fulfillment separately, and apply the app's
-expiration policy to non-renewing subscriptions before granting access.
-
-```swift
-@Observable
-@MainActor
-class StoreManager {
-    static let shared = StoreManager()
-    var purchasedProductIDs: Set<String> = []
-    var isPremium: Bool { purchasedProductIDs.contains(ProductID.premium) }
-
-    func updateEntitlements() async {
-        var purchased = Set<String>()
-        for await result in Transaction.currentEntitlements {
-            if case .verified(let transaction) = result,
-               transaction.revocationDate == nil {
-                if transaction.productType == .nonRenewing,
-                   transaction.expirationDate.map({ $0 <= .now }) ?? true {
-                    continue
-                }
-                purchased.insert(transaction.productID)
-            }
-        }
-        purchasedProductIDs = purchased
-    }
-}
-```
-
-### SwiftUI .currentEntitlementTask Modifier
-
-```swift
-struct PremiumGatedView: View {
-    @State private var state: EntitlementTaskState<VerificationResult<Transaction>?> = .loading
-
-    var body: some View {
-        Group {
-            switch state {
-            case .loading: ProgressView()
-            case .failure: PaywallView()
-            case .success(.some(.verified(let transaction))) where transaction.revocationDate == nil:
-                PremiumContentView()
-            case .success:
-                PaywallView()
-            }
-        }
-        .currentEntitlementTask(for: ProductID.premium) { state in
-            self.state = state
-        }
-    }
-}
-```
-
-## SubscriptionStoreView (iOS 17+)
-
-Built-in SwiftUI view for subscription paywalls. Handles product loading,
-purchase UI, and restore purchases automatically.
-
-```swift
-SubscriptionStoreView(groupID: "YOUR_GROUP_ID")
-    .subscriptionStoreControlStyle(.prominentPicker)
-    .subscriptionStoreButtonLabel(.multiline)
-    .storeButton(.visible, for: .restorePurchases)
-    .storeButton(.visible, for: .redeemCode)
-    .subscriptionStorePolicyDestination(url: termsURL, for: .termsOfService)
-    .subscriptionStorePolicyDestination(url: privacyURL, for: .privacyPolicy)
-    .onInAppPurchaseCompletion { product, result in
-        if case .success(.success(.verified(let transaction))) = result {
-            await deliverContent(for: transaction)
-            await transaction.finish()
-        }
-    }
-```
-
-### Custom Marketing Content
-
-Use the container background and header patterns in
-[SubscriptionStoreView Control Styles](references/storekit-advanced.md#subscriptionstoreview-control-styles).
-
-### Hierarchical Layout
-
-Use `SubscriptionOptionGroup`, `SubscriptionOptionSection`, or
-`SubscriptionPeriodGroupSet` to organize iOS 18+ options; see
-[Subscription Group Management](references/storekit-advanced.md#subscription-group-management).
-
-## StoreView (iOS 17+)
-
-Merchandises multiple products with localized names, prices, and purchase buttons.
-
-```swift
-StoreView(ids: [ProductID.gems100, ProductID.premium], prefersPromotionalIcon: true)
-    .productViewStyle(.large)
-    .storeButton(.visible, for: .restorePurchases)
-    .onInAppPurchaseCompletion { product, result in
-        if case .success(.success(.verified(let transaction))) = result {
-            await deliverContent(for: transaction)
-            await transaction.finish()
-        }
-    }
-```
-
-### ProductView for Individual Products
-
-```swift
-ProductView(id: ProductID.premium) { iconPhase in
-    switch iconPhase {
-    case .success(let image): image.resizable().scaledToFit()
-    case .loading: ProgressView()
-    default: Image(systemName: "star.fill")
-    }
-}
-.productViewStyle(.large)
-```
-
-## Subscription Status Checking
-
-```swift
-func checkSubscriptionActive(groupID: String) async throws -> Bool {
-    let statuses = try await Product.SubscriptionInfo.status(for: groupID)
-    for status in statuses {
-        guard case .verified = status.renewalInfo,
-              case .verified = status.transaction else { continue }
-        if status.state == .subscribed || status.state == .inGracePeriod {
-            return true
-        }
-    }
-    return false
-}
-```
-
-### Renewal States
-
-| State | Meaning |
+| Product type | Entitlement responsibility |
 |---|---|
-| `.subscribed` | Active subscription |
-| `.expired` | Subscription has expired |
-| `.inBillingRetryPeriod` | Payment failed, Apple is retrying |
-| `.inGracePeriod` | Payment failed but access continues during grace period |
-| `.revoked` | Apple refunded or revoked the subscription |
+| Consumable | Persist delivered balance/history outside current entitlements |
+| Non-consumable | Grant durable ownership from verified transaction state |
+| Auto-renewable | Reconcile verified entitlement and subscription renewal state |
+| Non-renewing | App/server defines and persists the access-expiration policy |
 
-## Restore Purchases
+## Purchase and fulfillment
 
-StoreKit 2 handles restoration via `Transaction.currentEntitlements`. Add a
-restore button or call `AppStore.sync()` explicitly.
+Handle all `PurchaseResult` cases:
 
 ```swift
-func restorePurchases() async throws {
-    try await AppStore.sync()
-    await StoreManager.shared.updateEntitlements()
-}
-```
+switch try await purchase(product) {
+case .success(let result):
+    let transaction = try verified(result)
+    try await fulfillment.deliver(transaction)
+    await transaction.finish()
 
-On store views: `.storeButton(.visible, for: .restorePurchases)`
-
-## App Transaction (App Purchase Verification)
-
-Verify the legitimacy of the app installation. Use for business model changes
-or detecting tampered installations (iOS 16+).
-
-```swift
-func verifyAppPurchase() async {
-    do {
-        let result = try await AppTransaction.shared
-        switch result {
-        case .verified(let appTransaction):
-            let originalVersion = appTransaction.originalAppVersion
-            let purchaseDate = appTransaction.originalPurchaseDate
-            // Migration logic for users who paid before subscription model
-        case .unverified:
-            // Potentially tampered -- restrict features as appropriate
-            break
-        }
-    } catch { /* Could not retrieve app transaction */ }
-}
-```
-
-## Purchase Options
-
-```swift
-// App account token for server-side reconciliation
-try await product.purchase(options: [.appAccountToken(UUID())])
-
-// Consumable quantity
-try await product.purchase(options: [.quantity(5)])
-
-// Simulate Ask to Buy in sandbox
-try await product.purchase(options: [.simulatesAskToBuyInSandbox(true)])
-```
-
-## SwiftUI Purchase Callbacks
-
-```swift
-.onInAppPurchaseStart { product in
-    await analytics.trackPurchaseStarted(product.id)
-}
-.onInAppPurchaseCompletion { product, result in
-    if case .success(.success(.verified(let transaction))) = result {
-        await deliverContent(for: transaction)
-        await transaction.finish()
-    }
-}
-.inAppPurchaseOptions { product in
-    [.appAccountToken(userAccountToken)]
-}
-```
-
-## Common Mistakes
-
-### 1. Not starting Transaction.updates at app launch
-
-```swift
-// WRONG: No listener -- misses renewals, refunds, Ask to Buy approvals
-@main struct MyApp: App {
-    var body: some Scene { WindowGroup { ContentView() } }
-}
-// CORRECT: Start listener in App init (see Transaction.updates section above)
-```
-
-### 2. Forgetting transaction.finish()
-
-```swift
-// WRONG: Never finished -- reappears in unfinished queue forever
-let transaction = try checkVerified(verification)
-unlockFeature(transaction.productID)
-
-// CORRECT: Deliver durably, then finish. If delivery fails, do not finish yet.
-let transaction = try checkVerified(verification)
-try await recordDelivery(transaction)
-await transaction.finish()
-```
-
-### 3. Ignoring verification result
-
-```swift
-// WRONG: Using unverified transaction -- security risk
-let transaction = verification.unsafePayloadValue
-
-// CORRECT: Verify before using
-let transaction = try checkVerified(verification)
-```
-
-### 4. Using original In-App Purchase APIs in new StoreKit 2 code
-
-```swift
-// AVOID: Original In-App Purchase APIs
-let request = SKProductsRequest(productIdentifiers: ["com.app.premium"])
-SKPaymentQueue.default().add(payment)
-
-// PREFERRED: StoreKit 2
-let products = try await Product.products(for: ["com.app.premium"])
-let result = try await product.purchase()
-```
-
-### 5. Not checking revocationDate
-
-```swift
-// WRONG: Grants access to refunded purchases
-if case .verified(let transaction) = result {
-    purchased.insert(transaction.productID)
-}
-
-// CORRECT: Skip revoked transactions
-if case .verified(let transaction) = result, transaction.revocationDate == nil {
-    purchased.insert(transaction.productID)
-}
-```
-
-### 6. Hardcoding prices
-
-```swift
-// WRONG: Wrong for other currencies and regions
-Text("Buy Premium for $4.99")
-
-// CORRECT: Localized price from Product
-Text("Buy \(product.displayName) for \(product.displayPrice)")
-```
-
-### 7. Not handling .pending purchase result
-
-```swift
-// WRONG: Silently drops pending Ask to Buy
-default: break
-
-// CORRECT: Explain approval is pending; unlock only after Transaction.updates
 case .pending:
-    showPendingApprovalMessage()
+    purchaseState = .pendingApproval
+
+case .userCancelled:
+    purchaseState = .idle
+
+@unknown default:
+    purchaseState = .failed
+}
 ```
 
-### 8. Checking entitlements only once at launch
+Never use `unsafePayloadValue` to unlock content. Never finish before delivery. If durable delivery fails, leave the transaction unfinished and recover it through the lifetime listener or `Transaction.unfinished`.
 
-```swift
-// WRONG: Check once, never update
-func appDidFinish() { Task { await updateEntitlements() } }
+Make fulfillment safe when the initiating purchase flow and `Transaction.updates` observe the same transaction. For consumables, reconcile server/app balance before finish; `currentEntitlements` doesn't retain consumed quantity.
 
-// CORRECT: Re-check on Transaction.updates AND on foreground return
-// Transaction.updates listener handles mid-session changes.
-// Also use .task { await storeManager.updateEntitlements() } on content views.
-```
+## Transaction updates and entitlements
 
-### 9. Missing restore purchases button
+Start one listener at app launch. It can deliver Ask to Buy approvals, purchases from another device, renewals, refunds, revocations, Family Sharing changes, and unfinished transactions.
 
-```swift
-// WRONG: No restore option -- App Store rejection risk
-SubscriptionStoreView(groupID: "group_id")
+`Transaction.currentEntitlements` represents verified current access for non-consumables, active or grace-period auto-renewable subscriptions, and non-renewing subscription transactions. It excludes consumables and refunded/revoked products. Apply the app's expiration policy to non-renewing subscriptions.
 
-// CORRECT
-SubscriptionStoreView(groupID: "group_id")
-    .storeButton(.visible, for: .restorePurchases)
-```
+Rebuild a fresh entitlement set so removed or revoked access disappears. Reconcile at launch and on transaction updates; refresh on foreground only where the product needs it, without creating duplicate listeners.
 
-### 10. Subscription views without policy links
+UI hints such as a StoreKit view's entitlement configuration can customize merchandising but aren't access authority. Grant access from verified transaction information.
 
-```swift
-// WRONG: No terms or privacy policy
-SubscriptionStoreView(groupID: "group_id")
+## Subscriptions, restore, and recovery
 
-// CORRECT
-SubscriptionStoreView(groupID: "group_id")
-    .subscriptionStorePolicyDestination(url: termsURL, for: .termsOfService)
-    .subscriptionStorePolicyDestination(url: privacyURL, for: .privacyPolicy)
-```
+Use verified subscription status/renewal information when the UI needs more than yes/no access. Treat `.subscribed` and `.inGracePeriod` as entitled; distinguish billing retry, expiration, and revocation according to product policy.
 
-## Review Checklist
+StoreKit automatically makes transaction information available after reinstall or on a new device. Derive access proactively from current entitlements and expose a user-initiated Restore Purchases path. Do not call `AppStore.sync()` automatically at launch.
 
-- [ ] `Transaction.updates` listener starts at app launch in App init
-- [ ] All transactions verified before granting access
-- [ ] `transaction.finish()` called only after durable content delivery
-- [ ] Revoked/refunded transactions excluded and entitlement state updated
-- [ ] `.pending` result shows Ask to Buy/deferred-approval feedback
-- [ ] Restore purchases button visible on paywall and store views
-- [ ] Terms of Service and Privacy Policy links on subscription views
-- [ ] Prices shown using `product.displayPrice`, never hardcoded
-- [ ] Subscription terms (price, duration, renewal) clearly displayed
-- [ ] Free trial states post-trial pricing clearly
-- [ ] No original In-App Purchase APIs (`SKProduct`, `SKPaymentQueue`) unless legacy OS support requires them
-- [ ] Product IDs defined as constants, not scattered strings
-- [ ] StoreKit tests cover promotional offers, win-back, offer codes, Ask to Buy, renewals, refunds, and revocations
-- [ ] Entitlements re-checked on Transaction.updates and app foreground
-- [ ] Server-side validation uses `jwsRepresentation` if applicable
-- [ ] Consumables delivered and finished promptly
-- [ ] Transaction observer types and product model types are `Sendable` when shared across concurrency boundaries
+Offers require both configured offer data and current eligibility. A raw `winBackOffers` list is not eligibility; compare it with verified renewal information. Keep StoreKit configuration and sandbox coverage for promotional offers, win-back, offer codes, Ask to Buy, renewal transitions, refunds, revocations, and Family Sharing.
 
-## References
+## Correction reviews
 
-- See [references/app-review-guidelines.md](references/app-review-guidelines.md) for IAP rules (Guideline 3.1.1), subscription display requirements, and rejection prevention.
-- See [references/storekit-advanced.md](references/storekit-advanced.md) for subscription control styles, offer management, testing patterns, and advanced subscription handling.
-- For submission, privacy, metadata, screenshots, and rejection-risk audits use `app-store-review`.
-- For keyword, screenshot-caption, ranking, and conversion strategy use `app-store-optimization`.
-- Official Apple docs: [Choosing a StoreKit API](https://sosumi.ai/documentation/storekit/choosing-a-storekit-api-for-in-app-purchases), [Transaction.updates](https://sosumi.ai/documentation/storekit/transaction/updates), [Transaction.currentEntitlements](https://sosumi.ai/documentation/storekit/transaction/currententitlements),
-  [SubscriptionStoreView](https://sosumi.ai/documentation/storekit/subscriptionstoreview), and [PurchaseAction](https://sosumi.ai/documentation/storekit/purchaseaction).
+When reviewing flawed StoreKit code, name the broken contract:
+
+- No lifetime listener: start retained `Transaction.updates` observation during app initialization.
+- Access from unverified result/local flag: verify and reconcile from transaction state.
+- Finish immediately: deliver durably first; unfinished transactions are the recovery mechanism.
+- Pending treated as failure/success: keep pending UI and wait for a verified update.
+- Restore at launch: use current entitlements automatically and reserve `AppStore.sync()` for explicit user action.
+- Hardcoded price/trial copy: use StoreKit localized product and offer data.
+- Every win-back offer shown: filter raw offers by verified eligible IDs.
+- Legacy offer fields: use current `transaction.offer?.type` and `.id` APIs for the supported SDK.
+- Broad IAP/external-link claim: defer to current guideline, entitlement, region, and storefront evidence.
+
+## Common mistakes
+
+- Creating transaction listeners from paywalls or views.
+- Updating UI but not durable fulfillment before finish.
+- Treating consumables as current entitlements.
+- Forgetting non-renewing subscription expiration policy.
+- Keeping revoked/refunded products in a cached entitlement set.
+- Hardcoding prices, duration, trial, or renewal terms.
+- Starting duplicate purchases or swallowing `.pending`.
+- Using StoreKit view configuration as authorization to unlock content.
+- Testing only the immediate happy-path purchase.
+- Mixing physical-goods checkout or full App Review work into StoreKit implementation.
+
+## Review checklist
+
+- [ ] Product types, IDs, groups, platforms, and deployment target are explicit.
+- [ ] Purchase surface matches the product and existing architecture.
+- [ ] StoreKit-localized product/price/terms are displayed.
+- [ ] Verification precedes every entitlement or fulfillment decision.
+- [ ] Fulfillment is durable and idempotent before finish.
+- [ ] One retained transaction listener starts during app initialization.
+- [ ] Current entitlement logic handles product type, expiration, and revocation.
+- [ ] Pending, cancellation, error, refund, and recovery states are distinct.
+- [ ] Restore is visible and `AppStore.sync()` is user initiated.
+- [ ] Subscription policy links and required disclosures are present.
+- [ ] Offers are filtered by current verified eligibility.
+- [ ] StoreKit configuration/sandbox tests cover changed state transitions.
+- [ ] Server reconciliation uses signed transaction data when the server is authoritative.
+- [ ] App Review, ASO, and physical-goods work are routed to the correct skill.
+
+## Official references
+
+- [Choosing a StoreKit API](https://sosumi.ai/documentation/storekit/choosing-a-storekit-api-for-in-app-purchases)
+- [In-App Purchase](https://sosumi.ai/documentation/storekit/in-app-purchase)
+- [Transaction.updates](https://sosumi.ai/documentation/storekit/transaction/updates)
+- [Transaction.currentEntitlements](https://sosumi.ai/documentation/storekit/transaction/currententitlements)
+- [SubscriptionStoreView](https://sosumi.ai/documentation/storekit/subscriptionstoreview)

@@ -26,6 +26,7 @@ Initial community release.
 - Add CI tests and an Agent Skills installation smoke test.
 - Add a maintainer audit workflow for focused, collection, and release audits.
 - Reduce high-cost discovery descriptions while preserving specialist routing boundaries.
+- Refactor `push-notifications` and `storekit` with directly routed progressive-disclosure references and focused routing evaluations.
 
 ### Project identity
 

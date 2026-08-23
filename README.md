@@ -130,7 +130,7 @@ python3 -m unittest discover -s tests -v
 npx skills add . --list
 ```
 
-The complete collection currently includes **87 skills**, **274 local evaluation cases**, and **263 published evaluation scenarios**. See [`CHANGELOG.md`](CHANGELOG.md) for notable changes.
+The complete collection currently includes **87 skills**, **276 local evaluation cases**, and **265 published evaluation scenarios**. See [`CHANGELOG.md`](CHANGELOG.md) for notable changes.
 
 ## Contributing
 

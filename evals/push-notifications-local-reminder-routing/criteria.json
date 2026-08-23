@@ -1,0 +1,31 @@
+{
+  "context": "Tests whether the push-notifications skill routes a local-only reminder to focused scheduling guidance without adding remote or extension infrastructure.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Calendar semantics",
+      "description": "Uses UNCalendarNotificationTrigger and defines wall-clock, time-zone, or daylight-saving behavior for a daily 8:30 AM reminder.",
+      "max_score": 25
+    },
+    {
+      "name": "Stable request ownership",
+      "description": "Uses a stable request identifier so edit replaces the intended pending request and disable removes the owned pending and appropriate delivered notification.",
+      "max_score": 25
+    },
+    {
+      "name": "Authorization behavior",
+      "description": "Checks current settings, requests visible authorization in context, and preserves in-app reminder state if notification presentation is unavailable.",
+      "max_score": 20
+    },
+    {
+      "name": "Verification",
+      "description": "Checks next trigger date, pending requests, edit/disable behavior, localization, and relevant time changes.",
+      "max_score": 20
+    },
+    {
+      "name": "Scope boundary",
+      "description": "Does not add APNs registration, provider infrastructure, notification extensions, or Live Activity handling.",
+      "max_score": 10
+    }
+  ]
+}

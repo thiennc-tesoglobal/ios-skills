@@ -5,494 +5,156 @@ description: "Implement or debug local and APNs notifications, permissions, payl
 
 # Push Notifications
 
-Implement, review, and debug local and remote notifications on iOS/macOS using `UserNotifications` and APNs. Covers permission flow, token registration, payload structure, foreground handling, notification actions, grouping, and rich notifications. Targets iOS 26+ with Swift 6.3, backward-compatible to iOS 16 unless noted.
+Implement, review, and debug local and remote notifications with `UserNotifications` and APNs. Target the project's deployment range; examples assume modern Swift concurrency and note availability when using newer APIs.
 
-Keep adjacent domains separate: Live Activity `content-state` payloads belong in `activitykit`; PushKit/VoIP call pushes belong in `callkit`; App Clip ephemeral notification setup belongs in `app-clips`; long-running or scheduled background work after a silent push belongs in `background-processing`.
+Keep adjacent domains separate: Live Activity `content-state` pushes belong to `activitykit`; PushKit/VoIP calls to `callkit`; App Clip ephemeral setup to `app-clips`; long-running or scheduled background work to `background-processing`.
 
 ## Contents
 
-- [Correction Reviews](#correction-reviews)
-- [Permission Flow](#permission-flow)
-- [APNs Registration](#apns-registration)
-- [Local Notifications](#local-notifications)
-- [Remote Notification Payload](#remote-notification-payload)
-- [Notification Handling](#notification-handling)
-- [Notification Actions and Categories](#notification-actions-and-categories)
-- [Notification Grouping](#notification-grouping)
-- [Common Mistakes](#common-mistakes)
-- [Review Checklist](#review-checklist)
-- [References](#references)
+- [Route by task](#route-by-task)
+- [Core workflow](#core-workflow)
+- [Authorization and APNs registration](#authorization-and-apns-registration)
+- [Payload and delivery contracts](#payload-and-delivery-contracts)
+- [Runtime handling and routing](#runtime-handling-and-routing)
+- [Categories and actions](#categories-and-actions)
+- [Correction reviews](#correction-reviews)
+- [Common mistakes](#common-mistakes)
+- [Review checklist](#review-checklist)
 
-## Correction Reviews
+## Route by task
 
-When reviewing flawed notification proposals, explicitly name the violated contract. APNs token reviews must say token registration is independent from alert authorization, upload on every `didRegister` callback, avoid local-cache-as-truth logic, never assume token length, and treat Simulator registration failure as expected while noting `.apns` files or `simctl push` can simulate delivery. Background-push reviews must say `content-available` only, `apns-push-type: background`, `apns-priority: 5`, Remote notifications background mode, low priority, throttled, not guaranteed, not every few minutes, and bounded `didReceiveRemoteNotification` returning the correct `UIBackgroundFetchResult`. Rich-notification reviews must say service extensions require `mutable-content: 1` plus an alert payload, silent pushes do not trigger them, attachments are supported on-disk files that the system validates and stores, secrets use Keychain Sharing while App Groups are for shared files/UserDefaults, communication notifications require capability + `NSUserActivityTypes` + `INInteraction` donation + `content.updating(from:)`, and every service-extension path including attachment/download failures and `serviceExtensionTimeWillExpire()` must call the content handler exactly once with original, best-attempt, or updated content.
+Read only the references needed for the request:
 
-## Permission Flow
+- For notification authorization, APNs registration, token lifecycle, provider headers, visible/background payloads, or delivery diagnosis, read [APNs lifecycle and remote delivery](references/apns-lifecycle.md).
+- For time, calendar, or location reminders scheduled on-device, read [local notifications](references/local-notifications.md).
+- For complete application-delegate wiring, foreground/tap handling, deep-link routing, categories, badges, and simulator/device workflows, read [notification patterns](references/notification-patterns.md).
+- For service/content extensions, media attachments, encrypted display text, communication notifications, or custom expanded UI, read [rich notifications](references/rich-notifications.md).
 
-Request notification authorization before scheduling or displaying user-visible alerts, sounds, or badges. The system prompt appears only once; subsequent calls return the stored decision. APNs token registration is separate: call `registerForRemoteNotifications()` when the app needs a device token, even if the user hasn't granted alert authorization.
+Do not read every reference for a narrow task. Keep the response scoped to the failed or requested delivery path.
 
-```swift
-import UserNotifications
+## Core workflow
 
-@MainActor
-func requestNotificationPermission() async -> Bool {
-    let center = UNUserNotificationCenter.current()
-    do {
-        let granted = try await center.requestAuthorization(
-            options: [.alert, .sound, .badge]
-        )
-        return granted
-    } catch {
-        print("Authorization request failed: \(error)")
-        return false
-    }
-}
-```
+1. Classify the notification as local, visible remote, background remote, Live Activity, VoIP, or extension-modified.
+2. Inspect entitlements, capabilities, bundle/topic, delegate installation, categories, provider ownership, and target platform.
+3. Separate visible authorization from APNs registration and server token binding.
+4. Define payload keys, APNs headers, expiry/collapse behavior, and sensitive-data policy.
+5. Implement foreground presentation, response/action routing, and bounded background or extension work.
+6. Verify each boundary independently: scheduling/provider acceptance, device receipt, extension execution, presentation, and response routing.
 
-### Checking Current Status
+## Authorization and APNs registration
 
-Always check status before assuming permissions. The user can change settings at any time.
+Notification authorization controls user-visible alerts, sounds, and badges. Request it in context and check `notificationSettings()` because the user can change settings later.
 
-```swift
-@MainActor
-func checkNotificationStatus() async -> UNAuthorizationStatus {
-    let settings = await UNUserNotificationCenter.current().notificationSettings()
-    return settings.authorizationStatus
-    // .notDetermined, .denied, .authorized, .provisional, .ephemeral
-}
-```
+APNs registration is a separate path. Call `registerForRemoteNotifications()` whenever a device token is needed, including server binding or background delivery. Do not gate it on `.authorized`.
 
-### Provisional Notifications
+Receive tokens through application-delegate callbacks. Treat token data as opaque, convert it to hex for transport, and upload on every successful callback. Do not assume a fixed length or treat a locally cached token as provider truth.
 
-Provisional notifications deliver quietly to the notification center without interrupting the user. The user can then choose to keep or turn them off. Use for onboarding flows where you want to demonstrate value before asking for full permission.
-
-```swift
-// Delivers silently -- no permission prompt shown to the user
-try await center.requestAuthorization(options: [.alert, .sound, .badge, .provisional])
-```
-
-### Critical Alerts
-
-Critical alerts bypass Do Not Disturb and the mute switch. Requires a special entitlement from Apple (request via developer portal). Use only for health, safety, or security scenarios.
-
-```swift
-// Requires com.apple.developer.usernotifications.critical-alerts entitlement
-try await center.requestAuthorization(
-    options: [.alert, .sound, .badge, .criticalAlert]
-)
-```
-
-### Handling Denied Permissions
-
-When the user has denied notifications, guide them to Settings with `UIApplication.openSettingsURLString`. Do not repeatedly prompt or nag.
-
-## APNs Registration
-
-Use `UIApplicationDelegateAdaptor` to receive the device token in a SwiftUI app. The AppDelegate callbacks are the only way to receive APNs tokens.
-
-```swift
-@main
-struct MyApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
-}
-
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-    ) -> Bool {
-        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
-        return true
-    }
-
-    func application(
-        _ application: UIApplication,
-        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
-    ) {
-        let token = deviceToken.map { String(format: "%02x", $0) }.joined()
-        print("APNs token: \(token)")
-        // Send token to your server
-        Task { await TokenService.shared.upload(token: token) }
-    }
-
-    func application(
-        _ application: UIApplication,
-        didFailToRegisterForRemoteNotificationsWithError error: Error
-    ) {
-        print("APNs registration failed: \(error.localizedDescription)")
-        // Simulator can simulate pushes, but it does not register with APNs.
-    }
-}
-```
-
-### Registration Order
-
-Configure delegates and categories at launch. Then request user-notification authorization in context for visible notifications, and register with APNs whenever the app needs a device token. Do not gate APNs registration on `.authorized`; without alert authorization, remote notifications are delivered silently.
-
-```swift
-@MainActor
-func configureNotifications() async {
-    let center = UNUserNotificationCenter.current()
-    let settings = await center.notificationSettings()
-
-    if settings.authorizationStatus == .notDetermined {
-        _ = await requestNotificationPermission()
-    }
-
-    // Needed for APNs token delivery and silent remote notifications.
-    UIApplication.shared.registerForRemoteNotifications()
-}
-```
-
-### Token Handling
-
-Device tokens change. Re-send the token to your server every time `didRegisterForRemoteNotificationsWithDeviceToken` fires, not just the first time. Do not persist tokens locally as a source of truth or assume a fixed token length.
-
-## Local Notifications
-
-Schedule notifications directly from the device without a server. Useful for reminders, timers, and location-based alerts.
-
-### Creating Content
-
-```swift
-let content = UNMutableNotificationContent()
-content.title = "Workout Reminder"
-content.subtitle = "Time to move"
-content.body = "You have a scheduled workout in 15 minutes."
-content.sound = .default
-content.badge = NSNumber(value: 1)
-content.userInfo = ["workoutId": "abc123"]
-content.threadIdentifier = "workouts"  // groups in notification center
-```
-
-### Trigger Types
-
-```swift
-// Fire after a time interval (minimum 60 seconds for repeating)
-let timeTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 300, repeats: false)
-
-// Fire at a specific date/time
-var dateComponents = DateComponents()
-dateComponents.hour = 8
-dateComponents.minute = 30
-let calendarTrigger = UNCalendarNotificationTrigger(
-    dateMatching: dateComponents, repeats: true  // daily at 8:30 AM
-)
-
-// Fire when entering a geographic region
-let region = CLCircularRegion(
-    center: CLLocationCoordinate2D(latitude: 37.33, longitude: -122.01),
-    radius: 100,
-    identifier: "gym"
-)
-region.notifyOnEntry = true
-region.notifyOnExit = false
-let locationTrigger = UNLocationNotificationTrigger(region: region, repeats: false)
-// Requires "When In Use" location permission at minimum
-```
-
-### Scheduling and Managing
-
-```swift
-let request = UNNotificationRequest(
-    identifier: "workout-reminder-abc123",
-    content: content,
-    trigger: timeTrigger
-)
-
-let center = UNUserNotificationCenter.current()
-try await center.add(request)
-
-// Remove specific pending notifications
-center.removePendingNotificationRequests(withIdentifiers: ["workout-reminder-abc123"])
-
-// Remove all pending
-center.removeAllPendingNotificationRequests()
-
-// Remove delivered notifications from notification center
-center.removeDeliveredNotifications(withIdentifiers: ["workout-reminder-abc123"])
-center.removeAllDeliveredNotifications()
-
-// List all pending requests
-let pending = await center.pendingNotificationRequests()
-```
-
-## Remote Notification Payload
-
-### Standard APNs Payload
-
-```json
-{
-    "aps": {
-        "alert": {
-            "title": "New Message",
-            "subtitle": "From Alice",
-            "body": "Hey, are you free for lunch?"
-        },
-        "badge": 3,
-        "sound": "default",
-        "thread-id": "chat-alice",
-        "category": "MESSAGE_CATEGORY"
-    },
-    "messageId": "msg-789",
-    "senderId": "user-alice"
-}
-```
-
-### Silent / Background Push
-
-Set `content-available: 1` with no alert, sound, or badge. Requires "Background Modes > Remote notifications" plus APNs headers `apns-push-type: background` and `apns-priority: 5`. The system treats these as low priority, throttled, and not guaranteed; do not send them every few minutes or rely on them for immediate freshness. In `didReceiveRemoteNotification`, do bounded work and return a `UIBackgroundFetchResult` promptly, within the background execution window.
-
-```json
-{
-    "aps": {
-        "content-available": 1
-    },
-    "updateType": "new-data"
-}
-```
-
-Handle in AppDelegate:
 ```swift
 func application(
     _ application: UIApplication,
-    didReceiveRemoteNotification userInfo: [AnyHashable: Any]
-) async -> UIBackgroundFetchResult {
-    guard let updateType = userInfo["updateType"] as? String else {
-        return .noData
-    }
-    do {
-        try await DataSyncService.shared.sync(trigger: updateType)
-        return .newData
-    } catch {
-        return .failed
-    }
+    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+) {
+    let token = deviceToken.map { String(format: "%02x", $0) }.joined()
+    Task { await tokenService.upload(token) }
 }
 ```
 
-### Mutable Content
+Simulator can simulate delivery with `.apns` files or `simctl push`, but it doesn't perform normal APNs device-token registration. Verify real registration/provider delivery on hardware.
 
-Set `mutable-content: 1` plus an `alert` dictionary to let a Notification Service Extension modify an alerting remote notification before display. Silent pushes do not trigger the service extension. Use service extensions for bounded work such as downloading supported on-disk attachments, decrypting display text, or configuring communication notifications; call the content handler on every success, failure, and timeout path. For communication notifications, enable the capability, add `NSUserActivityTypes`, donate the `INInteraction`, then call `content.updating(from:)`.
+## Payload and delivery contracts
 
-```json
-{
-    "aps": {
-        "alert": { "title": "Photo", "body": "Alice sent a photo" },
-        "mutable-content": 1
-    },
-    "imageUrl": "https://example.com/photo.jpg"
-}
-```
+| Path | Required contract | Key limitation |
+|---|---|---|
+| Visible remote | `aps.alert`, `apns-push-type: alert` | Presentation depends on authorization, app state, Focus, and delegate policy |
+| Background remote | `content-available: 1` only in `aps`, push type `background`, priority `5` | Low priority, throttled, coalesced, and not guaranteed |
+| Service extension | Alert payload plus `mutable-content: 1` | Silent-only, sound-only, or badge-only pushes don't launch it |
+| Local | `UNNotificationRequest` with time/calendar/location trigger | Device scheduling and current authorization determine presentation |
 
-### Localized Notifications
+Put Apple keys inside `aps` and minimal app routing identifiers beside it. Treat payload data as untrusted: validate identity/authorization against current app or server state before navigation or mutation. Avoid sensitive plaintext.
 
-Use localization keys so the notification displays in the user's language:
+Background pushes are hints to fetch current state, not a timer. Enable Background Modes > Remote notifications, perform bounded work, and return the correct `UIBackgroundFetchResult`. Route `BGTaskScheduler` design to `background-processing`.
 
-```json
-{
-    "aps": {
-        "alert": {
-            "title-loc-key": "NEW_MESSAGE_TITLE",
-            "loc-key": "NEW_MESSAGE_BODY",
-            "loc-args": ["Alice"]
-        }
-    }
-}
-```
+## Runtime handling and routing
 
-## Notification Handling
-
-### UNUserNotificationCenterDelegate
-
-Implement the delegate to control foreground display and handle user taps. Set the delegate as early as possible -- in `application(_:didFinishLaunchingWithOptions:)` or `App.init`.
+Set `UNUserNotificationCenter.current().delegate` during launch, before responses can arrive.
 
 ```swift
 @MainActor
 final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
-    static let shared = NotificationDelegate()
-
-    // Called when notification arrives while app is in FOREGROUND
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
-        // Return which presentation elements to show
-        // Without this, foreground notifications are silently suppressed
-        return [.banner, .sound, .badge]
+        [.banner, .list, .sound, .badge]
     }
 
-    // Called when user TAPS the notification
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
     ) async {
-        let userInfo = response.notification.request.content.userInfo
-        let actionIdentifier = response.actionIdentifier
-
-        switch actionIdentifier {
-        case UNNotificationDefaultActionIdentifier:
-            // User tapped the notification body
-            await handleNotificationTap(userInfo: userInfo)
-        case UNNotificationDismissActionIdentifier:
-            // User dismissed the notification
-            break
-        default:
-            // Custom action button tapped
-            await handleCustomAction(actionIdentifier, userInfo: userInfo)
-        }
+        await notificationRouter.handle(response)
     }
 }
 ```
 
-### Deep Linking from Notifications
+Keep payload parsing in a testable boundary. Hand a validated destination or intent to the app's existing navigation/state owner; notification delegates should not create a competing navigation architecture.
 
-Route notification taps to the correct screen using a shared `@Observable` router. The delegate writes a pending destination; the SwiftUI view observes and consumes it.
+Foreground receipt does not automatically show UI. Return only the presentation options the product wants. Handle body taps, dismiss callbacks when registered, and custom action identifiers deliberately.
 
-```swift
-@Observable @MainActor
-final class DeepLinkRouter {
-    static let shared = DeepLinkRouter()
+## Categories and actions
 
-    var pendingDestination: AppDestination?
-}
+Register categories during launch. Payload `category` and local `categoryIdentifier` values must exactly match the registered identifier.
 
-// In NotificationDelegate:
-func handleNotificationTap(userInfo: [AnyHashable: Any]) async {
-    guard let id = userInfo["messageId"] as? String else { return }
-    DeepLinkRouter.shared.pendingDestination = .chat(id: id)
-}
+Choose action options from behavior:
 
-// In SwiftUI -- observe and consume:
-.onChange(of: router.pendingDestination) { _, destination in
-    if let destination {
-        path.append(destination)
-        router.pendingDestination = nil
-    }
-}
-```
+- `.foreground` launches the app for UI work;
+- `.authenticationRequired` protects sensitive actions until unlock;
+- `.destructive` communicates irreversible intent;
+- `UNTextInputNotificationAction` supports inline text response.
 
-See [references/notification-patterns.md](references/notification-patterns.md) for the full deep-linking handler with tab switching.
+Validate identifiers in `userInfo` again before calling services. Define idempotency for actions the system or user may invoke more than once.
 
-## Notification Actions and Categories
+## Correction reviews
 
-Define interactive actions that appear as buttons on the notification. Register categories at launch.
+For flawed designs, name the violated contract rather than only showing replacement code:
 
-### Defining Categories and Actions
+- Registration gated by alert permission: separate authorization and token registration.
+- Token cached to skip provider upload: upload on every callback and let the provider reconcile.
+- Frequent priority-10 silent pushes: use background payload/headers and state that delivery is throttled and not guaranteed.
+- Service extension triggered by silent push: require alert content plus `mutable-content: 1`.
+- Extension secrets in App Group defaults: use Keychain Sharing for secrets; App Groups for shared files/defaults.
+- Attachment from arbitrary remote URL: download a supported file to disk, then construct `UNNotificationAttachment`.
+- Extension missing fallback: call the content handler exactly once on success, failure, and `serviceExtensionTimeWillExpire()`.
 
-```swift
-func registerNotificationCategories() {
-    let replyAction = UNTextInputNotificationAction(
-        identifier: "REPLY_ACTION",
-        title: "Reply",
-        options: [],
-        textInputButtonTitle: "Send",
-        textInputPlaceholder: "Type a reply..."
-    )
+## Common mistakes
 
-    let likeAction = UNNotificationAction(
-        identifier: "LIKE_ACTION",
-        title: "Like",
-        options: []
-    )
+- Setting the center delegate after launch or inside a transient SwiftUI view.
+- Treating a missing banner as proof that APNs didn't deliver.
+- Assuming background delivery is immediate or periodic.
+- Converting device token data as UTF-8 or assuming token length.
+- Doing unbounded network work in a background callback or extension.
+- Putting authorization state, secrets, or trusted navigation decisions in payload data.
+- Using `removeAll…` for a feature that doesn't own every app notification.
+- Mixing Live Activity, VoIP, and ordinary alert payload rules.
 
-    let deleteAction = UNNotificationAction(
-        identifier: "DELETE_ACTION",
-        title: "Delete",
-        options: [.destructive, .authenticationRequired]
-    )
+## Review checklist
 
-    let messageCategory = UNNotificationCategory(
-        identifier: "MESSAGE_CATEGORY",
-        actions: [replyAction, likeAction, deleteAction],
-        intentIdentifiers: [],
-        options: [.customDismissAction]  // fires didReceive on dismiss too
-    )
+- [ ] Notification path and sibling-skill boundary are explicit.
+- [ ] Visible authorization is requested in context and current settings are respected.
+- [ ] APNs registration is not incorrectly gated by visible authorization.
+- [ ] Token is treated as opaque and uploaded on every registration callback.
+- [ ] Provider push type, priority, topic, expiration, and payload match the path.
+- [ ] Delegate and categories are installed during launch.
+- [ ] Foreground presentation, taps, dismissals, and custom actions follow product policy.
+- [ ] Background or extension work is bounded and completes through every path.
+- [ ] Payload identifiers are validated before navigation or mutation.
+- [ ] Local requests have stable ownership, update, and cancellation semantics.
+- [ ] Simulator limitations and physical-device verification are distinguished.
+- [ ] Delivery evidence covers the actual provider/device/app boundary that changed.
 
-    UNUserNotificationCenter.current().setNotificationCategories([messageCategory])
-}
-```
+## Official references
 
-### Handling Action Responses
-
-```swift
-func handleCustomAction(_ identifier: String, userInfo: [AnyHashable: Any]) async {
-    switch identifier {
-    case "REPLY_ACTION":
-        // response is UNTextInputNotificationResponse for text input actions
-        break
-    case "LIKE_ACTION":
-        guard let messageId = userInfo["messageId"] as? String else { return }
-        await MessageService.shared.likeMessage(id: messageId)
-    case "DELETE_ACTION":
-        guard let messageId = userInfo["messageId"] as? String else { return }
-        await MessageService.shared.deleteMessage(id: messageId)
-    default:
-        break
-    }
-}
-```
-
-Action options:
-- `.authenticationRequired` -- device must be unlocked to perform the action
-- `.destructive` -- displayed in red; use for delete/remove actions
-- `.foreground` -- launches the app to the foreground when tapped
-
-## Notification Grouping
-
-Group related notifications with `threadIdentifier` (or `thread-id` in the APNs payload). Each unique thread becomes a separate group in Notification Center.
-
-```swift
-content.threadIdentifier = "chat-alice"  // all messages from Alice group together
-content.summaryArgument = "Alice"
-content.summaryArgumentCount = 3         // "3 more notifications from Alice"
-```
-
-Customize the summary format string in the category:
-
-```swift
-let category = UNNotificationCategory(
-    identifier: "MESSAGE_CATEGORY",
-    actions: [replyAction],
-    intentIdentifiers: [],
-    categorySummaryFormat: "%u more messages from %@",
-    options: []
-)
-```
-
-## Common Mistakes
-
-**DON'T:** Gate APNs token registration on alert authorization when the app needs silent pushes or server token binding.
-**DO:** Request authorization for alerts/sounds/badges, and register with APNs whenever a device token is needed.
-**DON'T:** Convert device token with `String(data: deviceToken, encoding: .utf8)`.
-**DO:** Use hex: `deviceToken.map { String(format: "%02x", $0) }.joined()`.
-**DON'T:** Promise every-few-minutes silent refresh or immediate background delivery.
-**DO:** Say background pushes are low priority, throttled, not guaranteed, limited to a few per hour in practice, and require bounded `didReceiveRemoteNotification` work that returns the correct `UIBackgroundFetchResult`.
-**DON'T:** Expect a silent push to run a Notification Service Extension, or leave the extension without calling its content handler.
-**DO:** Use `mutable-content: 1` with an alert payload, supported on-disk attachments that the system validates and stores, `INInteraction` donation plus `content.updating(from:)` for communication notifications, and original or best-attempt content on every success, failure, and timeout path.
-**DON'T:** Forget foreground handling. Without `willPresent`, notifications are silently suppressed.
-**DO:** Implement `willPresent` and return `.banner`, `.sound`, `.badge`.
-**DON'T:** Set delegate too late or register from SwiftUI views without AppDelegate adaptor.
-**DO:** Set delegate in `App.init`; use `UIApplicationDelegateAdaptor` for APNs.
-**DON'T:** Upload APNs tokens only when they "change" or assume a fixed token length. **DO:** Upload on every `didRegister` callback and treat the token as opaque data converted to hex.
-**DON'T:** Put Live Activity, VoIP, or App Clip-specific notification rules here. **DO:** Route those to `activitykit`, `callkit`, and `app-clips`.
-
-## Review Checklist
-
-- [ ] Authorization requested before visible alerts/sounds/badges; denied case handled (Settings link)
-- [ ] APNs registration not incorrectly blocked by alert authorization status
-- [ ] Device token converted to hex, uploaded on every callback, and not treated as a locally cached or fixed-length constant
-- [ ] `UNUserNotificationCenterDelegate` set in `App.init` or `application(_:didFinishLaunching:)`
-- [ ] Foreground (`willPresent`) and tap (`didReceive`) handling implemented
-- [ ] Categories/actions registered at launch if interactive notifications needed
-- [ ] Silent push uses `content-available: 1`, no alert/sound/badge, `apns-push-type: background`, `apns-priority: 5`, Background Modes > Remote notifications, throttling caveats, and correct `UIBackgroundFetchResult`
-
-## References
-- [references/notification-patterns.md](references/notification-patterns.md) — AppDelegate setup, APNs callbacks, deep-link router, silent push, debugging
-- [references/rich-notifications.md](references/rich-notifications.md) — Service Extension, Content Extension, attachments, communication notifications
-- Apple docs: [APNs registration](https://sosumi.ai/documentation/usernotifications/registering-your-app-with-apns), [permission](https://sosumi.ai/documentation/usernotifications/asking-permission-to-use-notifications), [payloads](https://sosumi.ai/documentation/usernotifications/generating-a-remote-notification), [background pushes](https://sosumi.ai/documentation/usernotifications/pushing-background-updates-to-your-app)
+- [UserNotifications](https://sosumi.ai/documentation/usernotifications)
+- [Registering your app with APNs](https://sosumi.ai/documentation/usernotifications/registering-your-app-with-apns)
+- [Generating a remote notification](https://sosumi.ai/documentation/usernotifications/generating-a-remote-notification)
+- [UNUserNotificationCenterDelegate](https://sosumi.ai/documentation/usernotifications/unusernotificationcenterdelegate)

@@ -41,6 +41,20 @@
         "Requires Communication Notifications capability, NSUserActivityTypes intent entries, intent donation, and content.updating(from:).",
         "Requires calling the content handler on success, failure, and serviceExtensionTimeWillExpire timeout paths with original, best-attempt, or updated content."
       ]
+    },
+    {
+      "id": 4,
+      "name": "local-calendar-reminder-reference-routing",
+      "prompt": "Add a daily 8:30 AM local medication reminder that users can edit or disable. Keep the answer scoped to on-device scheduling; the app has no notification server, rich media, or Live Activity.",
+      "expected_output": "A focused local-notification plan that models authorization, stable request ownership, calendar scheduling, update/removal, time behavior, and verification without introducing APNs or extension infrastructure.",
+      "files": [],
+      "assertions": [
+        "Uses UNCalendarNotificationTrigger and discusses the intended wall-clock, time-zone, or daylight-saving behavior rather than treating a fixed interval as a daily calendar reminder.",
+        "Uses a stable UNNotificationRequest identifier so editing replaces the intended pending request and disabling removes both pending and, when appropriate, delivered notifications.",
+        "Checks current notification settings and preserves the in-app reminder state when visible notification authorization is unavailable.",
+        "Verifies the next trigger date, pending requests, edit/disable behavior, large localized content, and relevant time-zone transitions.",
+        "Does not introduce APNs registration, a provider server, a notification service extension, or Live Activity handling for this local-only request."
+      ]
     }
   ]
 }

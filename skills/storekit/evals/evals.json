@@ -42,6 +42,20 @@
         "States that digital features generally require IAP unless a current guideline exception, storefront rule, or approved entitlement applies.",
         "Avoids a blanket claim that all external purchase links are always rejected and instead calls out reader-app and regional or storefront-sensitive rules."
       ]
+    },
+    {
+      "id": 4,
+      "name": "consumable-purchase-reference-routing",
+      "prompt": "Implement a custom SwiftUI button that buys a 100-coin consumable using the app's existing StoreManager. Include app-account reconciliation and recovery, but do not add subscriptions, offers, or a new paywall architecture.",
+      "expected_output": "A focused consumable purchase flow that preserves the existing manager, uses the correct custom SwiftUI purchase path, verifies and fulfills idempotently before finishing, and keeps consumable balance outside current entitlements.",
+      "files": [],
+      "assertions": [
+        "Preserves the existing StoreManager and uses SwiftUI PurchaseAction or the manager's equivalent verified custom purchase boundary instead of introducing a second store architecture.",
+        "Uses a non-personal stable appAccountToken for account reconciliation when the existing backend supports it.",
+        "Handles success, pending, user cancellation, and failure without granting coins before a verified transaction.",
+        "Persists or reconciles coin delivery idempotently before transaction.finish() and leaves failed delivery recoverable through updates or unfinished transactions.",
+        "States that Transaction.currentEntitlements is not consumable balance or delivery history and avoids loading subscription, offer, or App Review guidance for this request."
+      ]
     }
   ]
 }

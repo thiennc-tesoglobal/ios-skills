@@ -1,0 +1,31 @@
+{
+  "context": "Tests whether the storekit skill handles a focused consumable purchase without loading unrelated subscription, offer, compliance, or architecture work.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Existing architecture",
+      "description": "Preserves the existing StoreManager and uses PurchaseAction or its equivalent verified custom purchase boundary instead of creating a second store architecture.",
+      "max_score": 20
+    },
+    {
+      "name": "Purchase results and verification",
+      "description": "Handles success, pending, user cancellation, and failure distinctly and verifies the transaction before granting coins.",
+      "max_score": 25
+    },
+    {
+      "name": "Fulfillment before finish",
+      "description": "Persists or reconciles coin delivery idempotently before finish and leaves failed delivery recoverable through updates or unfinished transactions.",
+      "max_score": 25
+    },
+    {
+      "name": "Consumable entitlement boundary",
+      "description": "States that Transaction.currentEntitlements is not consumable balance or delivery history and defines app/server ownership of the balance.",
+      "max_score": 20
+    },
+    {
+      "name": "Focused routing",
+      "description": "Avoids unrelated subscription, offer, App Review, and architecture changes while using a non-personal stable appAccountToken when supported.",
+      "max_score": 10
+    }
+  ]
+}
