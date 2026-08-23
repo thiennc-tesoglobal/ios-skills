@@ -79,6 +79,7 @@ body:
         - swift-architecture
         - swift-charts
         - swift-codable
+        - swift-code-review
         - swift-concurrency
         - swift-formatstyle
         - swift-language
