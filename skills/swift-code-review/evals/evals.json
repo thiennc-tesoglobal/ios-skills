@@ -1,0 +1,57 @@
+{
+  "skill_name": "swift-code-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "actor-reservation-review",
+      "prompt": "Review this Swift diff: an actor checks inventory, awaits a network reservation, then decrements stock; a stored Task listens to an AsyncSequence forever; and a @unchecked Sendable cache wraps a mutable dictionary without showing synchronization. Produce a concise code review.",
+      "expected_output": "An evidence-backed review that identifies the actor reentrancy/invariant problem, checks task lifetime and cancellation, questions the unchecked Sendable promise, and gives exact file-line evidence with calibrated severity.",
+      "files": [],
+      "assertions": [
+        "Explains why actor state read before an await must be rechecked, reserved with a rollback policy, or otherwise made atomic.",
+        "Inspects the long-lived AsyncSequence task's owner and cancellation path instead of requiring weak self mechanically.",
+        "Requires concrete synchronization or immutable value semantics before accepting @unchecked Sendable.",
+        "Reports findings with exact file-line evidence and does not call a style preference a blocking issue."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "observation-state-ownership-review",
+      "prompt": "Review a SwiftUI diff where a parent creates an @Observable editor model, a child stores the received model in @State, a TextField binds through $model without @Bindable, and an environment settings object is mutated from a form. Explain correctness issues and what belongs in state architecture versus general code review.",
+      "expected_output": "A boundary-aware SwiftUI review that distinguishes model ownership from binding syntax, proposes the smallest safe correction, and routes broader state architecture without inventing unrelated refactors.",
+      "files": [],
+      "assertions": [
+        "Explains that @State expresses ownership and can preserve the first child model rather than being a generic parameter wrapper.",
+        "Uses @Bindable when a child needs two-way bindings and checks the environment projection pattern.",
+        "Does not claim an observable model is recreated on every body evaluation without inspecting state storage and initialization context.",
+        "Separates a concrete binding/ownership defect from optional architecture advice."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "error-boundary-and-force-review",
+      "prompt": "Review a Swift networking change that uses try! on decoded server data, try? around a user-visible save, an empty catch for cancellation, and a typed-throws public method. The caller already maps domain errors to localized UI copy. Report only verified issues.",
+      "expected_output": "A nuanced error review that flags runtime crash risk and unjustified error suppression, accepts intentional cancellation when documented, checks the existing caller boundary, and treats typed throws as a toolchain/API evolution decision rather than an automatic defect.",
+      "files": [],
+      "assertions": [
+        "Flags try! on variable server data as a runtime crash risk with a concrete alternative.",
+        "Checks whether try? loses recovery or diagnostic information before reporting it, rather than banning try? universally.",
+        "Does not re-report missing localization when the caller already owns the localized user-facing mapping.",
+        "Evaluates typed throws against the project's Swift mode and public contract instead of blanket-banning it."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "cross-cutting-specialist-routing",
+      "prompt": "Review a pull request that adds a SwiftUI screen with a clipping bug in iPad multitasking, a URLSession retry change, a missing VoiceOver label, a StoreKit entitlement check, and a simple naming change. Explain what this cross-cutting review should report directly and which repository skills should own deeper follow-up.",
+      "expected_output": "A concise review that preserves exact evidence and severity while routing responsive layout, networking, accessibility, and StoreKit details to their specialist skills; it should not duplicate full framework implementations.",
+      "files": [],
+      "assertions": [
+        "Routes clipping, overlap, safe-area, and iPad size adaptation to swiftui-responsive-layout.",
+        "Routes URLSession retry semantics, VoiceOver, and StoreKit entitlement details to ios-networking, ios-accessibility, and storekit respectively.",
+        "Keeps cross-cutting ownership, error propagation, and evidence requirements in swift-code-review scope.",
+        "Does not turn a naming preference into a blocking finding or propose a broad architecture rewrite."
+      ]
+    }
+  ]
+}

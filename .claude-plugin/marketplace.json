@@ -115,9 +115,9 @@
     {
       "name": "ios-engineering-skills",
       "source": "./",
-      "description": "iOS engineering: end-to-end app delivery, networking, security, accessibility, debugging, diagnostics, linting, and App Store optimization",
+      "description": "iOS engineering: end-to-end app delivery, code review, networking, security, accessibility, debugging, diagnostics, linting, and App Store optimization",
       "version": "1.0.0",
-      "keywords": ["ios", "app-workflow", "delivery", "networking", "security", "authentication", "accessibility", "localization", "debugging", "instruments", "ettrace", "memgraph", "memory", "metrickit", "cryptokit", "app-store", "aso", "swiftlint", "linting"],
+      "keywords": ["ios", "app-workflow", "delivery", "code-review", "networking", "security", "authentication", "accessibility", "localization", "debugging", "instruments", "ettrace", "memgraph", "memory", "metrickit", "cryptokit", "app-store", "aso", "swiftlint", "linting"],
       "category": "development",
       "strict": false,
       "skills": [
@@ -134,6 +134,7 @@
         "./skills/ios-localization",
         "./skills/ios-memgraph-analysis",
         "./skills/ios-networking",
+        "./skills/swift-code-review",
         "./skills/swift-security",
         "./skills/swiftlint",
         "./skills/ios-simulator",
@@ -248,7 +249,7 @@
     {
       "name": "all-ios-skills",
       "source": "./",
-      "description": "All 88 iOS and Swift development skills in one plugin",
+      "description": "All 89 iOS and Swift development skills in one plugin",
       "version": "1.0.0",
       "keywords": ["swift", "ios", "swiftui", "complete"],
       "category": "development",
@@ -327,6 +328,7 @@
         "./skills/swift-testing",
         "./skills/swiftdata",
         "./skills/swiftlint",
+        "./skills/swift-code-review",
         "./skills/swiftui-animation",
         "./skills/swiftui-gestures",
         "./skills/swiftui-layout-components",

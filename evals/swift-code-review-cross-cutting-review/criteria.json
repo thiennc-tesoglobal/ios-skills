@@ -1,0 +1,31 @@
+{
+  "context": "Tests whether swift-code-review produces verified, severity-calibrated findings for cross-cutting Swift changes while routing responsive layout, networking, accessibility, and StoreKit work to the appropriate specialist skills.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Evidence and context",
+      "description": "Every actionable finding is anchored to an exact file and line, and the review states that the enclosing symbol and relevant caller or parent were checked before the conclusion.",
+      "max_score": 25
+    },
+    {
+      "name": "Concurrency and ownership",
+      "description": "Identifies the actor suspension-point invariant, checks task lifetime/cancellation, and distinguishes a real ownership cycle from a mechanical weak-self preference.",
+      "max_score": 25
+    },
+    {
+      "name": "Observation state",
+      "description": "Distinguishes @State ownership from a child parameter and uses @Bindable for the required two-way binding without claiming state storage is recreated on every body evaluation.",
+      "max_score": 15
+    },
+    {
+      "name": "Specialist routing",
+      "description": "Routes clipping and adaptive layout to swiftui-responsive-layout, URLSession behavior to ios-networking, VoiceOver to ios-accessibility, and StoreKit entitlement details to storekit without duplicating full implementations.",
+      "max_score": 15
+    },
+    {
+      "name": "Severity and actionability",
+      "description": "Uses blocking severity only for material correctness or safety impact, excludes naming preferences and unmeasured performance claims, and gives a smallest-safe fix or explicit evidence gap.",
+      "max_score": 20
+    }
+  ]
+}

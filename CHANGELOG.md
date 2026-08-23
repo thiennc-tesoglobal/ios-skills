@@ -6,10 +6,13 @@
 
 - Add `swiftui-responsive-layout` for diagnosing and fixing clipping, overlap, safe-area, keyboard, Dynamic Type, localization, rotation, and iPad window-resizing failures.
 - Keep ordinary container selection in `swiftui-layout-components` and route responsive failures through a dedicated boundary.
+- Add the adapted `swift-code-review` skill for evidence-backed Swift/SwiftUI diff reviews covering concurrency, ownership, error boundaries, and Observation state.
+- Route layout, networking, accessibility, StoreKit, persistence, and other framework-specific findings to the existing specialist skills instead of duplicating their implementation guides.
 
 ### Quality
 
 - Add four local eval cases and one published responsive checkout scenario covering keyboard, safe areas, large text, localization, iPad multitasking, state preservation, and sibling routing.
+- Add four local review eval cases and one published cross-cutting review scenario covering verification gates, actor/task lifetime, Observation ownership, error boundaries, and specialist routing.
 
 ## v1.0.0
 
