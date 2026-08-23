@@ -28,7 +28,10 @@ Read only the references required by the request:
 
 - For product loading, StoreKit views, `PurchaseAction`, direct purchases, options, AppTransaction, or durable content delivery, read [products, merchandising, and purchases](references/products-and-purchases.md).
 - For `Transaction.updates`, current entitlements, subscription status, revocation, Family Sharing, restore, or reconciliation, read [entitlements and subscription state](references/entitlements-and-subscriptions.md).
-- For view styles, introductory/promotional/win-back offers, offer codes, server verification, testing, refunds, billing recovery, Ask to Buy, or unfinished transactions, read [advanced StoreKit](references/storekit-advanced.md).
+- For offer eligibility, subscription surfaces, offer codes, and disclosures, read [StoreKit offers and merchandising](references/storekit-offers.md).
+- For StoreKit configuration files, `SKTestSession`, renewal controls, and test matrices, read [StoreKit Test and Sandbox](references/storekit-testing.md).
+- For entitlement recovery, subscriptions, refunds, revocations, Family Sharing, Ask to Buy, or unfinished transactions, read [StoreKit recovery and state transitions](references/storekit-recovery.md).
+- For the focused reference index, read [advanced StoreKit](references/storekit-advanced.md). Use [complete advanced StoreKit recipes](references/storekit-advanced-complete.md) only for broad end-to-end examples or migration.
 - For digital-goods payment rules, reader/external-link boundaries, subscription disclosures, or IAP rejection risks, read [App Review IAP guidance](references/app-review-guidelines.md).
 
 Do not load offer, compliance, or subscription material for a narrow consumable/non-consumable task.

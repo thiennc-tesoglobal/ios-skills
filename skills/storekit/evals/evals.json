@@ -18,15 +18,16 @@
     {
       "id": 2,
       "name": "storekit-subscription-offer-code-plan-product-subscriptioninfo",
-      "prompt": "Review this StoreKit subscription-offer code plan: use `Product.SubscriptionInfo.Status.status(for:)`, show every `winBackOffers` entry to cancelled users, use `.subscriptionPromotionalOffer(offer: signature:)`, and inspect `transaction.offerType` / `transaction.offerID` on purchase. Correct the API and eligibility mistakes.",
-      "expected_output": "A correction-focused answer that updates stale StoreKit offer APIs, filters win-back offers through renewal eligibility, and verifies applied offers through the current transaction offer model.",
+      "prompt": "Review this StoreKit subscription-offer code plan: use `Product.SubscriptionInfo.Status.status(for:)`, show every `winBackOffers` entry to cancelled users, use `.subscriptionPromotionalOffer(offer: signature:)`, inspect `transaction.offerType` / `transaction.offerID` on purchase, and drive StoreKit Test with `product.purchase(options: [.purchaseDate(Date(), renewalBehavior: .default), .codeOffer(...)])`. Correct the API, eligibility, and test-target mistakes.",
+      "expected_output": "A correction-focused answer that updates stale StoreKit offer APIs, filters win-back offers through renewal eligibility, verifies applied offers through the current transaction offer model, and separates production purchase APIs from StoreKit Test controls.",
       "files": [],
       "assertions": [
         "Replaces `Product.SubscriptionInfo.Status.status(for:)` with `Product.SubscriptionInfo.status(for:)`.",
         "Explains that `product.subscription?.winBackOffers` is a raw list and must be filtered through verified `renewalInfo.eligibleWinBackOfferIDs` before display or purchase.",
         "Uses the iOS 26 SwiftUI `subscriptionPromotionalOffer` closure plus `compactJWS` closure for StoreKit views, or clearly separates it from lower-level signed purchase options.",
         "Uses `transaction.offer?.type` and `transaction.offer?.id` instead of stale `transaction.offerType` and `transaction.offerID`.",
-        "Mentions StoreKit configuration or sandbox testing for promotional, win-back, offer code, Ask to Buy, and renewal-state flows."
+        "Mentions StoreKit configuration or sandbox testing for promotional, win-back, offer code, Ask to Buy, and renewal-state flows.",
+        "Separates StoreKit Test `SKTestSession.buyProduct(identifier:options:)` controls from production `product.purchase(options:)` and uses `.renewUntilNow` or `.cancelImmediately` rather than `.default`."
       ]
     },
     {

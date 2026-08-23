@@ -27,6 +27,9 @@ Initial community release.
 - Add a maintainer audit workflow for focused, collection, and release audits.
 - Reduce high-cost discovery descriptions while preserving specialist routing boundaries.
 - Refactor `push-notifications` and `storekit` with directly routed progressive-disclosure references and focused routing evaluations.
+- Correct APNs Simulator coverage, Notification Service Extension exactly-once fallback, App Review payment boundaries, and StoreKit Test-only API examples against current Apple documentation.
+- Split notification and StoreKit references into focused runtime, extension, offer, testing, and recovery guides; retain full recipes as opt-in archives.
+- Add a provider-neutral behavioral A/B runner and record model-access blockers instead of treating static validation as output-quality evidence.
 
 ### Project identity
 

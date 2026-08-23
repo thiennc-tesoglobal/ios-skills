@@ -27,8 +27,11 @@ Read only the references needed for the request:
 
 - For notification authorization, APNs registration, token lifecycle, provider headers, visible/background payloads, or delivery diagnosis, read [APNs lifecycle and remote delivery](references/apns-lifecycle.md).
 - For time, calendar, or location reminders scheduled on-device, read [local notifications](references/local-notifications.md).
-- For complete application-delegate wiring, foreground/tap handling, deep-link routing, categories, badges, and simulator/device workflows, read [notification patterns](references/notification-patterns.md).
-- For service/content extensions, media attachments, encrypted display text, communication notifications, or custom expanded UI, read [rich notifications](references/rich-notifications.md).
+- For complete application-delegate wiring, foreground/tap handling, deep-link routing, and categories, read [notification runtime and routing](references/notification-runtime.md).
+- For `.apns`, `simctl`, APNs Sandbox Simulator coverage, provider/device matrices, or delivery diagnosis, read [notification delivery testing](references/notification-testing.md).
+- For service-extension mutation and exactly-once completion, read [service extensions](references/service-extension.md).
+- For custom expanded UI, read [content extensions](references/content-extension.md); for Messages-style presentation, read [communication notifications](references/communication-notifications.md).
+- For the focused reference index, read [notification patterns](references/notification-patterns.md) or [rich notifications](references/rich-notifications.md). Use [complete notification patterns](references/notification-patterns-complete.md) and [complete rich-notification recipes](references/rich-notifications-complete.md) only for broad end-to-end examples or migration.
 
 Do not read every reference for a narrow task. Keep the response scoped to the failed or requested delivery path.
 
@@ -59,7 +62,7 @@ func application(
 }
 ```
 
-Simulator can simulate delivery with `.apns` files or `simctl push`, but it doesn't perform normal APNs device-token registration. Verify real registration/provider delivery on hardware.
+On supported current Xcode/OS hosts, iOS Simulator can register with the APNs Sandbox and receives a simulator-specific, variable-length token. Provider delivery to that Simulator is useful for sandbox end-to-end checks. `.apns` files and `simctl push` simulate delivery without exercising the provider path; host/CI support varies. Verify production entitlements, signing, and hardware-specific behavior on a physical device.
 
 ## Payload and delivery contracts
 

@@ -24,7 +24,7 @@
     },
     {
       "name": "Testing guidance",
-      "description": "Mentions StoreKit configuration or sandbox testing for promotional, win-back, offer code, Ask to Buy, and renewal-state flows.",
+      "description": "Mentions StoreKit configuration or sandbox testing for promotional, win-back, offer code, Ask to Buy, and renewal-state flows, and separates StoreKit Test SKTestSession controls from production product.purchase options using .renewUntilNow or .cancelImmediately rather than .default.",
       "max_score": 14
     }
   ]

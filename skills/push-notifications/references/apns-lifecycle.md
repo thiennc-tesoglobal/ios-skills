@@ -55,7 +55,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
 Treat the token as opaque and variable-length. Upload it on every successful callback; APNs can change it. Do not persist a token locally as the provider's source of truth or skip upload because it matches a cached value. Associate tokens with the correct user/session on the provider and remove invalid tokens in response to APNs feedback.
 
-Simulator can receive simulated `.apns` or `simctl push` payloads, but it doesn't provide normal APNs device-token registration. Confirm real registration and provider delivery on a physical device.
+On supported current Xcode/OS hosts, iOS Simulator can register with the APNs Sandbox and receives a simulator-specific, variable-length token. Provider delivery to that Simulator is useful for sandbox end-to-end checks. `.apns` and `simctl push` exercise simulated delivery without the provider path; host/CI support varies. Confirm production registration, signing, entitlements, and hardware-specific behavior on a physical device.
 
 ## Provider request contracts
 

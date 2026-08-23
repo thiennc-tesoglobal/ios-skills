@@ -124,6 +124,6 @@ Advanced offers, billing recovery UI, refund requests, server validation, testin
 
 - [Transaction.updates](https://sosumi.ai/documentation/storekit/transaction/updates)
 - [Transaction.currentEntitlements](https://sosumi.ai/documentation/storekit/transaction/currententitlements)
-- [Product.SubscriptionInfo.status(for:)](https://sosumi.ai/documentation/storekit/product/subscriptioninfo/status(for:))
-- [AppStore.sync](https://sosumi.ai/documentation/storekit/appstore/sync())
+- [Product.SubscriptionInfo.status(for:)](https://sosumi.ai/documentation/storekit/product/subscriptioninfo/status%28for%3A%29)
+- [AppStore.sync](https://sosumi.ai/documentation/storekit/appstore/sync%28%29)
 - [Transaction.unfinished](https://sosumi.ai/documentation/storekit/transaction/unfinished)

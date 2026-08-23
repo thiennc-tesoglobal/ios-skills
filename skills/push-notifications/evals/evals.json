@@ -11,7 +11,7 @@
         "Explains that requestAuthorization is for alerts, sounds, and badges, while registerForRemoteNotifications is the APNs token registration path.",
         "Says APNs registration should not be gated on .authorized when the app needs silent pushes or server token binding.",
         "Requires sending the device token to the provider server on every didRegister callback and not persisting it locally as a source of truth.",
-        "Notes that Simulator can simulate pushes with .apns or simctl but does not provide real APNs device-token registration."
+        "Distinguishes provider-free .apns/simctl simulation from APNs Sandbox registration on supported current Simulator hosts, and requires physical-device verification for production or hardware-specific behavior."
       ]
     },
     {
@@ -39,7 +39,7 @@
         "Uses Keychain Sharing for decryption secrets and App Groups only for shared files or UserDefaults.",
         "Requires attachments to be supported files on disk and notes the system validates and stores them.",
         "Requires Communication Notifications capability, NSUserActivityTypes intent entries, intent donation, and content.updating(from:).",
-        "Requires calling the content handler on success, failure, and serviceExtensionTimeWillExpire timeout paths with original, best-attempt, or updated content."
+        "Requires calling the content handler exactly once on success, failure, and serviceExtensionTimeWillExpire timeout paths with original, best-attempt, or updated content."
       ]
     },
     {

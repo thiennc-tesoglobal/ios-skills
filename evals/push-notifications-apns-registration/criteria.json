@@ -19,7 +19,7 @@
     },
     {
       "name": "Simulator handling",
-      "description": "Notes that Simulator can simulate pushes with .apns files or simctl but does not provide real APNs device-token registration.",
+      "description": "Distinguishes provider-free .apns/simctl simulation from APNs Sandbox registration on supported current Simulator hosts, treats the token as simulator-specific and variable-length, and reserves physical-device checks for production or hardware-specific behavior.",
       "max_score": 15
     },
     {

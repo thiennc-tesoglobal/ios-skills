@@ -41,8 +41,8 @@ time. For a release audit, quote the current guidelines directly.
 
 - Physical products and e-commerce
 - Ride-sharing, food delivery, and real-world services
-- One-to-one services such as tutoring or consulting booked through the app
-- Enterprise or B2B apps distributed through Apple Business Manager
+- Real-time person-to-person services purchased between two individuals, such as tutoring, medical consultations, real-estate tours, or fitness training
+- Enterprise services sold directly by the developer to organizations or groups for their employees or students; consumer, single-user, and family sales still use IAP
 
 ## External Purchase Links and Reader Apps
 
@@ -105,5 +105,5 @@ time. For a release audit, quote the current guidelines directly.
 ## References
 
 - [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) -- use the original Apple URL because this guidelines page is not reliably available through Sosumi.
-- [StoreKit External Purchase Link Entitlement](https://sosumi.ai/documentation/bundleresources/entitlements/com_apple_developer_storekit_external-purchase-link)
+- [StoreKit External Purchase Link Entitlement](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.storekit.external-purchase-link)
 - [StoreKit External Purchase](https://sosumi.ai/documentation/storekit/external-purchase)

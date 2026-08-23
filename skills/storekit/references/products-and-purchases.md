@@ -133,4 +133,4 @@ let originalPurchaseDate = appTransaction.originalPurchaseDate
 - [PurchaseAction](https://sosumi.ai/documentation/storekit/purchaseaction)
 - [StoreView](https://sosumi.ai/documentation/storekit/storeview)
 - [SubscriptionStoreView](https://sosumi.ai/documentation/storekit/subscriptionstoreview)
-- [Transaction.finish](https://sosumi.ai/documentation/storekit/transaction/finish())
+- [Transaction.finish](https://sosumi.ai/documentation/storekit/transaction/finish%28%29)

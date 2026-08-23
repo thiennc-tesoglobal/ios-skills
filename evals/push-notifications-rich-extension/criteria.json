@@ -24,7 +24,7 @@
     },
     {
       "name": "Graceful fallback",
-      "description": "Requires calling the content handler on all paths and falling back to the original or best-attempt content when work fails or time expires.",
+      "description": "Requires calling the content handler exactly once on all paths and falling back to the original or best-attempt content when work fails or time expires.",
       "max_score": 10
     }
   ]
