@@ -1,12 +1,12 @@
 # Swift iOS Skills Community
 
-[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-87-2ea44f)](skills/)
+[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-88-2ea44f)](skills/)
 [![Swift](https://img.shields.io/badge/Swift-6.3-F05138?logo=swift&logoColor=white)](https://swift.org)
 [![Apple platforms](https://img.shields.io/badge/Apple%20Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-black?logo=apple)](https://developer.apple.com)
 [![Validation](https://github.com/thiennc-tesoglobal/ios-skills/actions/workflows/validate-repository.yml/badge.svg)](https://github.com/thiennc-tesoglobal/ios-skills/actions/workflows/validate-repository.yml)
 [![License](https://img.shields.io/badge/License-PolyForm%20Perimeter-blue)](LICENSE)
 
-A practical collection of **87 Agent Skills** for building complete Swift and Apple-platform applications with AI coding agents.
+A practical collection of **88 Agent Skills** for building complete Swift and Apple-platform applications with AI coding agents.
 
 The collection helps an agent choose the right specialist guidance, organize maintainable source code, implement features, and verify the result with builds, tests, and Simulator evidence. It is a knowledge and delivery layer—not an app template or framework dependency.
 
@@ -84,6 +84,7 @@ Examples of focused routing:
 - `swift-concurrency` — actor isolation, `Sendable`, and async code
 - `swiftdata` — models, queries, relationships, and migrations
 - `swiftui-animation` — transitions, springs, and Reduce Motion behavior
+- `swiftui-responsive-layout` — clipping, overlap, safe areas, keyboard, and cross-size adaptation
 - `ios-accessibility` — VoiceOver, Dynamic Type, and accessible interactions
 - `storekit` — purchases and subscriptions
 - `ios-simulator` — build, install, launch, and runtime verification
@@ -94,8 +95,8 @@ Installing every skill does not mean every skill should be loaded for every requ
 
 | Bundle | Skills | Coverage |
 |---|---:|---|
-| `all-ios-skills` | 87 | Complete collection |
-| `swiftui-skills` | 10 | SwiftUI UI, navigation, animation, performance, and interop |
+| `all-ios-skills` | 88 | Complete collection |
+| `swiftui-skills` | 11 | SwiftUI UI, responsive layout, navigation, animation, performance, and interop |
 | `swift-core-skills` | 10 | Swift language, architecture, concurrency, data, and testing |
 | `ios-app-framework-skills` | 15 | Widgets, StoreKit, App Intents, maps, media, PDFs, and CarPlay |
 | `ios-data-framework-skills` | 8 | CloudKit, HealthKit, EventKit, Contacts, Wallet, and weather |
@@ -130,7 +131,7 @@ python3 -m unittest discover -s tests -v
 npx skills add . --list
 ```
 
-The complete collection currently includes **87 skills**, **276 local evaluation cases**, and **265 published evaluation scenarios**. See [`CHANGELOG.md`](CHANGELOG.md) for notable changes.
+The complete collection currently includes **88 skills**, **280 local evaluation cases**, and **266 published evaluation scenarios**. See [`CHANGELOG.md`](CHANGELOG.md) for notable changes.
 
 ## Contributing
 

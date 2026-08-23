@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Skills
+
+- Add `swiftui-responsive-layout` for diagnosing and fixing clipping, overlap, safe-area, keyboard, Dynamic Type, localization, rotation, and iPad window-resizing failures.
+- Keep ordinary container selection in `swiftui-layout-components` and route responsive failures through a dedicated boundary.
+
+### Quality
+
+- Add four local eval cases and one published responsive checkout scenario covering keyboard, safe areas, large text, localization, iPad multitasking, state preservation, and sibling routing.
+
 ## v1.0.0
 
 Initial community release.

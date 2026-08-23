@@ -38,7 +38,7 @@ Read [Accessibility Patterns](references/a11y-patterns.md) for SwiftUI/UIKit/App
 
 Support accessibility text sizes without clipping essential content or forcing a fixed horizontal layout. Let controls grow, wrap, or change axis where necessary. Minimum target size is a usability floor, not a substitute for spacing and clear labels.
 
-Respect system preferences including Reduce Motion, Reduce Transparency, Differentiate Without Color, Increased Contrast, and Button Shapes when the UI depends on those channels. Route animation alternatives to `swiftui-animation` and layout adaptation to `swiftui-layout-components`.
+Respect system preferences including Reduce Motion, Reduce Transparency, Differentiate Without Color, Increased Contrast, and Button Shapes when the UI depends on those channels. Route animation alternatives to `swiftui-animation`, ordinary container construction to `swiftui-layout-components`, and cross-size clipping or reflow fixes to `swiftui-responsive-layout`.
 
 Media work should read [Media Accessibility](references/media-accessibility.md) for captions, audio descriptions, and playback controls.
 

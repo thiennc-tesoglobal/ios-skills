@@ -1,0 +1,41 @@
+{
+  "context": "Tests whether responsive SwiftUI guidance diagnoses structural overlap, reserves safe-area space, adapts content at large text sizes, and verifies the real failure without expanding into unrelated architecture.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Structural diagnosis",
+      "description": "Explains that a bottom overlay paints above content without reserving scroll layout space and connects this directly to the hidden final fields.",
+      "max_score": 15
+    },
+    {
+      "name": "Space-reserving action bar",
+      "description": "Uses safeAreaInset or an equivalently correct space-reserving structure for the persistent checkout bar and shows it in the compact SwiftUI sketch.",
+      "max_score": 20
+    },
+    {
+      "name": "Safe-area boundary",
+      "description": "Removes or rejects broad root ignoresSafeArea behavior, extending only decorative background where appropriate while keeping interactive content within system safe areas.",
+      "max_score": 15
+    },
+    {
+      "name": "Keyboard behavior",
+      "description": "Keeps form content scrollable, relies on system keyboard-safe-area behavior rather than a hard-coded keyboard height, and verifies the focused bottom field with the software keyboard visible.",
+      "max_score": 15
+    },
+    {
+      "name": "Dynamic Type adaptation",
+      "description": "Lets price and action content wrap or change axis at accessibility Dynamic Type sizes and does not solve the collision by shrinking essential text.",
+      "max_score": 15
+    },
+    {
+      "name": "Verification evidence",
+      "description": "Defines a focused matrix that includes narrow and wide widths, accessibility text, long localized content, the actual NavigationStack, safe areas, and keyboard-visible state.",
+      "max_score": 10
+    },
+    {
+      "name": "Scope preservation",
+      "description": "Preserves navigation, state ownership, validation, visual hierarchy, and animation while making the narrow responsive-layout correction.",
+      "max_score": 10
+    }
+  ]
+}

@@ -93,6 +93,7 @@ body:
         - swiftui-navigation
         - swiftui-patterns
         - swiftui-performance
+        - swiftui-responsive-layout
         - swiftui-uikit-interop
         - swiftui-webkit
         - tabletopkit

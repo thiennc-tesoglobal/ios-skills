@@ -1,6 +1,6 @@
 ---
 name: swiftui-layout-components
-description: "Build SwiftUI stacks, grids, lists, scroll views, forms, controls, search interfaces, and overlays. Use for layout and container decisions; route state architecture, navigation policy, animation choreography, and runtime profiling to dedicated skills."
+description: "Build SwiftUI stacks, grids, lists, scroll views, forms, controls, search interfaces, and overlays. Use for ordinary layout and container decisions; route cross-size adaptation, clipping or overlap diagnosis, state architecture, navigation policy, animation choreography, and runtime profiling to dedicated skills."
 ---
 
 # SwiftUI Layout and Components
@@ -9,7 +9,7 @@ Choose containers and controls that preserve identity, adapt across sizes, and r
 
 ## Scope and Compatibility
 
-This skill owns stacks, grids, lists, scroll views, forms, controls, search UI, and overlays. Route state ownership to `swiftui-patterns`, navigation and modal policy to `swiftui-navigation`, gestures to `swiftui-gestures`, motion to `swiftui-animation`, and measured performance problems to `swiftui-performance`.
+This skill owns ordinary stacks, grids, lists, scroll views, forms, controls, search UI, and overlays. Route clipping, unintended overlap, keyboard obstruction, and adaptation across window sizes, orientation, Dynamic Type, or localization to `swiftui-responsive-layout`. Route state ownership to `swiftui-patterns`, navigation and modal policy to `swiftui-navigation`, gestures to `swiftui-gestures`, motion to `swiftui-animation`, and measured performance problems to `swiftui-performance`.
 
 Inspect deployment target, Swift mode, and SDK before using versioned modifiers. Preserve project settings unless the user requests a change; gate newer APIs and verify them in SDK headers or primary Apple documentation.
 

@@ -97,7 +97,8 @@ Most skills in this repo follow a stable pattern. Preserve it unless there is a 
 Do not casually collapse existing splits between sibling skills. For example:
 - `swiftui-patterns` owns MV/state/composition guidance
 - `swiftui-navigation` owns NavigationStack, sheets, tabs, and deep links
-- `swiftui-layout-components` owns grids, lists, forms, scroll views, and layout patterns
+- `swiftui-layout-components` owns ordinary grids, lists, forms, scroll views, and container patterns
+- `swiftui-responsive-layout` owns cross-size adaptation and clipping, overlap, safe-area, keyboard, Dynamic Type, and localization-driven layout failures
 
 Some overlap between skills is intentional so each skill remains useful on its own.
 
@@ -165,7 +166,7 @@ This returns a clean JSON object with just the post content and comments.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **ios-skills** (8710 symbols, 8968 relationships, 8 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **ios-skills** (8817 symbols, 9119 relationships, 8 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 

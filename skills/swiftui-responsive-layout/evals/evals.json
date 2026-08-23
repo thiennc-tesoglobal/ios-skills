@@ -1,0 +1,63 @@
+{
+  "skill_name": "swiftui-responsive-layout",
+  "evals": [
+    {
+      "id": 1,
+      "name": "checkout-bar-keyboard-dynamic-type-overlap",
+      "prompt": "Fix a SwiftUI checkout screen where a bottom CTA is drawn with overlay, hides the last form fields, and covers the focused field when the keyboard appears. At accessibility text sizes the price and button also collide. Keep the current navigation and state model.",
+      "expected_output": "A focused diagnosis and responsive fix that reserves safe-area space for the CTA, allows content and controls to reflow, verifies keyboard and Dynamic Type states, and preserves unrelated architecture.",
+      "files": [],
+      "assertions": [
+        "Identifies that overlay does not reserve layout space for the scroll or form content.",
+        "Recommends safeAreaInset or an equivalent space-reserving container for the persistent CTA.",
+        "Keeps decorative safe-area extension separate from interactive content and avoids a broad root ignoresSafeArea fix.",
+        "Allows the price and action row to wrap or change axis at accessibility Dynamic Type sizes instead of shrinking essential text.",
+        "Requires verification with the software keyboard, the focused bottom field, accessibility text, and the actual navigation container.",
+        "Preserves the existing state and navigation architecture."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ipad-multitasking-fixed-grid-overflow",
+      "prompt": "An iPad SwiftUI dashboard hard-codes four 240-point cards whenever horizontalSizeClass is regular. It looks correct full screen but clips in Stage Manager and narrow Split View. Diagnose and replace the brittle adaptation without adding per-device branches.",
+      "expected_output": "A container-aware grid correction based on meaningful card minimum width, with live-resize verification and a clear explanation of why size class alone is insufficient for this component.",
+      "files": [],
+      "assertions": [
+        "Explains that size class is a broad environment category and not an exact component-width or device-model signal.",
+        "Recommends an adaptive grid or focused container-width decision using a card minimum derived from content.",
+        "Rejects static screen bounds and device-model branching.",
+        "Tests narrow and regular iPad window widths and resizes the window while the screen is active.",
+        "Checks long localized content and at least one large Dynamic Type configuration.",
+        "Does not turn the answer into a navigation or app-architecture rewrite."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "stateful-action-row-axis-adaptation",
+      "prompt": "A SwiftUI media toolbar contains stateful controls and long labels in an HStack. Larger text causes overlap, but duplicating the controls in compact and regular if branches resets focus and selection. Propose an adaptive implementation.",
+      "expected_output": "An identity-preserving axis or fit adaptation using AnyLayout or ViewThatFits as appropriate, with explicit content and state-preservation checks.",
+      "files": [],
+      "assertions": [
+        "Uses AnyLayout when the same stateful children switch between horizontal and vertical arrangement, or clearly justifies an equivalent identity-preserving approach.",
+        "Uses Dynamic Type or actual content fit as the breakpoint rather than a device model.",
+        "Avoids duplicated conditional control subtrees that reset focus or selection.",
+        "Lets essential labels wrap and keeps every action available.",
+        "Verifies resize or Dynamic Type changes while focus and selection are active."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "responsive-layout-sibling-boundary-routing",
+      "prompt": "I need a normal searchable List with swipe actions, plus a separate card header that clips only in narrow iPad windows and Arabic. Which SwiftUI skill should own each part, and what should the responsive review avoid changing?",
+      "expected_output": "A boundary-aware routing answer that leaves normal List and search construction with swiftui-layout-components while assigning the cross-size and localization-driven clipping diagnosis to swiftui-responsive-layout.",
+      "files": [],
+      "assertions": [
+        "Routes ordinary List, search, and swipe-action container work to swiftui-layout-components.",
+        "Keeps narrow-window and Arabic clipping diagnosis in swiftui-responsive-layout.",
+        "Routes localization content correctness to ios-localization and accessibility semantics to ios-accessibility when those concerns arise.",
+        "Does not rewrite navigation, state ownership, or animation as part of the responsive review.",
+        "Requires verification in the actual narrow iPad container and right-to-left layout direction."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+SwiftUI responsive-layout diagnosis for safe-area, keyboard, Dynamic Type, and content-overlap failures

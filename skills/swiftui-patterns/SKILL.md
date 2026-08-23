@@ -18,7 +18,7 @@ This skill owns:
 - deterministic previews
 - behavior-preserving view refactors
 
-Route detailed containers and controls to `swiftui-layout-components`, navigation to `swiftui-navigation`, motion to `swiftui-animation`, runtime diagnosis to `swiftui-performance`, Liquid Glass to `swiftui-liquid-glass`, concurrency mechanics to `swift-concurrency`, and architecture selection beyond a single feature to `swift-architecture`.
+Route detailed containers and controls to `swiftui-layout-components`, cross-size clipping and overlap diagnosis to `swiftui-responsive-layout`, navigation to `swiftui-navigation`, motion to `swiftui-animation`, runtime diagnosis to `swiftui-performance`, Liquid Glass to `swiftui-liquid-glass`, concurrency mechanics to `swift-concurrency`, and architecture selection beyond a single feature to `swift-architecture`.
 
 ## Compatibility Preflight
 

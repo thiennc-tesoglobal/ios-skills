@@ -11,7 +11,7 @@
     {
       "name": "swiftui-skills",
       "source": "./",
-      "description": "SwiftUI patterns, focus, navigation, gestures, layout, animation, Liquid Glass, WebKit, performance, and UIKit interop",
+      "description": "SwiftUI patterns, focus, navigation, gestures, layout, responsive adaptation, animation, Liquid Glass, WebKit, performance, and UIKit interop",
       "version": "1.0.0",
       "keywords": ["swiftui", "ios", "swift", "ui", "liquid-glass", "animation", "navigation", "gestures", "layout", "uikit", "webkit", "webview"],
       "category": "development",
@@ -25,6 +25,7 @@
         "./skills/swiftui-navigation",
         "./skills/swiftui-patterns",
         "./skills/swiftui-performance",
+        "./skills/swiftui-responsive-layout",
         "./skills/swiftui-uikit-interop",
         "./skills/swiftui-webkit"
       ]
@@ -247,7 +248,7 @@
     {
       "name": "all-ios-skills",
       "source": "./",
-      "description": "All 87 iOS and Swift development skills in one plugin",
+      "description": "All 88 iOS and Swift development skills in one plugin",
       "version": "1.0.0",
       "keywords": ["swift", "ios", "swiftui", "complete"],
       "category": "development",
@@ -333,6 +334,7 @@
         "./skills/swiftui-navigation",
         "./skills/swiftui-patterns",
         "./skills/swiftui-performance",
+        "./skills/swiftui-responsive-layout",
         "./skills/swiftui-uikit-interop",
         "./skills/swiftui-webkit",
         "./skills/tabletopkit",

@@ -35,6 +35,7 @@ Load only skills needed for the current slice:
 |---|---|
 | State ownership, view composition, previews, file boundaries | `swiftui-patterns` |
 | Layout, lists, forms, search, overlays | `swiftui-layout-components` |
+| Cross-size adaptation, clipping, overlap, safe areas, keyboard layout | `swiftui-responsive-layout` |
 | Navigation, sheets, tabs, deep links | `swiftui-navigation` |
 | Motion and transitions | `swiftui-animation` |
 | Liquid Glass and iOS 26 visual APIs | `swiftui-liquid-glass` |
