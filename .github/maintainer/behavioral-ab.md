@@ -8,8 +8,9 @@ candidate using the same model, prompt, scenario order, and timeout.
 
 - Baseline: `e9059f3` (`refactor: streamline notification and StoreKit skills`)
 - Candidate: the commit under test
-- Scenarios: APNs Simulator boundary, service-extension exact-once completion,
-  App Review payment rules, and StoreKit Test API separation
+- Scenarios: APNs Simulator boundary and service-extension exact-once completion
+  use `push-notifications`; App Review payment rules and StoreKit Test API
+  separation use `storekit`.
 - Runner: `.github/scripts/behavioral_ab.py`
 
 The runner captures raw model output for human scoring. It does not claim that a
@@ -32,6 +33,10 @@ python3 .github/scripts/behavioral_ab.py \
 Authenticate the configured runner first. For Claude Code, run `/login` in a
 trusted interactive session, then rerun the command. Use
 `--allow-unavailable` only when recording a machine without model access.
+
+Each built-in scenario selects its own skill. Pass `--skill push-notifications`
+or `--skill storekit` only for a focused run that intentionally overrides all
+scenario routing.
 
 ## Scoring
 

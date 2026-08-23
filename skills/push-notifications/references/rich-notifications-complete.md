@@ -522,74 +522,34 @@ extension NotificationService {
 
 ### Handling in the Service Extension
 
-The complete flow integrates communication notifications into the standard service extension:
+Add only the communication step to the exact-once `NotificationService`
+wrapper shown below in [Complete Service Extension Example](#complete-service-extension-example).
+This fragment never owns or calls `contentHandler`; the wrapper's `finish(with:)`
+method serializes success, failure, and timeout completion.
 
 ```swift
-override func didReceive(
-    _ request: UNNotificationRequest,
-    withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
-) {
-    guard let content = request.content.mutableCopy() as? UNMutableNotificationContent else {
-        contentHandler(request.content)
-        return
-    }
-
-    Task {
-        // Download and attach image
-        if let imageUrl = content.userInfo["imageUrl"] as? String {
-            await attachImage(from: imageUrl, to: content)
-        }
-
-        // Configure as communication notification if sender info is present
-        if let senderName = content.userInfo["senderName"] as? String,
-           let conversationId = content.userInfo["conversationId"] as? String {
-            let senderImage = content.userInfo["senderImageUrl"] as? String
-
-            let handle = INPersonHandle(value: conversationId, type: .unknown)
-            var avatar: INImage? = nil
-            if let urlString = senderImage,
-               let url = URL(string: urlString),
-               let (data, _) = try? await URLSession.shared.data(from: url) {
-                avatar = INImage(imageData: data)
-            }
-
-            let nameComponents = PersonNameComponentsFormatter()
-                .personNameComponents(from: senderName)
-
-            let sender = INPerson(
-                personHandle: handle,
-                nameComponents: nameComponents,
-                displayName: senderName,
-                image: avatar,
-                contactIdentifier: nil,
-                customIdentifier: conversationId
-            )
-
-            let intent = INSendMessageIntent(
-                recipients: nil,
-                outgoingMessageType: .outgoingMessageText,
-                content: content.body,
-                speakableGroupName: nil,
-                conversationIdentifier: conversationId,
-                serviceName: nil,
-                sender: sender,
-                attachments: nil
-            )
-
-            let interaction = INInteraction(intent: intent, response: nil)
-            interaction.direction = .incoming
-            try? await interaction.donate()
-
-            if let updatedContent = try? content.updating(from: intent) {
-                contentHandler(updatedContent)
-                return
-            }
-        }
-
-        contentHandler(content)
-    }
+// Inside the processing task in NotificationService.didReceive...
+if let senderName = content.userInfo["senderName"] as? String,
+   let conversationID = content.userInfo["conversationId"] as? String {
+    let updatedContent = await configureAsCommunication(
+        content: content,
+        senderName: senderName,
+        senderImageURL: content.userInfo["senderImage"] as? String,
+        conversationId: conversationID
+    )
+    finish(with: updatedContent ?? content)
+} else {
+    finish(with: content)
 }
+
+// The wrapper's timeout path remains:
+// finish(with: bestAttemptContent ?? fallbackContent)
 ```
+
+Do not paste this fragment into a standalone extension without the completion
+guard. If `serviceExtensionTimeWillExpire()` wins the race, its call to
+`finish(with:)` cancels the task and prevents the later task completion from
+calling the handler a second time.
 
 ## Extension Gotchas
 

@@ -30,6 +30,7 @@ Initial community release.
 - Correct APNs Simulator coverage, Notification Service Extension exactly-once fallback, App Review payment boundaries, and StoreKit Test-only API examples against current Apple documentation.
 - Split notification and StoreKit references into focused runtime, extension, offer, testing, and recovery guides; retain full recipes as opt-in archives.
 - Add a provider-neutral behavioral A/B runner and record model-access blockers instead of treating static validation as output-quality evidence.
+- Route each behavioral A/B scenario to its owning skill and keep communication-extension examples behind the exact-once completion wrapper.
 
 ### Project identity
 

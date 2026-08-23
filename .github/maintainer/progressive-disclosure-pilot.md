@@ -56,6 +56,6 @@ The shorter-than-planned entrypoints are intentional: they retain shared decisio
 - Existing local and published eval scenarios remain unchanged and valid.
 - Each skill adds one focused-routing regression case.
 - APNs and extension evals include the corrected Simulator and exactly-once completion contracts.
-- Behavioral A/B is runnable with the same model and prompts; an unauthenticated runner is recorded as unavailable rather than scored as a pass.
+- Behavioral A/B routes each scenario to its owning skill, uses the same model and prompts for baseline/candidate, and records an unauthenticated runner as unavailable rather than scoring a pass.
 - Repository validation, unit tests, Claude plugin validation, Agent Skills discovery, and skill quick validation pass.
 - GitNexus change detection reports only the intended skill, reference, eval, documentation, and generated index-block changes.
