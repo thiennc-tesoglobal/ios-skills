@@ -66,8 +66,11 @@ Run:
 ```sh
 python3 .github/scripts/validate_repository.py
 python3 -m unittest discover -s tests -v
+npm ci
+npm test
+npm run pack:check
 claude plugin validate .
-npx skills add . --list
+npx --yes skills@1.5.23 add . --list
 ```
 
 Then inspect:
@@ -84,7 +87,7 @@ Then inspect:
 A release is ready only when:
 
 - repository validation and tests pass
-- manifests agree on version and skill membership
+- npm, Claude, and Tessl manifests agree on version and skill membership
 - installation discovery returns the expected public catalog
 - changed skills have relevant eval evidence
 - changelog and release notes describe user-visible changes
@@ -92,6 +95,14 @@ A release is ready only when:
 - Git status contains only intended release changes
 
 Do not create a tag, GitHub Release, or registry publication without user authorization.
+
+The npm wrapper pins installations to the Git tag matching `package.json`. After the tag release workflow succeeds and npm publication is explicitly authorized, publish and verify from outside the repository:
+
+```sh
+npm publish --access public
+npm view @thiennc/ios-skills version
+npx --yes @thiennc/ios-skills --version
+```
 
 ## Report
 
@@ -101,4 +112,4 @@ Lead with the conclusion, then classify findings:
 - **P1:** material accuracy, discovery, eval, or maintenance weakness
 - **P2:** useful cleanup or incremental coverage improvement
 
-For each finding include evidence, impact, and the smallest reasonable correction. State what is already healthy. After requested changes, re-run focused validation, repository tests, package validation, and GitNexus change detection before commit.
+For each finding include evidence, impact, and the smallest reasonable correction. State what is already healthy. After requested changes, re-run focused validation, repository tests, npm package validation, clean discovery, and GitNexus change detection before commit.

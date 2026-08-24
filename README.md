@@ -32,19 +32,25 @@ Product request → ios-app-workflow → relevant specialists → implementation
 Choose skills interactively:
 
 ```sh
-npx skills add thiennc-tesoglobal/ios-skills
+npx @thiennc/ios-skills
 ```
 
 Install the end-to-end workflow:
 
 ```sh
-npx skills add thiennc-tesoglobal/ios-skills --skill ios-app-workflow
+npx @thiennc/ios-skills --skill ios-app-workflow
 ```
 
 Install the complete collection only when broad framework coverage is required:
 
 ```sh
-npx skills add thiennc-tesoglobal/ios-skills --all
+npx @thiennc/ios-skills --all
+```
+
+The direct GitHub installer remains available as a fallback:
+
+```sh
+npx skills add thiennc-tesoglobal/ios-skills
 ```
 
 Smaller installations provide agents with a cheaper and more precise discovery surface. The repository follows the open [Agent Skills specification](https://agentskills.io).
@@ -129,7 +135,10 @@ Pull requests validate skill metadata, references, evaluation coverage, plugin b
 ```sh
 python3 .github/scripts/validate_repository.py
 python3 -m unittest discover -s tests -v
-npx skills add . --list
+npm ci
+npm test
+npm run pack:check
+npx --yes skills@1.5.23 add . --list
 ```
 
 The complete collection currently includes **89 skills**, **284 local evaluation cases**, and **267 published evaluation scenarios**. See [`CHANGELOG.md`](CHANGELOG.md) for notable changes.

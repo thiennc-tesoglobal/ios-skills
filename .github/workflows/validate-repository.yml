@@ -20,11 +20,24 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22.20.0
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
       - name: Validate skills, evals, links, and bundles
         run: python3 .github/scripts/validate_repository.py
 
       - name: Run repository tests
-        run: python3 -m unittest discover -s tests -v
+        run: |
+          python3 -m unittest discover -s tests -v
+          npm test
+
+      - name: Verify npm package contents
+        run: npm run pack:check
 
       - name: Smoke-test Agent Skills discovery
         run: npx --yes skills@1.5.23 add . --list

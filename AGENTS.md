@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository is a maintained collection of Agent Skills for modern Apple platform development, centered on **iOS and iPadOS 26+**, **Swift 6.3**, and current Apple frameworks.
 
-This is not a buildable app or Swift package. The main work here is **authoring, refining, and reorganizing skill content** so the skills are accurate, discoverable, and useful to future agents.
+This is not a buildable app or Swift package. It includes a small npm installer wrapper, but the main work remains **authoring, refining, and reorganizing skill content** so the skills are accurate, discoverable, and useful to future agents.
 
 ## Core repo shape
 
@@ -20,6 +20,7 @@ Treat this as a content + metadata repository:
 - `skills/<skill>/SKILL.md` — canonical skill instructions
 - `skills/<skill>/references/*.md` — deeper examples, recipes, and reference material
 - `.claude-plugin/marketplace.json` — source of truth for Claude Code bundle membership and metadata
+- `package.json`, `bin/`, and `lib/` — version-pinned npm installer wrapper
 - `README.md` — public catalog/distribution document
 - `CHANGELOG.md` — public-surface history for new skills, restructures, and bundle changes
 
@@ -107,6 +108,7 @@ Some overlap between skills is intentional so each skill remains useful on its o
 If you add, remove, rename, or significantly retarget a skill, update the related repo surfaces together:
 - the skill folder under `skills/`
 - `.claude-plugin/marketplace.json`
+- `package.json` when release versions or installer behavior change
 - `README.md` when the public catalog, descriptions, or counts change
 - `CHANGELOG.md` when the public surface changes
 
@@ -114,6 +116,7 @@ When reviewing changes, check:
 - frontmatter is still valid
 - referenced paths still exist
 - bundle membership still matches the intended taxonomy
+- npm, Claude, and Tessl versions remain aligned
 - public docs stay consistent with repo contents
 
 ## GitHub release notes

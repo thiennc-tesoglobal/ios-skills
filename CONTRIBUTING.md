@@ -55,7 +55,10 @@ Run the same primary checks used by CI:
 ```sh
 python3 .github/scripts/validate_repository.py
 python3 -m unittest discover -s tests -v
-npx skills add . --list
+npm ci
+npm test
+npm run pack:check
+npx --yes skills@1.5.23 add . --list
 ```
 
 If Claude marketplace metadata changes, also run:
@@ -74,7 +77,7 @@ Resolve validation errors before opening a pull request. Advisory size warnings 
 - [ ] Technical claims use current primary sources.
 - [ ] Relevant evaluation coverage was added or updated.
 - [ ] Repository validation and tests pass locally.
-- [ ] Plugin bundle membership and version metadata remain aligned when changed.
+- [ ] npm, Claude, and Tessl package metadata remain aligned when changed.
 - [ ] The pull request explains what changed and how it was verified.
 
 By contributing, you agree that your contribution is distributed under the repository's [PolyForm Perimeter License 1.0.0](LICENSE).

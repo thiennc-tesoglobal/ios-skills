@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 - 2026-08-24
 
 ### Skills
 
@@ -13,6 +13,8 @@
 
 - Add four local eval cases and one published responsive checkout scenario covering keyboard, safe areas, large text, localization, iPad multitasking, state preservation, and sibling routing.
 - Add four local review eval cases and one published cross-cutting review scenario covering verification gates, actor/task lifetime, Observation ownership, error boundaries, and specialist routing.
+- Add the `@thiennc/ios-skills` npm CLI for version-pinned one-command installation.
+- Validate npm metadata, wrapper behavior, package contents, and release version alignment in CI.
 
 ## v1.0.0
 
