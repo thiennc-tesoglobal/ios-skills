@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import argparse
 import ast
+import datetime as dt
 import json
 import re
 import sys
@@ -17,6 +19,7 @@ PUBLISHED_EVALS_DIR = ROOT / "evals"
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_PATTERN = re.compile(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|\Z)", re.DOTALL)
 MARKDOWN_LINK_PATTERN = re.compile(r"\]\(([^)]+)\)")
+EXPECTED_VERSION = "1.1.0"
 
 
 class Validation:
@@ -193,6 +196,7 @@ def skill_names_from_paths(paths: Any, label: str, validation: Validation) -> li
 def validate_distribution(skill_names: set[str], validation: Validation) -> None:
     marketplace_path = ROOT / ".claude-plugin" / "marketplace.json"
     marketplace = load_json(marketplace_path, validation)
+    npm_package = load_json(ROOT / "package.json", validation)
     marketplace_version: str | None = None
     if isinstance(marketplace, dict):
         metadata = marketplace.get("metadata")
@@ -240,6 +244,54 @@ def validate_distribution(skill_names: set[str], validation: Validation) -> None
         )
         if tessl_names != skill_names:
             validation.error("Tessl skill membership does not match the skills directory")
+
+    versions = {marketplace_version}
+    if isinstance(marketplace, dict) and isinstance(marketplace.get("plugins"), list):
+        versions.update(
+            plugin.get("version")
+            for plugin in marketplace["plugins"]
+            if isinstance(plugin, dict)
+        )
+    if isinstance(tessl, dict):
+        versions.add(tessl.get("version"))
+    if isinstance(npm_package, dict):
+        versions.add(npm_package.get("version"))
+    if versions != {EXPECTED_VERSION}:
+        validation.error(
+            f"Package versions are not aligned at {EXPECTED_VERSION}: "
+            f"{sorted(str(value) for value in versions)}"
+        )
+
+    if isinstance(npm_package, dict):
+        if npm_package.get("name") != "@thiennc/ios-skills":
+            validation.error("npm package name must be @thiennc/ios-skills")
+        if npm_package.get("private") is True:
+            validation.error("npm package must be publishable")
+        if npm_package.get("bin") != {"ios-skills": "bin/ios-skills.mjs"}:
+            validation.error("npm package must expose the ios-skills executable")
+        if npm_package.get("dependencies", {}).get("skills") != "1.5.23":
+            validation.error("npm package must pin skills@1.5.23")
+        if npm_package.get("publishConfig", {}).get("access") != "public":
+            validation.error("npm package must publish with public access")
+
+
+def release_changelog_errors(changelog: str) -> list[str]:
+    match = re.search(
+        rf"^## {re.escape(EXPECTED_VERSION)} - (\d{{4}}-\d{{2}}-\d{{2}})\s*$",
+        changelog,
+        re.MULTILINE,
+    )
+    if match:
+        try:
+            dt.date.fromisoformat(match.group(1))
+        except ValueError:
+            pass
+        else:
+            return []
+    return [
+        f"release metadata requires '## {EXPECTED_VERSION} - YYYY-MM-DD'; "
+        "the version must not remain Unreleased"
+    ]
 
 
 def validate_published_evals(
@@ -298,6 +350,13 @@ def validate_published_evals(
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--release",
+        action="store_true",
+        help="require finalized release metadata such as a dated changelog entry",
+    )
+    args = parser.parse_args()
     validation = Validation()
     skill_files = sorted(SKILLS_DIR.glob("*/SKILL.md"))
     skill_results = [validate_skill(path, validation) for path in skill_files]
@@ -317,6 +376,10 @@ def main() -> int:
     )
     published_eval_count = validate_published_evals(skill_names, validation)
     validate_distribution(skill_names, validation)
+    if args.release:
+        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        for error in release_changelog_errors(changelog):
+            validation.error(error)
 
     for warning in validation.warnings:
         print(f"WARNING: {warning}")

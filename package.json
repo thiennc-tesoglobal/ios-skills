@@ -1,0 +1,45 @@
+{
+  "name": "@thiennc/ios-skills",
+  "version": "1.1.0",
+  "description": "Install the Swift iOS Skills Community collection with one command.",
+  "type": "module",
+  "bin": {
+    "ios-skills": "bin/ios-skills.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/test_npm_cli.mjs",
+    "pack:check": "npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "dependencies": {
+    "skills": "1.5.23"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiennc-tesoglobal/ios-skills.git"
+  },
+  "homepage": "https://github.com/thiennc-tesoglobal/ios-skills#readme",
+  "bugs": {
+    "url": "https://github.com/thiennc-tesoglobal/ios-skills/issues"
+  },
+  "keywords": [
+    "agent-skills",
+    "apple",
+    "codex",
+    "ios",
+    "swift",
+    "swiftui"
+  ],
+  "license": "SEE LICENSE IN LICENSE"
+}
