@@ -1,6 +1,6 @@
 ---
 name: background-processing
-description: "Schedule and execute background work on iOS using BGTaskScheduler. Use when registering BGAppRefreshTask for short background fetches, BGProcessingTask for long-running maintenance, BGContinuedProcessingTask (iOS 26+) for foreground-started work that continues in background, background URLSession downloads, or background push notifications. Covers Info.plist configuration, expiration handling, task completion, and debugging with simulated launches."
+description: "Schedules and executes iOS background work with BGTaskScheduler and background URLSession. Use for app refresh, processing, continued-processing tasks, expiration and completion handling, background downloads, background pushes, registration, Info.plist configuration, or launch simulation."
 ---
 
 # Background Processing

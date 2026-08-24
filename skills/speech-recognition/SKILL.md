@@ -1,6 +1,6 @@
 ---
 name: speech-recognition
-description: "Transcribe speech to text using Apple's Speech framework. Use when implementing live microphone transcription with AVAudioEngine, recognizing recorded audio files, handling speech and microphone authorization, choosing on-device vs server-backed SFSpeechRecognizer behavior, or adopting SpeechAnalyzer, SpeechTranscriber, DictationTranscriber, AssetInventory, and async result streams on iOS 26+."
+description: "Builds speech-to-text with Apple's Speech framework. Use for live microphone or recorded-audio transcription, speech and microphone authorization, on-device/server recognition, AVAudioEngine pipelines, or iOS 26 SpeechAnalyzer, transcriber, asset, and async-stream workflows."
 ---
 
 # Speech Recognition

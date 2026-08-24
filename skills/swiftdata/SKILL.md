@@ -29,7 +29,7 @@ Inspect deployment target, Xcode/Swift toolchain, enabled capabilities, and the 
 - Keep computed/transient presentation data out of the persisted schema unless persistence has product value.
 - Use transformable or external storage only after considering queryability, migration, CloudKit, and file-lifecycle costs.
 
-Read [SwiftData Advanced](references/swiftdata-advanced.md) for relationships, schema versions, migrations, CloudKit, and advanced container configuration. Read [Indexing](references/indexing.md) before adding indexes or compound uniqueness.
+Read [custom stores, history, and CloudKit](references/custom-stores-history-and-cloudkit.md), [performance, predicates, and modeling](references/performance-predicates-and-modeling.md), or [containers, undo, previews, and errors](references/containers-undo-previews-and-errors.md) for advanced workflows. Read [Indexing](references/indexing.md) before adding indexes or compound uniqueness.
 
 ## Containers and Contexts
 
@@ -68,7 +68,9 @@ Read [Core Data Coexistence](references/core-data-coexistence.md) when both fram
 
 ## References
 
-- [Advanced models, relationships, migrations, and CloudKit](references/swiftdata-advanced.md)
+- [Custom stores, history tracking, CloudKit, and coexistence](references/custom-stores-history-and-cloudkit.md)
+- [Batch performance, predicates, Codable values, and inheritance](references/performance-predicates-and-modeling.md)
+- [Multiple containers, undo, previews, notifications, and errors](references/containers-undo-previews-and-errors.md)
 - [Queries and fetch descriptors](references/swiftdata-queries.md)
 - [Predicate pitfalls](references/predicate-pitfalls.md)
 - [Indexing and uniqueness](references/indexing.md)

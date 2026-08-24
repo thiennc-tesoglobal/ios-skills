@@ -1,6 +1,6 @@
 ---
 name: ios-memgraph-analysis
-description: "Use when capturing or analyzing an iOS .memgraph, especially when the task mentions a memory leak, heap growth, persistent memory increase, ownership path, or matched-capture comparison with Apple CLI tools. Covers unambiguous Simulator capture, leaks/heap/vmmap/malloc_history evidence, raw artifact preservation, and same-flow verification. Use debugging-instruments for interactive Xcode Memory Graph, Instruments, generic retain-cycle inspection, or LLDB work."
+description: "Captures or analyzes iOS memgraph files and persistent heap growth with Apple CLI evidence, ownership paths, raw artifacts, and matched-flow verification. Use for leaks or memory-growth investigations; route interactive Xcode Memory Graph, Instruments, or LLDB work to debugging-instruments."
 ---
 
 # iOS Memgraph Analysis

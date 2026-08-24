@@ -1,6 +1,6 @@
 ---
 name: device-integrity
-description: "Verify device legitimacy and app integrity using DeviceCheck (DCDevice per-device bits) and App Attest (DCAppAttestService key generation, attestation, and assertion flows). Use when implementing fraud prevention, detecting compromised devices, validating app authenticity with Apple's servers, protecting sensitive API endpoints with attested requests, or adding device verification to a backend architecture."
+description: "Protects apps and APIs with DeviceCheck and App Attest. Use for per-device fraud state, App Attest key generation and attestation, request assertions, server verification, compromised-device signals, app authenticity, replay resistance, or sensitive endpoint protection."
 ---
 
 # Device Integrity

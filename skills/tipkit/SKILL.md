@@ -398,7 +398,9 @@ see duplicate or stale education.
 
 ## References
 
-- Read [references/tipkit-patterns.md](references/tipkit-patterns.md) for complete implementation patterns: custom styles, event rules with donation values, TipGroup sequencing, CloudKit/app-group persistence, reusable IDs, previews, and test launch strategies.
+- Read [rules, events, and placement](references/rules-events-and-placement.md) for Tip definitions, donations, parameters, inline tips, and popovers.
+- Read [styles, groups, and testing](references/styles-groups-and-testing.md) for custom presentation, TipGroup sequencing, previews, unit tests, and UI tests.
+- Read [actions, onboarding, and sync](references/actions-onboarding-and-sync.md) for buttons, onboarding integration, reusable identifiers, CloudKit, and full-app wiring.
 - Apple TipKit docs: https://sosumi.ai/documentation/tipkit
 - Apple `Tips.configure(_:)`: https://sosumi.ai/documentation/tipkit/tips/configure(_:)
 - Apple `TipGroup`: https://sosumi.ai/documentation/tipkit/tipgroup

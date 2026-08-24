@@ -13,7 +13,7 @@ the exact `ActivityAttributes.ContentState` shape, including any coordinated
 custom date/range encoding. Modern `ActivityContent` lifecycle examples require
 iOS 16.2+ unless noted.
 
-See [references/activitykit-patterns.md](references/activitykit-patterns.md) for complete code patterns including push payload formats, concurrent activities, state observation, and testing.
+Read [lifecycle, updates, and push](references/lifecycle-updates-and-push.md) for attributes, start/update flows, and APNs payloads. Read [ending and presentation](references/ending-and-presentation.md) for dismissal and Lock Screen/Dynamic Island layouts. Read [concurrency, state, and testing](references/concurrency-state-and-testing.md) for multiple activities, tokens, authorization, background behavior, and verification.
 
 ## Contents
 
@@ -332,7 +332,7 @@ alone does not create an alert.
 
 Put `timestamp`, `event`, and the full `content-state` inside `aps`. Validate
 update, end, and push-to-start bodies against the complete examples in
-[Push-to-Update Payloads](references/activitykit-patterns.md#push-to-update-server-payload-format),
+[Push-to-Update Payloads](references/lifecycle-updates-and-push.md#push-to-update-server-payload-format),
 including the exact `Codable` date/range representation.
 
 ### Push-to-Start
@@ -476,4 +476,6 @@ let activity = try Activity.request(
 
 ## References
 
-- See [references/activitykit-patterns.md](references/activitykit-patterns.md) for patterns and code examples
+- [Lifecycle, updates, and push](references/lifecycle-updates-and-push.md)
+- [Ending and presentation](references/ending-and-presentation.md)
+- [Concurrency, state, and testing](references/concurrency-state-and-testing.md)

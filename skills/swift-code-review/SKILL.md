@@ -1,6 +1,6 @@
 ---
 name: swift-code-review
-description: "Review changed Swift and SwiftUI code for correctness, concurrency, ownership, error propagation, Observation state, and API/lifecycle risks. Use for pull requests, diffs, or focused code reviews; route framework-specific work to the collection's specialist skills instead of duplicating it."
+description: "Reviews Swift and SwiftUI pull requests, diffs, and changed code for evidence-backed correctness, concurrency, ownership, errors, Observation state, and lifecycle risks. Use when the requested deliverable is a code review, then route deep fixes to specialist skills."
 license: Apache-2.0
 ---
 

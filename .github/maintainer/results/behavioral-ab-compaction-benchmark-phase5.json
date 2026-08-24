@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-24",
+  "baseline": "v1.1.0",
+  "candidate": "codex/ios-skills-quality-phases working tree",
+  "run_report": "behavioral-ab-compaction-phase5.json",
+  "generator": {
+    "provider": "codex",
+    "model": "gpt-5.4",
+    "runs": 6
+  },
+  "judge": {
+    "provider": "codex",
+    "model": "gpt-5.4",
+    "blind": true,
+    "positioning": {
+      "cloudkit-sync-recovery": "baseline=A,candidate=B",
+      "swift-charts-large-accessible": "candidate=A,baseline=B",
+      "carplay-template-boundary": "baseline=A,candidate=B"
+    }
+  },
+  "rubric": {
+    "dimensions": [
+      "coverage",
+      "correctness",
+      "actionability"
+    ],
+    "score_range": "0-2",
+    "material_inaccuracy_rule": "A materially incorrect platform or API claim forces correctness to 0."
+  },
+  "scenarios": [
+    {
+      "id": "cloudkit-sync-recovery",
+      "baseline": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Covers scope, trigger model, throttling, conflict handling, token reset, and a concrete verification matrix."
+      },
+      "candidate": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Covers the same five failure points and adds account status, partial failures, durable queueing, and deleted-zone recovery."
+      },
+      "winner": "tie"
+    },
+    {
+      "id": "swift-charts-large-accessible",
+      "baseline": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Addresses all five issues, includes the iOS 18 PointPlot boundary, and supplies a pre-iOS-18 fallback direction."
+      },
+      "candidate": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Addresses all five issues and adds non-color series encoding plus explicit Dynamic Type and VoiceOver verification."
+      },
+      "winner": "tie"
+    },
+    {
+      "id": "carplay-template-boundary",
+      "baseline": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Covers lifecycle, template-stack rules, Now Playing, entitlement limits, and completion handling."
+      },
+      "candidate": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Covers the same core issues and is more explicit about scene boundaries, entitlement-valid templates, and vehicle list limits."
+      },
+      "winner": "tie"
+    }
+  ],
+  "summary": {
+    "baseline_score": 18,
+    "candidate_score": 18,
+    "maximum_score": 18,
+    "baseline_pass_rate": 1.0,
+    "candidate_pass_rate": 1.0,
+    "pass_rate_delta": 0.0,
+    "baseline_total_duration_ms": 121830,
+    "candidate_total_duration_ms": 141840,
+    "baseline_mean_duration_ms": 40610,
+    "candidate_mean_duration_ms": 47280,
+    "duration_delta_percent": 16.42,
+    "new_materially_incorrect_claims": 0,
+    "decision": "accept"
+  }
+}

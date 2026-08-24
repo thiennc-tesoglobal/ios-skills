@@ -1,6 +1,6 @@
 ---
 name: healthkit
-description: "Read, write, and query Apple Health data using HealthKit. Covers HKHealthStore authorization, sample queries, statistics queries, statistics collection queries for charts, saving HKQuantitySample data, background delivery, workout sessions with HKWorkoutSession and HKLiveWorkoutBuilder, HKUnit, and HKQuantityTypeIdentifier values. Use when integrating with Apple Health, displaying health metrics, recording workouts, or enabling background health data delivery."
+description: "Builds HealthKit authorization, sample reads/writes, statistics, background delivery, and workout sessions. Use for Apple Health metrics, charts, HKQuantitySample storage, HKLiveWorkoutBuilder, unit handling, workout recording, or health-data delivery and privacy behavior."
 ---
 
 # HealthKit

@@ -1,0 +1,33 @@
+{
+  "date": "2026-08-24",
+  "provider": "codex",
+  "model": "gpt-5.4",
+  "catalog_skills": 89,
+  "discovery_description_characters": 26261,
+  "cases": [
+    {"id": "responsive-overlap", "expected": "swiftui-responsive-layout", "selected": "swiftui-responsive-layout", "passed": true},
+    {"id": "ordinary-list", "expected": "swiftui-layout-components", "selected": "swiftui-layout-components", "passed": true},
+    {"id": "swiftui-hitch", "expected": "swiftui-performance", "selected": "swiftui-performance", "passed": true},
+    {"id": "actor-review", "expected": "swift-code-review", "selected": "swift-code-review", "passed": true},
+    {"id": "notification-extension", "expected": "push-notifications", "selected": "push-notifications", "passed": true},
+    {"id": "live-activity", "expected": "activitykit", "selected": "activitykit", "passed": true},
+    {"id": "swiftdata-migration", "expected": "swiftdata", "selected": "swiftdata", "passed": true},
+    {"id": "core-data-store", "expected": "core-data", "selected": "core-data", "passed": true},
+    {"id": "local-ai-runtime", "expected": "apple-on-device-ai", "selected": "apple-on-device-ai", "passed": true},
+    {"id": "coreml-inference", "expected": "coreml", "selected": "coreml", "passed": true},
+    {"id": "memgraph-cli", "expected": "ios-memgraph-analysis", "selected": "ios-memgraph-analysis", "passed": true},
+    {"id": "interactive-instruments", "expected": "debugging-instruments", "selected": "debugging-instruments", "passed": true},
+    {"id": "ble-gatt", "expected": "core-bluetooth", "selected": "core-bluetooth", "passed": true},
+    {"id": "accessory-picker", "expected": "accessorysetupkit", "selected": "accessorysetupkit", "passed": true},
+    {"id": "legacy-3d", "expected": "scenekit", "selected": "scenekit", "passed": true},
+    {"id": "new-3d", "expected": "realitykit", "selected": "realitykit", "passed": true},
+    {"id": "research-sensors", "expected": "sensorkit", "selected": "sensorkit", "passed": true},
+    {"id": "health-workout", "expected": "healthkit", "selected": "healthkit", "passed": true},
+    {"id": "carplay-template", "expected": "carplay", "selected": "carplay", "passed": true}
+  ],
+  "summary": {
+    "passed": 19,
+    "total": 19,
+    "pass_rate": 1.0
+  }
+}

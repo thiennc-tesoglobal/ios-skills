@@ -1,6 +1,6 @@
 ---
 name: swift-security
-description: Use when working with iOS/macOS Keychain Services (SecItem queries, kSecClass, OSStatus errors), biometric authentication (LAContext, Face ID, Touch ID), CryptoKit (AES-GCM, ChaChaPoly, ECDSA, ECDH, HPKE, ML-KEM), Secure Enclave, secure credential storage (OAuth tokens, API keys), certificate pinning (SecTrust, SPKI), keychain sharing across apps/extensions, migrating secrets from UserDefaults or plists, or OWASP MASVS/MASTG mobile compliance on Apple platforms.
+description: "Builds or reviews Apple-platform security with Keychain, LocalAuthentication, CryptoKit, Secure Enclave, certificate pinning, key sharing, and secure credential migration. Use for secrets, biometrics, cryptography, trust evaluation, or OWASP MASVS/MASTG mobile controls."
 license: MIT
 ---
 

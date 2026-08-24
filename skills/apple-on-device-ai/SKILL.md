@@ -1,6 +1,6 @@
 ---
 name: apple-on-device-ai
-description: "Build private, on-device AI features on iPhone, iPad, and Mac with Foundation Models, Core ML, MLX Swift, or llama.cpp. Use when choosing an Apple-local model runtime, building an Apple Intelligence chatbot or tool-calling feature, running an LLM on Apple Silicon, converting or compressing a Python model for Core ML, or comparing on-device inference backends. For Swift Core ML loading and prediction code, use the coreml skill."
+description: "Designs private on-device AI for Apple platforms with Foundation Models, Core ML, MLX Swift, or llama.cpp. Use for local LLM runtime selection, Apple Intelligence chat or tool use, Apple Silicon inference, model conversion/compression, or backend comparison; route Core ML prediction code to coreml."
 ---
 
 # On-Device AI for Apple Platforms

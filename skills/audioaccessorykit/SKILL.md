@@ -1,6 +1,6 @@
 ---
 name: audioaccessorykit
-description: "Support automatic audio switching for paired third-party Bluetooth headphones or earbuds with AudioAccessoryKit. Use when a companion app registers an audio accessory, an app extension reports worn/removed placement or connected source-device changes, or AccessoryControlDevice capabilities and errors need handling. Do not use for general AVAudioSession routing, Bluetooth transport, or initial accessory pairing."
+description: "Supports automatic source switching for paired third-party headphones with AudioAccessoryKit. Use when companion apps register audio accessories or extensions report placement and connected-source changes; route general audio routing, Bluetooth transport, and initial pairing elsewhere."
 ---
 
 # AudioAccessoryKit

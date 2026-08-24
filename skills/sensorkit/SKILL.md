@@ -1,6 +1,6 @@
 ---
 name: sensorkit
-description: "Access research-grade sensor data using SensorKit for approved studies. Use when an app needs SensorKit entitlement setup, Research Sensor & Usage Data authorization, ambient light, recorded motion, device usage, keyboard metrics, visits, speech, face, wrist temperature, ECG, PPG, acoustic settings, or sleep-session data. Route ordinary motion to CoreMotion and health records/workouts to HealthKit."
+description: "Builds approved research data collection with SensorKit, including entitlement, authorization, reader/fetch workflows, and supported device or watch sensors. Use for research-grade SensorKit studies; route ordinary motion to Core Motion and health records or workouts to HealthKit."
 ---
 
 # SensorKit
@@ -56,7 +56,7 @@ sensors Apple approved for the study. Common entitlement values include:
 </array>
 ```
 
-Load the [Entitlement and Usage-Detail Catalog](references/sensorkit-patterns.md#entitlement-and-usage-detail-catalog)
+Load the [Entitlement and Usage-Detail Catalog](references/setup-catalog-and-manager.md#entitlement-and-usage-detail-catalog)
 when selecting the exact entitlement string and `NSSensorKitUsageDetail` key
 for each approved sensor. Recheck specialized sensors against their individual
 `SRSensor` pages.
@@ -100,7 +100,7 @@ If `Required` is `true` and the user denies that sensor, the system warns them
 that the study needs it and offers a chance to reconsider.
 
 Use the exact usage-detail dictionary for each requested sensor. Load the
-[Entitlement and Usage-Detail Catalog](references/sensorkit-patterns.md#entitlement-and-usage-detail-catalog)
+[Entitlement and Usage-Detail Catalog](references/setup-catalog-and-manager.md#entitlement-and-usage-detail-catalog)
 when mapping sensors beyond the motion and ambient-light examples above.
 
 ## Authorization
@@ -152,7 +152,7 @@ func sensorReader(_ reader: SRSensorReader, didChange authorizationStatus: SRAut
 
 ## Available Sensors
 
-Load the [Sensor Catalog](references/sensorkit-patterns.md#sensor-catalog) to map
+Load the [Sensor Catalog](references/setup-catalog-and-manager.md#sensor-catalog) to map
 each `SRSensor` to its sample type. Request only sensors approved for the study
 and recheck the selected sensor's availability and usage-detail key.
 
@@ -174,7 +174,7 @@ keyboardReader.delegate = self
 ```
 
 The reader communicates through `SRSensorReaderDelegate`. Load the
-[Delegate Method Catalog](references/sensorkit-patterns.md#delegate-method-catalog)
+[Delegate Method Catalog](references/setup-catalog-and-manager.md#delegate-method-catalog)
 when wiring the complete authorization, recording, device-fetch, and
 sample-fetch lifecycle.
 
@@ -335,7 +335,7 @@ entry for every requested sensor.
 
 Distinguish at least `.invalidEntitlement`, `.noAuthorization`,
 `.dataInaccessible`, `.fetchRequestInvalid`, `.promptDeclined`, and unknown
-future codes. Load the [Full Delegate Implementation](references/sensorkit-patterns.md#full-delegate-implementation)
+future codes. Load the [Full Delegate Implementation](references/setup-catalog-and-manager.md#full-delegate-implementation)
 for the complete switch and callback wiring.
 
 ## Review Checklist
@@ -357,7 +357,9 @@ for the complete switch and callback wiring.
 
 ## References
 
-- Extended patterns (delegate wiring, multi-sensor manager, sample type details): [references/sensorkit-patterns.md](references/sensorkit-patterns.md)
+- [Setup, sensor/delegate catalogs, and multi-sensor manager](references/setup-catalog-and-manager.md)
+- [Keyboard, device, phone, visit, media, and wrist samples](references/usage-and-environment-samples.md)
+- [Speech, face, temperature, ECG/PPG, deletion, and testing](references/speech-face-and-health-samples.md)
 - [SensorKit framework](https://sosumi.ai/documentation/sensorkit)
 - [SRSensorReader](https://sosumi.ai/documentation/sensorkit/srsensorreader)
 - [SRSensor](https://sosumi.ai/documentation/sensorkit/srsensor)

@@ -1,6 +1,6 @@
 ---
 name: authentication
-description: "Implement iOS authentication flows with AuthenticationServices and LocalAuthentication. Use when building Sign in with Apple, passkey/WebAuthn registration or sign-in with ASAuthorizationPlatformPublicKeyCredentialProvider, ASAuthorizationController credential state and revocation handling, ASWebAuthenticationSession OAuth or third-party login, Password AutoFill, identity-token server validation, or local biometric re-authentication with LAContext."
+description: "Builds iOS authentication with AuthenticationServices and LocalAuthentication. Use for Sign in with Apple, passkeys/WebAuthn, credential state or revocation, OAuth/web sessions, Password AutoFill, identity-token server validation, and local biometric reauthentication."
 ---
 
 # Authentication

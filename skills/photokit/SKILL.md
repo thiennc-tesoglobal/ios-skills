@@ -1,6 +1,6 @@
 ---
 name: photokit
-description: "Implement, review, or improve photo picking, camera capture, and media handling in iOS apps using PhotoKit and AVFoundation. Use when working with PhotosPicker, PHPickerViewController, camera capture sessions (AVCaptureSession), photo library access, image loading and display, video recording, or media permissions. Also use when selecting photos from the library, taking pictures, recording video, processing images, or handling photo/camera privacy permissions in Swift apps."
+description: "Builds or reviews photo-library picking, image loading, camera capture, and video recording with PhotoKit, PhotosPicker/PHPicker, and AVFoundation. Use for photo or camera permissions, media selection, capture sessions, library changes, caching, or media export."
 ---
 
 # PhotoKit
