@@ -147,7 +147,7 @@ var document: IntentFile
 var distance: Measurement<UnitLength>
 ```
 
-See [references/appintents-advanced.md](references/appintents-advanced.md) for all initializer variants.
+See [parameter and entity-query patterns](references/parameters-and-entity-queries.md) for all initializer variants.
 
 ## AppEntity
 
@@ -239,7 +239,7 @@ struct AppSettingsQuery: UniqueAppEntityQuery {
 }
 ```
 
-See [references/appintents-advanced.md](references/appintents-advanced.md) for `EntityPropertyQuery` with
+See [parameter and entity-query patterns](references/parameters-and-entity-queries.md) for `EntityPropertyQuery` with
 filter/sort support.
 
 When one parameter determines another parameter's valid entity choices, use
@@ -434,4 +434,6 @@ system UI budget.
 ## References
 
 - Read [references/system-surfaces.md](references/system-surfaces.md) for Siri, widgets, Control Center, and Spotlight integration patterns.
-- See [references/appintents-advanced.md](references/appintents-advanced.md) for `@Parameter` variants, EntityPropertyQuery, assistant schemas, focus filters, SiriKit migration, error handling, confirmation flows, authentication, URL-representable types, and Spotlight indexing details.
+- Read [parameters and entity queries](references/parameters-and-entity-queries.md) for `@Parameter`, dynamic options, defaults, and `EntityPropertyQuery`.
+- Read [assistant, Focus, and intent behavior](references/assistant-focus-and-intent-behavior.md) for assistant schemas, Focus filters, SiriKit migration, dialogs, confirmation, and authentication.
+- Read [URL and Spotlight integration](references/url-and-spotlight-integration.md) for URL-representable types, indexed entities, onscreen content, summaries, and direct Core Spotlight usage.

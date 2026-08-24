@@ -1,6 +1,6 @@
 ---
 name: swift-concurrency
-description: "Diagnose Swift concurrency errors and design data-race-safe async code using actor isolation, Sendable, structured tasks, cancellation, and synchronization primitives. Use for compiler isolation diagnostics or concurrency behavior, not routine SwiftUI lifecycle wiring."
+description: "Diagnoses and implements data-race-safe Swift concurrency with actor isolation, Sendable, structured tasks, cancellation, and synchronization. Use for compiler diagnostics or async behavior; when the requested deliverable is a PR or diff review, select swift-code-review first."
 ---
 
 # Swift Concurrency

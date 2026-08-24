@@ -1,0 +1,64 @@
+{
+  "provider": "codex",
+  "runner": "codex",
+  "model": "gpt-5.4",
+  "skill_override": null,
+  "scenario_filter": [
+    "cloudkit-sync-recovery",
+    "swift-charts-large-accessible",
+    "carplay-template-boundary"
+  ],
+  "old_root": "/tmp/ios-skills-ab-v110.7a0aS8",
+  "new_root": "/tmp/ios-skills-ab-phase5.ytxu9O",
+  "scenarios": [
+    {
+      "id": "cloudkit-sync-recovery",
+      "skill": "cloudkit",
+      "old": {
+        "status": "ok",
+        "text": "COVERAGE: The skill squarely covers this plan: database scope, push-driven sync, throttle handling, CKSyncEngine conflict behavior, and server change token persistence/reset.\nCORRECTNESS: Every listed claim is incorrect: personal data should not live in the public database; timer polling should be replaced by subscriptions or `CKSyncEngine`; throttling must honor `retryAfterSeconds`; `CKSyncEngine` does not resolve `failedRecordSaves`; `nil` change token is only for first fetch or after `changeTokenExpired`.\nACTIONABILITY: Correct design: store user data in private DB/custom zones, persist local pending work plus `stateSerialization` or zone tokens, merge `serverRecordChanged` into `serverRecord` then reschedule save, and let push/engine drive sync.\nMISSED: Verification matrix: scope -> record lands in private DB; throttle -> delayed retry preserves queue; conflict -> `failedRecordSaves` triggers merge+resend; relaunch -> incremental fetch resumes from saved token; expiry -> token cleared and full refetch only on `changeTokenExpired`.",
+        "exit_code": 0,
+        "duration_ms": 34809
+      },
+      "new": {
+        "status": "ok",
+        "text": "COVERAGE: Reviews all five cited failure points: database scope, sync trigger, throttling, `failedRecordSaves`, and change-token lifecycle.  \nCORRECTNESS: Incorrect claim: `CKSyncEngine` does not resolve `sentRecordZoneChanges.failedRecordSaves`; personal data belongs in the private DB, sync should be subscription/`CKSyncEngine`-driven not timer-polled, throttling must wait `retryAfterSeconds`, and `nil` tokens are only for first fetch or `changeTokenExpired`.  \nACTIONABILITY: Verify matrix: personal note save -> private DB only; remote edit -> push/engine fetch without polling; `.requestRateLimited` -> queued retry after server delay; `.serverRecordChanged` in `failedRecordSaves` -> three-way merge into `serverRecord` then resave; steady-state fetch -> persisted token reused across relaunch.  \nMISSED: Add account-status gating, persisted `stateSerialization`, per-item `.partialFailure` inspection, offline durable queueing, and `.userDeletedZone` recovery.",
+        "exit_code": 0,
+        "duration_ms": 48849
+      }
+    },
+    {
+      "id": "swift-charts-large-accessible",
+      "skill": "swift-charts",
+      "old": {
+        "status": "ok",
+        "text": "COVERAGE: Strong; the skill directly covers all five faults: 10,000 individual marks, unencoded multi-series lines, fixed `200`-point height, missing accessibility labels, and treating `chartAngleSelection` as a category string.\nCORRECTNESS: One incorrect/misleading claim appears in the reference: “Swift Charts provides automatic VoiceOver descriptions… without additional code.” That overstates support; explicit per-mark `.accessibilityLabel` and `.accessibilityValue` are still needed.\nACTIONABILITY: Change `PointMark` x10,000 to `PointPlot` on iOS 18+ (or reduce marks), add `.foregroundStyle(by:)` or `series:` for each line series, replace `.frame(height: 200)` with adaptive min/max height, add accessibility labels/values, and map `selectedAngle` through cumulative sector ranges before resolving a category.\nMISSED: The skill could be sharper by adding one compact “dashboard anti-patterns” example that fixes all five issues together and by stating the pre-iOS-18 fallback when `PointPlot` is unavailable.",
+        "exit_code": 0,
+        "duration_ms": 51206
+      },
+      "new": {
+        "status": "ok",
+        "text": "COVERAGE: Strong; the skill explicitly covers all five faults: `PointPlot`/vectorized plots for >1000 points, explicit multi-series encoding, adaptive chart height, accessibility labels/values, and pie-angle selection mapping.\nCORRECTNESS: The dashboard’s implied claim that `chartAngleSelection` can be compared directly to category strings is incorrect; the skill correctly says it returns a plottable angle value that must be mapped through cumulative sector ranges.\nACTIONABILITY: Replace 10,000 `PointMark`s with `PointPlot` or aggregate first, add `.foregroundStyle(by:)` or `series:` for each line series, change `.frame(height: 200)` to adaptive min/max height, add `.accessibilityLabel` and `.accessibilityValue`, and derive the selected category from angle ranges.\nMISSED: The skill could push one more correction for this dashboard shape: pair series color with `.symbol(by:)` or `.lineStyle(by:)`, and explicitly test Dynamic Type and VoiceOver on the dense chart.",
+        "exit_code": 0,
+        "duration_ms": 46952
+      }
+    },
+    {
+      "id": "carplay-template-boundary",
+      "skill": "carplay",
+      "old": {
+        "status": "ok",
+        "text": "COVERAGE: Covers the main failure points: scene lifecycle, template stack rules, `CPNowPlayingTemplate`, entitlement/category limits, and handler completion requirements.\nCORRECTNESS: Incorrect claim: arbitrary SwiftUI can be drawn in the car window. Only navigation apps receive `CPWindow`, and it is for map content; other UI must be CarPlay templates. `CPTabBarTemplate` is root-only, and `CPNowPlayingTemplate` must be `shared`.\nACTIONABILITY: Split by app category, use `didConnect(_:to:)` only for navigation and `didConnect(_:)` otherwise, call `setRootTemplate` in `didConnect`, push only pushable templates, always call template/list completion handlers, and clear controller/window references on disconnect.\nMISSED: The plan also misses entitlement-specific template restrictions and vehicle limits, plus the need to avoid category-invalid templates such as `CPInformationTemplate` in audio flows.",
+        "exit_code": 0,
+        "duration_ms": 35815
+      },
+      "new": {
+        "status": "ok",
+        "text": "COVERAGE: Strong on this plan: the skill directly covers entitlement gating, scene delegate split, `CPWindow` limits, `CPTabBarTemplate` root-only use, `CPNowPlayingTemplate.shared`, vehicle UI limits, and completion-handler requirements.\nCORRECTNESS: The claim that you can draw arbitrary SwiftUI in the car window is incorrect; only navigation apps get `CPWindow`, and it is for map content while UI chrome stays in CarPlay templates. `CPTabBarTemplate` must be set via `setRootTemplate`, `CPNowPlayingTemplate` must use `.shared`, and category entitlements constrain which templates are valid.\nACTIONABILITY: Rewrite the plan around scene boundaries: non-navigation apps implement `templateApplicationScene(_:didConnect:)` and never touch a window; navigation apps implement `templateApplicationScene(_:didConnect:to:)`, set `window.rootViewController` to map content, and set a `CPMapTemplate` root. Call every template/list completion handler exactly once on all paths and clear retained controller/window references on disconnect.\nMISSED: The plan also misses that only navigation apps may use a `CPWindow` or `CPMapTemplate` root, and list population must respect `CPListTemplate.maximumItemCount` and `maximumSectionCount`.",
+        "exit_code": 0,
+        "duration_ms": 46039
+      }
+    }
+  ],
+  "status": "ok"
+}

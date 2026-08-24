@@ -1,6 +1,6 @@
 ---
 name: app-clips
-description: "Build iOS App Clips with invocation URLs, App Clip Codes, NFC, QR codes, Safari banners, Maps, Messages, target setup, App Store Connect experiences, size/capability constraints, NSUserActivity routing, SKOverlay promotion, App Group/keychain handoff, ephemeral notifications, location confirmation, and full-app migration. Use when creating App Clips or wiring App Clip invocation, experience configuration, or full-app handoff."
+description: "Builds App Clips and their invocation, routing, App Store Connect experiences, size/capability limits, promotion, data handoff, notifications, and full-app migration. Use for App Clip Codes, URLs, NFC/QR, Safari/Maps/Messages invocation, NSUserActivity, or App Group/keychain transfer."
 ---
 
 # App Clips

@@ -1,6 +1,6 @@
 ---
 name: ios-networking
-description: "Build, review, or improve networking code in iOS/macOS apps using URLSession with async/await, structured concurrency, and modern Swift patterns. Use when working with REST APIs, downloading files, uploading data, WebSocket connections, pagination, retry logic, request middleware, caching, background transfers, or network reachability monitoring. Also use when handling HTTP requests, API clients, network error handling, or data fetching in Swift apps."
+description: "Builds or reviews Apple-platform networking with URLSession, async/await, and structured concurrency. Use for REST clients, uploads/downloads, WebSockets, pagination, retries, middleware, caching, background transfers, reachability, request errors, or network data loading."
 ---
 
 # iOS Networking
@@ -185,7 +185,7 @@ The client accepts a `baseURL`, optional custom `URLSession`, `JSONDecoder`,
 and an array of `RequestMiddleware` interceptors. Each method builds a
 `URLRequest` from the endpoint, applies middleware, executes the request,
 validates the status code, and decodes the result. See
-[references/urlsession-patterns.md](references/urlsession-patterns.md) for the complete `APIClient` implementation
+[API client and request-building patterns](references/api-client-and-request-building.md) for the complete `APIClient` implementation
 with convenience methods, request builder, and test setup.
 
 Production clients should receive an injected, configured `URLSession` instead
@@ -340,7 +340,7 @@ func withRetry<T: Sendable>(
 
 Build cursor-based or offset-based pagination with `AsyncSequence`.
 Always check `Task.isCancelled` between pages. See
-[references/urlsession-patterns.md](references/urlsession-patterns.md) for complete `CursorPaginator` and
+[pagination and URLProtocol testing](references/pagination-and-urlprotocol-testing.md) for complete `CursorPaginator` and
 offset-based implementations.
 
 ## Network Reachability
@@ -374,7 +374,7 @@ async throwing APIs; see [references/network-framework.md#quic-multiplexed-strea
 Inject a configured session when production code needs timeouts, caching,
 connectivity waiting, data-cost policy, authentication challenges, redirects,
 metrics, or background delegates. Use `URLSession.shared` only for simple
-one-off work. See [URLSession patterns](references/urlsession-patterns.md) for
+one-off work. See [resilience, security, caching, and streaming](references/resilience-security-and-streaming.md) for
 the full configuration and test setup.
 
 ## App Transport Security (ATS)
@@ -435,10 +435,10 @@ protocol-based clients that accept a test double.
 
 ## References
 
-- See [references/urlsession-patterns.md](references/urlsession-patterns.md) for complete API client
-  implementation, multipart uploads, download progress, URLProtocol
-  mocking, retry/backoff, certificate pinning, request logging, and
-  pagination implementations.
+- See [API client and request building](references/api-client-and-request-building.md) for endpoint modeling, middleware, request builders, and production client structure.
+- See [uploads and downloads](references/uploads-and-downloads.md) for multipart bodies, transfer progress, delegate ownership, and file destinations.
+- See [pagination and URLProtocol testing](references/pagination-and-urlprotocol-testing.md) for cursor/offset pagination and deterministic network tests.
+- See [resilience, security, caching, and streaming](references/resilience-security-and-streaming.md) for retry/backoff, pinning, logging, cache validation, SSE, and production session configuration.
 - See [references/background-websocket.md](references/background-websocket.md) for background URLSession
   configuration, background downloads/uploads, WebSocket patterns with
   structured concurrency, and reconnection strategies.

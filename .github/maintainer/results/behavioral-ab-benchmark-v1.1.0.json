@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-24",
+  "baseline": "e9059f3",
+  "candidate": "v1.1.0",
+  "run_report": "behavioral-ab-codex-v1.1.0.json",
+  "generator": {
+    "provider": "codex",
+    "model": "gpt-5.4",
+    "runs": 8
+  },
+  "judge": {
+    "provider": "codex",
+    "model": "gpt-5.4",
+    "blind": true,
+    "positioning": {
+      "apns-simulator-boundary": "baseline=A,candidate=B",
+      "extension-exact-once": "candidate=A,baseline=B",
+      "app-review-payment-rule": "baseline=A,candidate=B",
+      "storekit-test-api": "candidate=A,baseline=B"
+    }
+  },
+  "rubric": {
+    "dimensions": ["coverage", "correctness", "actionability"],
+    "score_range": "0-2",
+    "material_inaccuracy_rule": "A materially incorrect platform or API claim forces correctness to 0."
+  },
+  "scenarios": [
+    {
+      "id": "apns-simulator-boundary",
+      "baseline": {
+        "coverage": 1,
+        "correctness": 0,
+        "actionability": 1,
+        "total": 2,
+        "evidence": "Treats the claim that Simulator can never receive APNs registration as correct and misses supported APNs Sandbox registration."
+      },
+      "candidate": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Separates simctl payload injection, supported APNs Sandbox Simulator coverage, and physical-device validation."
+      },
+      "winner": "candidate"
+    },
+    {
+      "id": "extension-exact-once",
+      "baseline": {
+        "coverage": 2,
+        "correctness": 1,
+        "actionability": 2,
+        "total": 5,
+        "evidence": "Finds the completion race but depends on diagnosing a flawed sample instead of providing a complete guarded implementation."
+      },
+      "candidate": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Provides an exactly-once completion guard, fallback content, cancellation, and the alert-versus-silent boundary."
+      },
+      "winner": "candidate"
+    },
+    {
+      "id": "app-review-payment-rule",
+      "baseline": {
+        "coverage": 1,
+        "correctness": 1,
+        "actionability": 2,
+        "total": 4,
+        "evidence": "Recognizes narrow exemptions but overstates the enterprise-distribution boundary."
+      },
+      "candidate": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Correctly constrains person-to-person and organization-only enterprise services and requires current storefront or entitlement evidence."
+      },
+      "winner": "candidate"
+    },
+    {
+      "id": "storekit-test-api",
+      "baseline": {
+        "coverage": 1,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 5,
+        "evidence": "Corrects renewalBehavior but leaves the SKTestSession and production-purchase boundary incomplete."
+      },
+      "candidate": {
+        "coverage": 2,
+        "correctness": 2,
+        "actionability": 2,
+        "total": 6,
+        "evidence": "Separates shipped purchase flows from StoreKit Test options and names renewUntilNow and cancelImmediately."
+      },
+      "winner": "candidate"
+    }
+  ],
+  "summary": {
+    "baseline_score": 16,
+    "candidate_score": 24,
+    "maximum_score": 24,
+    "baseline_pass_rate": 0.6667,
+    "candidate_pass_rate": 1.0,
+    "pass_rate_delta": 0.3333,
+    "baseline_total_duration_ms": 178716,
+    "candidate_total_duration_ms": 186332,
+    "baseline_mean_duration_ms": 44679,
+    "candidate_mean_duration_ms": 46583,
+    "duration_delta_percent": 4.26,
+    "new_materially_incorrect_claims": 0,
+    "decision": "accept"
+  }
+}

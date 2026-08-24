@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 - 2026-08-24
+
+### Quality and maintainability
+
+- Add a real Codex backend, provider/model selection, scenario filtering, and duration capture to the behavioral A/B runner.
+- Record blind behavioral comparisons for the `v1.1.0` fixes and the later skill/reference compaction work.
+- Compact the 15 largest skill entrypoints into task-routing guides while moving implementation recipes into opt-in references.
+- Rewrite the 30 longest discovery descriptions around capability, trigger, and ownership boundaries; verify the catalog with a 19-case routing matrix.
+- Split the 10 largest reference files into 31 focused references, preserve every technical section, and correct an overstatement about automatic Swift Charts accessibility.
+
 ## 1.1.0 - 2026-08-24
 
 ### Skills

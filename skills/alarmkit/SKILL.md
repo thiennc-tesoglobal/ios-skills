@@ -1,6 +1,6 @@
 ---
 name: alarmkit
-description: "Implement AlarmKit alarms and countdown timers for iOS and iPadOS with Lock Screen, Dynamic Island, StandBy, and paired Apple Watch system UI. Covers AlarmManager scheduling, AlarmAttributes and AlarmPresentation, system Stop and AlarmButton secondary actions, authorization, state observation, countdown widget-extension handoff, and Live Activity integration. Use when building wake-up alarms, countdown timers, or alarm-style alerts that need Apple's system alarm experience."
+description: "Builds AlarmKit alarms and countdowns with system Lock Screen, Dynamic Island, StandBy, and Apple Watch presentation. Use for authorization, AlarmManager scheduling, stop/secondary actions, countdown extension handoff, state observation, or Live Activity-backed alarm experiences."
 ---
 
 # AlarmKit

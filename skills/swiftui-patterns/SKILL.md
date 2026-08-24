@@ -96,5 +96,7 @@ Read [Isolated Preview Construction](references/preview-isolation.md) when a pre
 - Existing-view restructuring: [references/view-refactoring.md](references/view-refactoring.md)
 - Isolated previews and fixtures: [references/preview-isolation.md](references/preview-isolation.md)
 - Design polish, theming, haptics, loading, and focus: [references/design-polish.md](references/design-polish.md)
-- Deprecated or fragile API migration: [references/deprecated-migration.md](references/deprecated-migration.md)
+- Navigation and Observation migration: [references/migration-navigation-observation.md](references/migration-navigation-observation.md)
+- View styling, lifecycle, and layout migration: [references/migration-view-lifecycle-layout.md](references/migration-view-lifecycle-layout.md)
+- List, data, interop, and modern API migration: [references/migration-data-and-modern-apis.md](references/migration-data-and-modern-apis.md)
 - Platform and sharing patterns: [references/platform-and-sharing.md](references/platform-and-sharing.md)

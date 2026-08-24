@@ -1,6 +1,6 @@
 ---
 name: vision-framework
-description: "Implement computer vision features including text recognition (OCR), face detection, barcode scanning, image segmentation, object tracking, and document scanning in iOS apps. Covers both the modern Swift-native Vision API (iOS 18+) and legacy VNRequest patterns, VisionKit DataScannerViewController for live camera scanning, and CoreMLRequest/VNCoreMLRequest for custom model inference. Use when adding OCR, barcode scanning, face detection, or custom Core ML model inference with Vision."
+description: "Builds or reviews iOS computer-vision features with Vision and VisionKit, including OCR, barcode and document scanning, face/object detection, segmentation, tracking, and Core ML inference. Use for Vision requests, live DataScanner flows, or Vision/Core ML integration."
 ---
 
 # Vision Framework

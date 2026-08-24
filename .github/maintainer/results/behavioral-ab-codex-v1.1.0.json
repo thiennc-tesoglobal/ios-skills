@@ -1,0 +1,75 @@
+{
+  "provider": "codex",
+  "runner": "codex",
+  "model": "gpt-5.4",
+  "skill_override": null,
+  "old_root": "git:e9059f3",
+  "new_root": "git:v1.1.0",
+  "scenarios": [
+    {
+      "id": "apns-simulator-boundary",
+      "skill": "push-notifications",
+      "old": {
+        "status": "ok",
+        "text": "COVERAGE: Partial; it addresses the hardware requirement for real APNs registration but misses the skill’s explicit Simulator test path for `.apns`/`simctl push` and silent-push handler validation.\nCORRECTNESS: The claim “Simulator can never receive APNs device-token registration” is correct; the recommendation “only physical-device testing” is incorrect because the Simulator can receive simulated remote payloads even though it cannot perform normal APNs token registration.\nACTIONABILITY: Split the boundary: use Simulator for payload parsing, delegate/routing, foreground behavior, local notifications, and simulated silent-push handling; use a physical device for `registerForRemoteNotifications()`, real device-token callbacks, APNs sandbox/provider requests, and end-to-end delivery.\nMISSED: The review should state the provider/device boundary explicitly: Simulator proves app-side handling only, while hardware is required to prove APNs provider acceptance, token lifecycle, and real remote/silent delivery.",
+        "exit_code": 0,
+        "duration_ms": 38002
+      },
+      "new": {
+        "status": "ok",
+        "text": "COVERAGE: Incomplete; it keeps the physical-device check but misses two distinct Simulator paths: provider-free `.apns`/`simctl push` and, on supported current Xcode/OS hosts, APNs Sandbox registration/provider delivery to Simulator.\nCORRECTNESS: Incorrect claim: “the iOS Simulator can never receive APNs device-token registration” is false; Simulator may register with APNs Sandbox and receive a simulator-specific, variable-length token, but that does not prove production or hardware behavior.\nACTIONABILITY: Split testing by boundary: use `.apns` or `xcrun simctl push` for app receipt/routing, use APNs Sandbox to a supported Simulator for sandbox token/provider checks, and use a physical device for production entitlements, signing, and hardware-specific validation.\nMISSED: Silent pushes need `aps.content-available: 1`, `apns-push-type: background`, and priority `5`; they are low-priority hints, not timers, and Simulator tokens are sandbox-only and not interchangeable with device tokens.",
+        "exit_code": 0,
+        "duration_ms": 32068
+      }
+    },
+    {
+      "id": "extension-exact-once",
+      "skill": "push-notifications",
+      "old": {
+        "status": "ok",
+        "text": "COVERAGE: Covers the key contracts well: service extensions require an alerting payload with `mutable-content: 1`, silent/background pushes do not launch them, and fallback can be original or best-attempt content.\nCORRECTNESS: One incorrect part is the sample implementation: it can call the content handler twice because `didReceive` and `serviceExtensionTimeWillExpire()` race, while `didComplete` is declared but never used.\nACTIONABILITY: The prose is review-friendly and names the right completion rule, but the example should show an atomic single-finish guard and a fallback path for invalid payload, download failure, and timeout.\nMISSED: It does not explain how to serialize completion across the async task and timeout, cancel or ignore late async work after finishing, or make the “best attempt” fallback explicit when media fetch/decryption only partially succeeds.",
+        "exit_code": 0,
+        "duration_ms": 37479
+      },
+      "new": {
+        "status": "ok",
+        "text": "COVERAGE: Covers the key contracts: only alerting payloads with `mutable-content: 1` invoke the service extension, the normal task can race `serviceExtensionTimeWillExpire()`, and completion must be exactly once with original or best-attempt content.\n\nCORRECTNESS: No incorrect claim found; Apple docs match the skill that silent, sound-only, and badge-only pushes do not run the service extension, and if neither path calls the handler the system shows the original notification.\n\nACTIONABILITY: Strong; it provides a concrete exactly-once pattern with locked completion, fallback/original content retention, cancellation after finish, and bounded async media/decryption guidance.\n\nMISSED: It should say more directly that `serviceExtensionTimeWillExpire()` must hand back content immediately, and the media example should show explicit cancellation checks during download or processing.",
+        "exit_code": 0,
+        "duration_ms": 65531
+      }
+    },
+    {
+      "id": "app-review-payment-rule",
+      "skill": "storekit",
+      "old": {
+        "status": "ok",
+        "text": "COVERAGE: Partial. The skill covers the main boundary: digital goods/features generally require IAP; physical goods, real-world services, some one-to-one services, and ABM-distributed enterprise apps generally do not.\nCORRECTNESS: The claim is incorrect. Not every person-to-person service avoids IAP; the carveout here is one-to-one real-world services such as tutoring/consulting. Not every enterprise service avoids IAP; the reference limits that to enterprise/B2B apps distributed through Apple Business Manager.\nACTIONABILITY: Storefront or entitlement evidence is required when the app shows any external purchase link, button, CTA, or reader-style sign-up/account-management path for digital goods. The skill says those paths need a current storefront-specific rule or an approved entitlement.\nMISSED: The plan should explicitly ask for proof of storefront eligibility and approved entitlement status, and it should not treat “enterprise” or “person-to-person” as blanket exemptions.",
+        "exit_code": 0,
+        "duration_ms": 32608
+      },
+      "new": {
+        "status": "ok",
+        "text": "COVERAGE: Adequate for a StoreKit guardrail; it covers 3.1.1 baseline, IAP-required cases, limited non-IAP exceptions, and external-purchase evidence gates.\nCORRECTNESS: Incorrect claim: not every person-to-person or enterprise service can avoid IAP. Only real-time person-to-person services between two individuals qualify, and enterprise services must be sold directly by the developer to organizations/groups for employees or students; consumer, single-user, and family sales still use IAP.\nACTIONABILITY: Require storefront or entitlement evidence whenever the plan allows any external purchase link, CTA, sign-up, or digital-goods path outside IAP; cite the current storefront rule or approved entitlement, and for reader-style access confirm the app type plus storefront-specific allowance.\nMISSED: It should explicitly say these are not blanket exemptions, and that review approval depends on current App Review text, storefront, app type, and approved entitlement status.",
+        "exit_code": 0,
+        "duration_ms": 24974
+      }
+    },
+    {
+      "id": "storekit-test-api",
+      "skill": "storekit",
+      "old": {
+        "status": "ok",
+        "text": "COVERAGE: Partial; it covers `product.purchase(options:)` and test-only `PurchaseOption`s like `codeOffer`/`purchaseDate`, but it does not clearly separate those from `SKTestSession` environment-control APIs.\n\nCORRECTNESS: One incorrect claim: `renewalBehavior: .default` is invalid; the valid cases are `.renewUntilNow` and `.cancelImmediately`. `codeOffer(referenceName:)` and `purchaseDate(_:renewalBehavior:)` are valid StoreKit Test `Product.PurchaseOption`s.\n\nACTIONABILITY: Strong; change the example to `.renewUntilNow` or `.cancelImmediately`, and add one sentence distinguishing production purchase entry points from `SKTestSession` test harness controls.\n\nMISSED: No explicit `SKTestSession` section, no named renewal-behavior cases, and no clear warning that these purchase options are for Xcode StoreKit Test, not normal production purchase behavior.",
+        "exit_code": 0,
+        "duration_ms": 70627
+      },
+      "new": {
+        "status": "ok",
+        "text": "COVERAGE: Good; `SKILL.md` routes this review to the purchase, offers, and StoreKit Test refs, and those refs explicitly separate app purchases via `product.purchase(options:)` from StoreKit Test control via `SKTestSession.buyProduct(identifier:options:)`.\n\nCORRECTNESS: Mostly correct. The incorrect claim is `renewalBehavior: .default`: valid cases are only `.renewUntilNow` and `.cancelImmediately`; if you omit the argument, the default is `.renewUntilNow`.\n\nACTIONABILITY: Strong; the refs give a reviewer exact guidance to move `purchaseDate(...)` and `.codeOffer(...)` into a test target that imports `StoreKitTest`, while keeping production flows on normal `product.purchase` paths.\n\nMISSED: One nuance could be clearer: `purchaseDate` and `codeOffer` are still `Product.PurchaseOption` values in Apple’s API, but they are testing-only options intended for `SKTestSession.buyProduct`, not shipped purchase logic.",
+        "exit_code": 0,
+        "duration_ms": 63759
+      }
+    }
+  ],
+  "status": "ok"
+}

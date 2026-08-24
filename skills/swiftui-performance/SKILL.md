@@ -1,6 +1,6 @@
 ---
 name: swiftui-performance
-description: "Profile, diagnose, and remediate SwiftUI runtime performance using code review, Instruments, and repeatable measurements. Use when a SwiftUI screen renders slowly, scrolling or animations hitch, view bodies update excessively, list identity churns, layout work spikes, or broad Observation dependencies raise CPU cost. Covers evidence-based triage, SwiftUI Instruments lanes, lazy-container guardrails, state lifetime, and before/after verification."
+description: "Profiles and fixes SwiftUI runtime performance with code review, Instruments, and repeatable measurement. Use for slow rendering, scrolling or animation hitches, excessive body updates, identity churn, layout spikes, broad Observation invalidation, CPU cost, or before/after verification."
 ---
 
 # SwiftUI Performance

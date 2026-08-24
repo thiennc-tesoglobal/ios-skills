@@ -1,6 +1,6 @@
 ---
 name: widgetkit
-description: "Implement, review, or improve WidgetKit widgets and controls. Use when building Home Screen, Lock Screen, StandBy, or CarPlay widgets with timeline providers; configurable widgets with AppIntentTimelineProvider; interactive widgets or Control Center controls with Button/Toggle wiring; WidgetKit push reloads, refresh budgets, deep links, Smart Stack relevance, Liquid Glass/accented rendering, widget extension setup, WidgetBundle, App Groups, and entitlements."
+description: "Builds or reviews WidgetKit widgets and controls for Home Screen, Lock Screen, StandBy, CarPlay, and Control Center. Use for timelines, App Intent configuration, interactive controls, push reloads, refresh budgets, deep links, Smart Stack relevance, rendering, extensions, and App Groups."
 ---
 
 # WidgetKit
@@ -13,8 +13,7 @@ ActivityKit and App Intents only where they connect directly to WidgetKit
 surfaces; hand off full lifecycle, APNs content-state, Siri/Shortcuts/Spotlight,
 or entity-modeling work to sibling `activitykit` or `app-intents` skills.
 
-See [references/widgetkit-advanced.md](references/widgetkit-advanced.md) for timeline strategies, push-based
-updates, Xcode setup, and advanced patterns.
+Read [timelines, configuration, and deep links](references/timelines-configuration-and-deep-links.md) for widget refresh and routing. Read [Live Activity presentation and push](references/live-activity-presentation-and-push.md) for Dynamic Island and remote updates. Read [performance, setup, and lifecycle](references/performance-setup-and-lifecycle.md) for extension configuration, relevance, and runtime behavior.
 
 ## Contents
 
@@ -351,8 +350,7 @@ On watchOS, contextual relevance uses
   surface is a single tap target.
 - **Match timeline refresh to data granularity.** The budget is dynamic and opportunistic; schedule useful future entries, avoid unnecessary reloads, and use `Text(timerInterval:countsDown:)` for live countdowns. Load the advanced reference for current budget guidance.
 
-See [references/widgetkit-advanced.md](references/widgetkit-advanced.md) for
-code examples and detailed guidance on each pattern.
+Load the matching focused reference above for code examples and detailed guidance.
 
 ## iOS 26 Additions
 
@@ -445,5 +443,7 @@ opening the app, CarPlay integration.
 
 ## References
 
-- Advanced guide: [references/widgetkit-advanced.md](references/widgetkit-advanced.md)
+- [Timelines, configuration, and deep links](references/timelines-configuration-and-deep-links.md)
+- [Live Activity presentation and push](references/live-activity-presentation-and-push.md)
+- [Performance, setup, relevance, and lifecycle](references/performance-setup-and-lifecycle.md)
 - Apple docs: [WidgetKit](https://sosumi.ai/documentation/widgetkit) | [Keeping a widget up to date](https://sosumi.ai/documentation/widgetkit/keeping-a-widget-up-to-date) | [Smart Stack visibility](https://sosumi.ai/documentation/widgetkit/widget-suggestions-in-smart-stacks)

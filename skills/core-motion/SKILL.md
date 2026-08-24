@@ -1,6 +1,6 @@
 ---
 name: core-motion
-description: "Access Core Motion accelerometer, gyroscope, magnetometer, device-motion, pedometer, activity-recognition, altitude, headphone motion, batched high-frequency workout motion, and water-submersion/depth data. Use when reading device sensors, counting steps, detecting walking/running/driving/cycling, tracking altitude, building motion interactions, handling AirPods head tracking, or implementing watchOS dive/depth features."
+description: "Builds sensor workflows with Core Motion for accelerometer, gyroscope, device motion, pedometer, activity recognition, altitude, headphone motion, workout motion, and submersion/depth data. Use for motion interaction, steps, activity classification, AirPods tracking, or watchOS depth features."
 ---
 
 # CoreMotion

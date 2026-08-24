@@ -1,13 +1,13 @@
 ---
 name: swiftui-uikit-interop
-description: "Bridges UIKit and SwiftUI with UIViewRepresentable, UIViewControllerRepresentable, UIHostingController, UIHostingConfiguration, coordinator delegates, and UIKit automatic observation tracking for shared @Observable state. Use when wrapping UIKit-only or third-party UIKit views/controllers in SwiftUI, embedding SwiftUI in UIKit, integrating mail/share/document/PDF/text-view surfaces, or migrating UIKit apps to SwiftUI incrementally."
+description: "Bridges UIKit and SwiftUI with representables, hosting controllers/configurations, coordinators, and shared observable state. Use for wrapping UIKit or third-party views/controllers, embedding SwiftUI in UIKit, system controller surfaces, or incremental UIKit-to-SwiftUI migration."
 ---
 
 # SwiftUI-UIKit Interop
 
 Bridge UIKit and SwiftUI in both directions: wrap UIKit views and controllers, embed SwiftUI in UIKit screens, and synchronize state without duplicating lifecycle ownership.
 
-See [references/representable-recipes.md](references/representable-recipes.md) for complete wrapping recipes and [references/hosting-migration.md](references/hosting-migration.md) for UIKit-to-SwiftUI migration patterns.
+Read [map, text, and camera wrappers](references/map-text-and-camera-wrappers.md), [picker, mail, share, and search wrappers](references/picker-mail-share-and-search-wrappers.md), or [PDF and message wrappers](references/pdf-and-message-wrappers.md) for the matching representable recipe. Read [hosting migration](references/hosting-migration.md) for UIKit-to-SwiftUI migration patterns.
 
 ## Contents
 
@@ -418,7 +418,9 @@ If passing closures across isolation boundaries, ensure they are `@Sendable` or 
 
 ## References
 
-- Wrapping recipes: [references/representable-recipes.md](references/representable-recipes.md)
+- [Map, text, and camera wrappers](references/map-text-and-camera-wrappers.md)
+- [Picker, mail, share, and search wrappers](references/picker-mail-share-and-search-wrappers.md)
+- [PDF and message wrappers](references/pdf-and-message-wrappers.md)
 - Migration patterns: [references/hosting-migration.md](references/hosting-migration.md)
 - Apple docs: [UIViewRepresentable](https://sosumi.ai/documentation/swiftui/UIViewRepresentable)
 - Apple docs: [UIViewControllerRepresentable](https://sosumi.ai/documentation/swiftui/UIViewControllerRepresentable)

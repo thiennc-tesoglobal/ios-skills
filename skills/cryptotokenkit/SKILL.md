@@ -1,6 +1,6 @@
 ---
 name: cryptotokenkit
-description: "Access security tokens and smart cards using CryptoTokenKit. Use when building TKTokenDriver or TKSmartCardTokenDriver extensions, communicating with smart cards via TKSmartCard/TKSmartCardSlotManager, using iOS 26+ NFC smart-card sessions, registering smart cards, querying token-backed keychain items with kSecAttrTokenID, monitoring TKTokenWatcher, or configuring certificate-based smart-card authentication."
+description: "Builds CryptoTokenKit security-token and smart-card integrations. Use for token-driver extensions, token sessions, TKSmartCard communication, NFC smart-card sessions, token-backed Keychain queries, token watching, certificate authentication, APDU handling, or PIN workflows."
 ---
 
 # CryptoTokenKit

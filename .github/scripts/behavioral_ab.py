@@ -13,6 +13,8 @@ import json
 import shutil
 import subprocess
 import sys
+import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +40,21 @@ SCENARIOS: tuple[dict[str, str], ...] = (
         "skill": "storekit",
         "prompt": "Review StoreKit test code that calls product.purchase with purchaseDate(..., renewalBehavior: .default) and codeOffer. Separate production purchase APIs from StoreKit Test SKTestSession APIs and name the valid renewal behaviors.",
     },
+    {
+        "id": "cloudkit-sync-recovery",
+        "skill": "cloudkit",
+        "prompt": "Review a CloudKit sync plan that stores personal data in the public database, polls with a timer, retries throttling immediately, assumes CKSyncEngine resolves failedRecordSaves, and starts every fetch with a nil change token. Correct the design and give a focused verification matrix.",
+    },
+    {
+        "id": "swift-charts-large-accessible",
+        "skill": "swift-charts",
+        "prompt": "Review a Swift Charts dashboard that renders 10,000 PointMarks individually, connects multiple series without a series encoding, fixes chart height at 200 points, omits accessibility labels, and compares chartAngleSelection directly to category strings. Give focused corrections.",
+    },
+    {
+        "id": "carplay-template-boundary",
+        "skill": "carplay",
+        "prompt": "Review a CarPlay plan that draws arbitrary SwiftUI in the car window, pushes a CPTabBarTemplate, instantiates CPNowPlayingTemplate directly, ignores category entitlement limits, and may skip template completion handlers. Correct the template and lifecycle boundaries.",
+    },
 )
 
 
@@ -47,8 +64,60 @@ def resolve_skill(scenario: dict[str, str], override: str | None) -> str:
     return override or scenario["skill"]
 
 
+def runner_command(
+    runner: str,
+    provider: str,
+    model: str,
+    root: Path,
+    prompt: str,
+    budget: str,
+    output_path: Path | None = None,
+) -> list[str]:
+    """Build a non-interactive, read-only command for a supported model runner."""
+
+    if provider == "codex":
+        if output_path is None:
+            raise ValueError("Codex runs require an output path")
+        return [
+            runner,
+            "exec",
+            "--ephemeral",
+            "--skip-git-repo-check",
+            "--sandbox",
+            "read-only",
+            "--model",
+            model,
+            "--cd",
+            str(root),
+            "--output-last-message",
+            str(output_path),
+            prompt,
+        ]
+    if provider != "claude":
+        raise ValueError(f"unsupported provider: {provider}")
+    return [
+        runner,
+        "--bare",
+        "--no-session-persistence",
+        "--permission-mode",
+        "dontAsk",
+        "--model",
+        model,
+        "--max-budget-usd",
+        budget,
+        "-p",
+        prompt,
+        "--add-dir",
+        str(root),
+        "--output-format",
+        "text",
+    ]
+
+
 def run_case(
     runner: str,
+    provider: str,
+    model: str,
     root: Path,
     skill: str,
     scenario: dict[str, str],
@@ -63,42 +132,52 @@ def run_case(
         "COVERAGE, CORRECTNESS, ACTIONABILITY, and MISSED. Keep the response "
         "under 180 words and call out any incorrect claim."
     )
-    command = [
-        runner,
-        "--bare",
-        "--no-session-persistence",
-        "--permission-mode",
-        "dontAsk",
-        "--model",
-        "sonnet",
-        "--max-budget-usd",
-        budget,
-        "-p",
-        prompt,
-        "--add-dir",
-        str(root),
-        "--output-format",
-        "text",
-    ]
-    try:
-        completed = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            check=False,
+    started = time.monotonic()
+    with tempfile.TemporaryDirectory(prefix="ios-skills-ab-") as directory:
+        output_path = Path(directory) / "last-message.txt"
+        command = runner_command(
+            runner,
+            provider,
+            model,
+            root,
+            prompt,
+            budget,
+            output_path,
         )
-    except subprocess.TimeoutExpired:
-        return {"status": "timeout", "text": "", "exit_code": None}
+        try:
+            completed = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                check=False,
+            )
+        except subprocess.TimeoutExpired:
+            return {
+                "status": "timeout",
+                "text": "",
+                "exit_code": None,
+                "duration_ms": round((time.monotonic() - started) * 1000),
+            }
 
-    output = (completed.stdout or completed.stderr).strip()
+        if provider == "codex" and output_path.is_file():
+            output = output_path.read_text(encoding="utf-8").strip()
+        else:
+            output = (completed.stdout or completed.stderr).strip()
+    duration_ms = round((time.monotonic() - started) * 1000)
     if completed.returncode != 0 or "Not logged in" in output:
         return {
             "status": "unavailable",
             "text": output,
             "exit_code": completed.returncode,
+            "duration_ms": duration_ms,
         }
-    return {"status": "ok", "text": output, "exit_code": completed.returncode}
+    return {
+        "status": "ok",
+        "text": output,
+        "exit_code": completed.returncode,
+        "duration_ms": duration_ms,
+    }
 
 
 def main() -> int:
@@ -109,7 +188,15 @@ def main() -> int:
         "--skill",
         help="Override the skill for every scenario in a focused run; otherwise each scenario selects its own skill.",
     )
-    parser.add_argument("--runner", default="claude")
+    parser.add_argument(
+        "--scenario",
+        action="append",
+        choices=tuple(scenario["id"] for scenario in SCENARIOS),
+        help="Run only the selected scenario; repeat the option to select multiple scenarios.",
+    )
+    parser.add_argument("--provider", choices=("claude", "codex"), default="claude")
+    parser.add_argument("--runner", help="Runner executable; defaults to the provider name")
+    parser.add_argument("--model", help="Model name; defaults to sonnet or gpt-5.4")
     parser.add_argument("--timeout-seconds", type=int, default=120)
     parser.add_argument("--budget-usd", default="0.20")
     parser.add_argument("--output", type=Path)
@@ -120,19 +207,30 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    runner_path = shutil.which(args.runner)
+    runner = args.runner or args.provider
+    model = args.model or ("sonnet" if args.provider == "claude" else "gpt-5.4")
+    runner_path = shutil.which(runner)
     report: dict[str, Any] = {
-        "runner": args.runner,
+        "provider": args.provider,
+        "runner": runner,
+        "model": model,
         "skill_override": args.skill,
+        "scenario_filter": args.scenario,
         "old_root": str(args.old_root),
         "new_root": str(args.new_root),
         "scenarios": [],
     }
     if runner_path is None:
         report["status"] = "unavailable"
-        report["error"] = f"runner not found: {args.runner}"
+        report["error"] = f"runner not found: {runner}"
     else:
-        for scenario in SCENARIOS:
+        selected_ids = set(args.scenario or ())
+        selected_scenarios = tuple(
+            scenario
+            for scenario in SCENARIOS
+            if not selected_ids or scenario["id"] in selected_ids
+        )
+        for scenario in selected_scenarios:
             scenario_skill = resolve_skill(scenario, args.skill)
             report["scenarios"].append(
                 {
@@ -140,6 +238,8 @@ def main() -> int:
                     "skill": scenario_skill,
                     "old": run_case(
                         runner_path,
+                        args.provider,
+                        model,
                         args.old_root,
                         scenario_skill,
                         scenario,
@@ -148,6 +248,8 @@ def main() -> int:
                     ),
                     "new": run_case(
                         runner_path,
+                        args.provider,
+                        model,
                         args.new_root,
                         scenario_skill,
                         scenario,
