@@ -19,7 +19,7 @@ PUBLISHED_EVALS_DIR = ROOT / "evals"
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_PATTERN = re.compile(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|\Z)", re.DOTALL)
 MARKDOWN_LINK_PATTERN = re.compile(r"\]\(([^)]+)\)")
-EXPECTED_VERSION = "1.1.0"
+EXPECTED_VERSION = "1.2.0"
 
 
 class Validation:
