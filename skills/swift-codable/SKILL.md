@@ -346,5 +346,5 @@ decoder.keyDecodingStrategy = .convertFromSnakeCase
 - [CodingKey](https://sosumi.ai/documentation/swift/codingkey/) -- protocol for encoding/decoding keys
 - [JSONDecoder.KeyDecodingStrategy.convertFromSnakeCase](https://sosumi.ai/documentation/foundation/jsondecoder/keydecodingstrategy-swift.enum/convertfromsnakecase) -- snake-case conversion behavior and limitations
 - [Encoding and Decoding Custom Types](https://sosumi.ai/documentation/foundation/encoding-and-decoding-custom-types/) -- Apple guide on custom Codable conformance
-- [Using JSON with Custom Types](https://sosumi.ai/documentation/foundation/archives_and_serialization/using_json_with_custom_types/) -- Apple sample code for JSON patterns
+- [Using JSON with Custom Types](https://sosumi.ai/documentation/foundation/using-json-with-custom-types) -- Apple sample code for JSON patterns
 - [Preserving your app's model data across launches](https://sosumi.ai/documentation/swiftdata/preserving-your-apps-model-data-across-launches) -- SwiftData model property compatibility

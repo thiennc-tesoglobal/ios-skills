@@ -282,7 +282,7 @@ displayLink?.preferredFrameRateRange = CAFrameRateRange(
 
 **Important:** Always call `invalidate()` when done. A running `CADisplayLink` prevents the CPU from idling and drains battery. Drive custom animation from `targetTimestamp`, and scale rendering detail or work per frame to the refresh rate the system actually selects.
 
-> **Docs:** [CADisplayLink](https://sosumi.ai/documentation/quartzcore/cadisplaylink) | [Optimizing ProMotion refresh rates](https://sosumi.ai/documentation/quartzcore/optimizing-promotion-refresh-rates-for-iphone-13-pro-and-ipad-pro)
+> **Docs:** [CADisplayLink](https://sosumi.ai/documentation/quartzcore/cadisplaylink) | [Optimizing ProMotion refresh rates](https://sosumi.ai/documentation/quartzcore/optimizing-iphone-and-ipad-apps-to-support-promotion-displays)
 
 ## UIViewRepresentable Wrapper for CA Layers
 

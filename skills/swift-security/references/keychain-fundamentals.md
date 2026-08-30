@@ -4,7 +4,7 @@
 >
 > **Key APIs:** `SecItemAdd`, `SecItemCopyMatching`, `SecItemUpdate`, `SecItemDelete`, `kSecClassGenericPassword`, `kSecClassInternetPassword`, `kSecClassKey`, `kSecClassCertificate`, `kSecClassIdentity`
 >
-> **Apple Documentation:** [Keychain Services](https://sosumi.ai/documentation/security/keychain_services), [TN3137](https://sosumi.ai/documentation/technotes/tn3137-on-mac-keychains), Quinn "The Eskimo!" DTS posts: "SecItem: Fundamentals" and "SecItem: Pitfalls and Best Practices"
+> **Apple Documentation:** [Keychain Services](https://sosumi.ai/documentation/security/keychain-services), [TN3137](https://sosumi.ai/documentation/technotes/tn3137-on-mac-keychains), Quinn "The Eskimo!" DTS posts: "SecItem: Fundamentals" and "SecItem: Pitfalls and Best Practices"
 
 ---
 
@@ -584,7 +584,7 @@ The `kSecAttrAccessible` attribute controls when a keychain item's secret data c
 
 | Source                                                                                                                          | Relevance                                          |
 | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| [Keychain Services](https://sosumi.ai/documentation/security/keychain_services)                                       | Main API landing page                              |
+| [Keychain Services](https://sosumi.ai/documentation/security/keychain-services)                                       | Main API landing page                              |
 | [TN3137: On Mac Keychain APIs and Implementations](https://sosumi.ai/documentation/technotes/tn3137-on-mac-keychains) | macOS data protection vs file-based routing        |
 | Quinn "The Eskimo!" — "SecItem: Fundamentals" / "SecItem: Pitfalls and Best Practices"                                          | Most practical DTS reference, updated through 2025 |
 | [Apple Platform Security Guide](https://support.apple.com/guide/security/welcome/web) — Keychain Data Protection chapter        | Two-tier encryption architecture                   |

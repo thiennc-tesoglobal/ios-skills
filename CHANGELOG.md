@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Distribution
+
+- Isolate Agent Skills discovery checks from ignored maintainer state.
+- Validate the exact public skill names and count from a release-faithful repository snapshot.
+- Repair stale Sosumi documentation URLs and add a scheduled external-link check.
+
 ## 1.2.0 - 2026-08-24
 
 ### Quality and maintainability

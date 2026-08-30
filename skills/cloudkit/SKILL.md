@@ -65,7 +65,7 @@ SwiftData integration, conflict resolution, and error handling.
 - [CKRecord](https://sosumi.ai/documentation/cloudkit/ckrecord)
 - [CKQuery](https://sosumi.ai/documentation/cloudkit/ckquery)
 - [CKSubscription](https://sosumi.ai/documentation/cloudkit/cksubscription)
-- [CKSyncEngine](https://sosumi.ai/documentation/cloudkit/cksyncengine)
+- [CKSyncEngine](https://sosumi.ai/documentation/cloudkit/cksyncengine-5sie5)
 - [CKShare](https://sosumi.ai/documentation/cloudkit/ckshare)
 - [CKError](https://sosumi.ai/documentation/cloudkit/ckerror)
 - [NSUbiquitousKeyValueStore](https://sosumi.ai/documentation/foundation/nsubiquitouskeyvaluestore)

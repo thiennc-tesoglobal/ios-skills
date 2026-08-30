@@ -28,7 +28,7 @@ jobs:
           python3 -m unittest discover -s tests -v
           npm test
           npm run pack:check
-          npx --yes skills@1.5.23 add . --list
+          python3 .github/scripts/validate_public_discovery.py --run
 
       - name: Check release versions
         env:

@@ -1,0 +1,19 @@
+name: Check Documentation Links
+
+on:
+  schedule:
+    - cron: "23 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-sosumi-links:
+    name: Sosumi Links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check public skill documentation links
+        run: python3 .github/scripts/check_sosumi_links.py

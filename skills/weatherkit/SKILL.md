@@ -369,4 +369,4 @@ is in [references/weatherkit-patterns.md](references/weatherkit-patterns.md#cach
 - [WeatherQuery.historicalComparisons](https://sosumi.ai/documentation/weatherkit/weatherquery/historicalcomparisons)
 - [WeatherKit updates](https://sosumi.ai/documentation/updates/weatherkit)
 - [Bring context to today's weather](https://sosumi.ai/videos/play/wwdc2024/10067)
-- [Fetching weather forecasts with WeatherKit](https://sosumi.ai/documentation/weatherkit/fetching_weather_forecasts_with_weatherkit)
+- [WeatherService.weather(for:)](https://sosumi.ai/documentation/weatherkit/weatherservice/weather(for:))
