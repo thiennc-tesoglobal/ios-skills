@@ -84,7 +84,7 @@ item at the wrong vertical position.
 watchOS uses the **Digital Crown** as its primary navigation input alongside
 touch. SwiftUI provides `digitalCrownRotation(_:)` to track crown input.
 
-Docs: [digitalCrownRotation](https://sosumi.ai/documentation/swiftui/view/digitalcrownrotation(_:from:through:sensitivity:iscontinuous:ishapticfeedbackenabled:))
+Docs: [digitalCrownRotation](https://sosumi.ai/documentation/swiftui/view/digitalcrownrotation(_:from:through:by:sensitivity:iscontinuous:ishapticfeedbackenabled:))
 
 ```swift
 struct CrownScrollView: View {

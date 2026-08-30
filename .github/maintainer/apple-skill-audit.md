@@ -70,7 +70,8 @@ npm ci
 npm test
 npm run pack:check
 claude plugin validate .
-npx --yes skills@1.5.23 add . --list
+python3 .github/scripts/check_sosumi_links.py
+python3 .github/scripts/validate_public_discovery.py --run
 ```
 
 Then inspect:

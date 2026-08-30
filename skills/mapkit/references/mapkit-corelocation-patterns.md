@@ -770,8 +770,8 @@ A `horizontalAccuracy` of -1 means the coordinate is invalid.
 ## References
 
 - Apple docs: [CLLocationUpdate](https://sosumi.ai/documentation/CoreLocation/CLLocationUpdate)
-- Apple docs: [CLServiceSession](https://sosumi.ai/documentation/CoreLocation/CLServiceSession)
-- Apple docs: [CLMonitor](https://sosumi.ai/documentation/CoreLocation/CLMonitor)
-- Apple docs: [CLBackgroundActivitySession](https://sosumi.ai/documentation/CoreLocation/CLBackgroundActivitySession)
+- Apple docs: [CLServiceSession](https://sosumi.ai/documentation/corelocation/clservicesession-pt7n)
+- Apple docs: [CLMonitor](https://sosumi.ai/documentation/corelocation/clmonitor-2r51v)
+- Apple docs: [CLBackgroundActivitySession](https://sosumi.ai/documentation/corelocation/clbackgroundactivitysession-3mzv3)
 - Apple docs: [Requesting authorization](https://sosumi.ai/documentation/CoreLocation/requesting-authorization-to-use-location-services)
 - Apple docs: [Handling background location](https://sosumi.ai/documentation/CoreLocation/handling-location-updates-in-the-background)

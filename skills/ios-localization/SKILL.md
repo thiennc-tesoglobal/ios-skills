@@ -186,7 +186,7 @@ String Catalogs support device-specific text (iPhone vs iPad vs Mac):
 
 Use Foundation's automatic grammar agreement markup when nearby words must
 inflect for a value's number or gender. Preserve the complete inflecting phrase
-for translators; see [Automatic Grammar Agreement](https://sosumi.ai/documentation/foundation/automatic-grammar-agreement).
+for translators; see [AttributedString.inflected()](https://sosumi.ai/documentation/foundation/attributedstring/inflected()).
 
 ## FormatStyle -- Locale-Aware Formatting
 
