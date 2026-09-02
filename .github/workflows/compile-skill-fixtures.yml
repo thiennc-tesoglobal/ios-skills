@@ -1,0 +1,46 @@
+name: Compile Skill Fixtures
+
+on:
+  pull_request:
+    paths:
+      - ".github/compile-fixtures/**"
+      - ".github/scripts/typecheck_skill_fixtures.sh"
+      - ".github/workflows/compile-skill-fixtures.yml"
+      - "skills/core-haptics/**"
+      - "skills/energykit/**"
+      - "skills/metrickit/**"
+      - "skills/swift-concurrency/**"
+      - "skills/swiftdata/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/compile-fixtures/**"
+      - ".github/scripts/typecheck_skill_fixtures.sh"
+      - ".github/workflows/compile-skill-fixtures.yml"
+      - "skills/core-haptics/**"
+      - "skills/energykit/**"
+      - "skills/metrickit/**"
+      - "skills/swift-concurrency/**"
+      - "skills/swiftdata/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stable-xcode:
+    name: Xcode 26.6 (required)
+    runs-on: macos-26
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v6
+      - run: .github/scripts/typecheck_skill_fixtures.sh stable
+
+  beta-xcode:
+    name: Xcode 27 preview (informational)
+    runs-on: xcode-27
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+      - run: .github/scripts/typecheck_skill_fixtures.sh beta

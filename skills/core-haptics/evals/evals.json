@@ -1,0 +1,65 @@
+{
+  "skill_name": "core-haptics",
+  "evals": [
+    {
+      "id": 0,
+      "name": "drag-driven-continuous-haptic",
+      "prompt": "Implement a Swift 6.3 haptic texture whose intensity and sharpness follow a drag gesture continuously. It must stop on cancellation and recover after interruptions.",
+      "expected_output": "A retained Core Haptics engine and continuous player with live dynamic-parameter updates, explicit gesture cleanup, capability fallback, and reset recovery.",
+      "files": [],
+      "assertions": [
+        "Checks CHHapticEngine hardware capability and preserves a non-haptic interaction path.",
+        "Creates one retained engine and installs stoppedHandler and resetHandler before starting it.",
+        "Starts one retained continuous pattern player instead of creating a new pattern for every drag update.",
+        "Uses hapticIntensityControl and hapticSharpnessControl dynamic parameters for live updates.",
+        "Stops and releases the player on gesture end and cancellation.",
+        "Recreates invalidated players after an engine reset and treats callbacks as potentially off-main-thread.",
+        "Requires verification on supported physical hardware rather than Simulator-only testing."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "designer-ahap-lifecycle-review",
+      "prompt": "Review an implementation that force-unwraps Success.ahap, creates CHHapticEngine inside every button action, starts it, and assumes the player survives app backgrounding. Provide a corrected architecture.",
+      "expected_output": "A lifecycle-safe AHAP design with a retained engine owner, checked resources, capability fallback, interruption/reset handling, and appropriate player recreation.",
+      "files": [],
+      "assertions": [
+        "Rejects creating an engine per button action and assigns one clear retained owner.",
+        "Checks supportsHaptics before engine construction and keeps a fallback.",
+        "Loads the AHAP URL without force-unwrapping and handles playback errors.",
+        "Installs stoppedHandler and resetHandler before starting the engine.",
+        "Explains that reset recovery may require recreating players and registered resources.",
+        "Distinguishes direct playPattern playback from advanced-player needs such as loop, pause, seek, or callbacks.",
+        "Includes physical-device and interruption testing."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "unsupported-device-fallback",
+      "prompt": "Our custom confirmation waveform works on an iPhone but must also ship on iPad and Vision Pro. Design the capability and fallback behavior without making confirmation ambiguous.",
+      "expected_output": "Runtime capability-driven behavior that preserves semantic visual confirmation and treats haptics as enhancement rather than required state communication.",
+      "files": [],
+      "assertions": [
+        "Uses capabilitiesForHardware rather than platform or device-name assumptions.",
+        "Notes that some devices including iPad and Apple Vision Pro do not support Core Haptics feedback.",
+        "Preserves the product action and clear visual state when haptics are unavailable.",
+        "Does not make audio mandatory or use haptics as the sole confirmation channel.",
+        "Separates compile/Simulator checks from physical tactile verification."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "route-standard-save-feedback",
+      "prompt": "Add a standard success haptic after a SwiftUI Save button completes. Should this use CHHapticEngine and an AHAP file?",
+      "expected_output": "A boundary-aware answer that uses SwiftUI sensoryFeedback for standard success feedback and avoids unnecessary Core Haptics lifecycle machinery.",
+      "files": [],
+      "assertions": [
+        "Recommends sensoryFeedback with a state trigger for the standard SwiftUI success case.",
+        "Does not create CHHapticEngine, CHHapticPattern, or an AHAP asset for this requirement.",
+        "Routes ordinary view feedback patterns to swiftui-patterns.",
+        "Reserves Core Haptics for custom waveform, continuous, live-modulated, or synchronized audio-haptic requirements.",
+        "Keeps success visibly or semantically communicated even when haptics are unavailable."
+      ]
+    }
+  ]
+}
