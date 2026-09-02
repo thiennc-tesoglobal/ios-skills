@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Skills
+
+- Add `core-haptics` for custom waveform composition, engine lifecycle, live parameter modulation, AHAP playback, capability fallback, and physical-device verification.
+- Route ordinary SwiftUI and UIKit feedback to system feedback APIs while reserving Core Haptics for custom tactile experiences.
+
+### Quality and maintainability
+
+- Compact the six largest remaining skill entrypoints—ActivityKit, Contacts, CryptoTokenKit, FinanceKit, RelevanceKit, and SharePlay—into progressive-disclosure routing guides.
+- Add required Xcode 26.6 and informational Xcode 27 compile lanes for MetricKit, EnergyKit, SwiftData, Swift concurrency, and Core Haptics fixtures.
+- Add four local Core Haptics evaluations and one published drag-modulation scenario.
+
 ### Distribution
 
 - Isolate Agent Skills discovery checks from ignored maintainer state.

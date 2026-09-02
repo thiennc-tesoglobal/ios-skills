@@ -1,0 +1,56 @@
+{
+  "context": "Tests whether the agent implements a custom continuous haptic as one retained, live-modulated player with correct engine lifecycle, fallback, cancellation, and device verification.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Capability fallback",
+      "description": "Checks capabilitiesForHardware().supportsHaptics and keeps the control usable with clear visual state when unavailable.",
+      "max_score": 10
+    },
+    {
+      "name": "Retained engine",
+      "description": "Uses one retained CHHapticEngine owner rather than constructing an engine for each drag update.",
+      "max_score": 10
+    },
+    {
+      "name": "Handlers before start",
+      "description": "Installs stoppedHandler and resetHandler before starting the engine and handles their callback isolation safely.",
+      "max_score": 10
+    },
+    {
+      "name": "Continuous event",
+      "description": "Builds and starts a retained hapticContinuous pattern player at gesture start.",
+      "max_score": 10
+    },
+    {
+      "name": "Dynamic modulation",
+      "description": "Updates the retained player with bounded hapticIntensityControl and hapticSharpnessControl dynamic parameters.",
+      "max_score": 10
+    },
+    {
+      "name": "No per-frame recreation",
+      "description": "Does not recreate the engine, pattern, or player for each drag update and suggests meaningful update throttling if needed.",
+      "max_score": 10
+    },
+    {
+      "name": "Cancellation",
+      "description": "Stops and releases the continuous player for normal completion, cancellation, disappearance, and teardown.",
+      "max_score": 10
+    },
+    {
+      "name": "Reset recovery",
+      "description": "Restarts the engine and recreates invalidated players/resources after reset rather than assuming the player survives.",
+      "max_score": 10
+    },
+    {
+      "name": "Power policy",
+      "description": "Selects deliberate automatic shutdown or explicit engine start/stop behavior.",
+      "max_score": 10
+    },
+    {
+      "name": "Device evidence",
+      "description": "Requires physical-device checks for feel, interruptions, repetition, cancellation, fallback, and battery behavior.",
+      "max_score": 10
+    }
+  ]
+}

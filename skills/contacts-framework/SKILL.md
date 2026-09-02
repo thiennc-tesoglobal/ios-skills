@@ -5,456 +5,138 @@ description: "Read, create, update, and pick contacts using the Contacts and Con
 
 # Contacts Framework
 
-Use `CNContactStore`, `CNSaveRequest`, and `CNContactPickerViewController` to
-fetch, create, update, or pick contacts in Swift 6.3 / iOS 26+ apps.
+Use `CNContactStore`, `CNSaveRequest`, and ContactsUI to fetch, mutate, or let
+the user select contacts. Prefer the system picker when full address-book access
+is unnecessary.
 
 ## Contents
 
-- [Setup](#setup)
-- [Authorization](#authorization)
-- [Fetching Contacts](#fetching-contacts)
-- [Key Descriptors](#key-descriptors)
-- [Creating and Updating Contacts](#creating-and-updating-contacts)
-- [Contact Picker](#contact-picker)
-- [Observing Changes](#observing-changes)
-- [Common Mistakes](#common-mistakes)
-- [Review Checklist](#review-checklist)
+- [Choose the access model](#choose-the-access-model)
+- [Setup and authorization](#setup-and-authorization)
+- [Fetch invariants](#fetch-invariants)
+- [Mutation invariants](#mutation-invariants)
+- [Concurrency and cache invalidation](#concurrency-and-cache-invalidation)
+- [Common mistakes](#common-mistakes)
+- [Review checklist](#review-checklist)
 - [References](#references)
 
-## Setup
+## Choose the access model
 
-### Project Configuration
-
-1. Add `NSContactsUsageDescription` to Info.plist explaining why the app accesses contacts. The app crashes if it uses contact data APIs without this key.
-2. No additional capability or entitlement is required for ordinary Contacts access.
-3. Add `com.apple.developer.contacts.notes` only when reading or writing `CNContactNoteKey` / `CNContact.note`; this entitlement requires Apple approval before public distribution.
-
-### Imports
-
-```swift
-@preconcurrency import Contacts  // CNContactStore, CNSaveRequest, CNContact
-import ContactsUI                // CNContactPickerViewController
-```
-
-## Authorization
-
-Request access before fetching or saving contacts. The picker (`CNContactPickerViewController`)
-does not require authorization -- the system grants access only to the contacts
-the user selects.
-
-```swift
-let store = CNContactStore()
-
-func requestAccess() async throws -> Bool {
-    return try await store.requestAccess(for: .contacts)
-}
-
-// Check current status without prompting
-func checkStatus() -> CNAuthorizationStatus {
-    CNContactStore.authorizationStatus(for: .contacts)
-}
-```
-
-### Authorization States
-
-| Status | Meaning |
+| Need | API |
 |---|---|
-| `.notDetermined` | User has not been prompted yet |
-| `.authorized` | Full read/write access granted |
-| `.denied` | User denied access; direct to Settings |
-| `.restricted` | Parental controls or MDM restrict access |
-| `.limited` | iOS 18+: user granted access to selected contacts only |
+| User chooses one or more contacts without broad permission | `CNContactPickerViewController` |
+| App reads or writes its authorized contact set | `CNContactStore` |
+| User expands an iOS 18+ limited set | `ContactAccessButton` or `contactAccessPicker` |
+| Import/export or sharing | `CNContactVCardSerialization` |
 
-Treat both `.authorized` and `.limited` as usable Contacts API states. With
-`.limited`, fetch, edit, and delete operations only apply to contacts the user
-granted or the app created. Use `ContactAccessButton` or
-`contactAccessPicker(isPresented:completionHandler:)` to let users add contacts
-to the app's limited-access set.
+Read [Contacts extended patterns](references/contacts-patterns.md) for a complete
+observable manager, SwiftUI lists, single/multi-select picker wrappers,
+email-only selection, optimized search, vCard import/export, groups, and change
+notification handling.
 
-## Fetching Contacts
+## Setup and authorization
 
-Use `unifiedContacts(matching:keysToFetch:)` for predicate-based queries.
-Use `enumerateContacts(with:usingBlock:)` for batch enumeration of all contacts.
-For large cached address books, first fetch identifiers, then fetch detailed
-contacts in batches by identifier.
+- Add `NSContactsUsageDescription` before direct Contacts API access; missing it
+  causes termination.
+- Ordinary access needs no entitlement. Reading or writing `CNContact.note`
+  requires the Apple-approved `com.apple.developer.contacts.notes` entitlement.
+- The system contact picker does not require broad Contacts authorization; the
+  app receives only selected data.
 
-### Fetch by Name
+Treat authorization states explicitly:
 
-```swift
-func fetchContacts(named name: String) throws -> [CNContact] {
-    let predicate = CNContact.predicateForContacts(matchingName: name)
-    let keys: [CNKeyDescriptor] = [
-        CNContactGivenNameKey as CNKeyDescriptor,
-        CNContactFamilyNameKey as CNKeyDescriptor,
-        CNContactPhoneNumbersKey as CNKeyDescriptor
-    ]
-    return try store.unifiedContacts(matching: predicate, keysToFetch: keys)
-}
-```
+| Status | Behavior |
+|---|---|
+| `.notDetermined` | Request only from a user-understood action |
+| `.authorized` | Full access |
+| `.limited` | Usable, but only for granted or app-created contacts |
+| `.denied` | Explain the feature and route to Settings when appropriate |
+| `.restricted` | Disable the operation; do not repeatedly prompt |
 
-### Fetch by Identifier
+## Fetch invariants
 
-```swift
-func fetchContact(identifier: String) throws -> CNContact {
-    let keys: [CNKeyDescriptor] = [
-        CNContactGivenNameKey as CNKeyDescriptor,
-        CNContactFamilyNameKey as CNKeyDescriptor,
-        CNContactEmailAddressesKey as CNKeyDescriptor
-    ]
-    return try store.unifiedContact(withIdentifier: identifier, keysToFetch: keys)
-}
-```
-
-### Enumerate All Contacts
-
-Perform I/O-heavy enumeration off the main thread.
-
-```swift
-func fetchAllContacts() throws -> [CNContact] {
-    let keys: [CNKeyDescriptor] = [
-        CNContactGivenNameKey as CNKeyDescriptor,
-        CNContactFamilyNameKey as CNKeyDescriptor
-    ]
-    let request = CNContactFetchRequest(keysToFetch: keys)
-    request.sortOrder = .givenName
-
-    var contacts: [CNContact] = []
-    try store.enumerateContacts(with: request) { contact, _ in
-        contacts.append(contact)
-    }
-    return contacts
-}
-```
-
-## Key Descriptors
-
-Only fetch the properties you need. Accessing an unfetched property throws
+Only fetch keys the caller will access. Reading an unfetched property raises
 `CNContactPropertyNotFetchedException`.
 
-### Common Keys
-
-| Key | Property |
-|---|---|
-| `CNContactGivenNameKey` | First name |
-| `CNContactFamilyNameKey` | Last name |
-| `CNContactPhoneNumbersKey` | Phone numbers array |
-| `CNContactEmailAddressesKey` | Email addresses array |
-| `CNContactPostalAddressesKey` | Mailing addresses array |
-| `CNContactImageDataKey` | Full-resolution contact photo |
-| `CNContactThumbnailImageDataKey` | Thumbnail contact photo |
-| `CNContactBirthdayKey` | Birthday date components |
-| `CNContactOrganizationNameKey` | Company name |
-
-### Composite Key Descriptors
-
-Use `CNContactFormatter.descriptorForRequiredKeys(for:)` to fetch all keys needed
-for formatting a contact's name.
-
 ```swift
-let nameKeys = CNContactFormatter.descriptorForRequiredKeys(for: .fullName)
-let keys: [CNKeyDescriptor] = [nameKeys, CNContactPhoneNumbersKey as CNKeyDescriptor]
-```
+@preconcurrency import Contacts
 
-## Creating and Updating Contacts
-
-Use `CNMutableContact` to build new contacts and `CNSaveRequest` to persist changes.
-
-### Creating a New Contact
-
-```swift
-func createContact(givenName: String, familyName: String, phone: String) throws {
-    let contact = CNMutableContact()
-    contact.givenName = givenName
-    contact.familyName = familyName
-    contact.phoneNumbers = [
-        CNLabeledValue(
-            label: CNLabelPhoneNumberMobile,
-            value: CNPhoneNumber(stringValue: phone)
-        )
-    ]
-
-    let saveRequest = CNSaveRequest()
-    saveRequest.add(contact, toContainerWithIdentifier: nil) // nil = default container
-    try store.execute(saveRequest)
-}
-```
-
-### Updating an Existing Contact
-
-You must fetch the contact with the properties you intend to modify, create a
-mutable copy, change the properties, then save.
-
-```swift
-func updateContactEmail(identifier: String, email: String) throws {
-    let keys: [CNKeyDescriptor] = [
-        CNContactEmailAddressesKey as CNKeyDescriptor
-    ]
-    let contact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: keys)
-    guard let mutable = contact.mutableCopy() as? CNMutableContact else { return }
-
-    mutable.emailAddresses.append(
-        CNLabeledValue(label: CNLabelWork, value: email as NSString)
-    )
-
-    let saveRequest = CNSaveRequest()
-    saveRequest.update(mutable)
-    try store.execute(saveRequest)
-}
-```
-
-### Deleting a Contact
-
-```swift
-func deleteContact(identifier: String) throws {
-    let keys: [CNKeyDescriptor] = [CNContactIdentifierKey as CNKeyDescriptor]
-    let contact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: keys)
-    guard let mutable = contact.mutableCopy() as? CNMutableContact else { return }
-
-    let saveRequest = CNSaveRequest()
-    saveRequest.delete(mutable)
-    try store.execute(saveRequest)
-}
-```
-
-### Save Result and Recovery
-
-`try store.execute(saveRequest)` returning without throwing is the save success
-checkpoint. Update an app-side cache or success UI only after that return. If it
-throws, surface or propagate the error, keep the unsaved intent available to the
-user, and correct the known cause—such as authorization, a read-only container,
-or invalid input—before building a fresh request. Serialize overlapping saves,
-do not access a request while `execute(_:)` is using it, and refetch a possibly
-stale contact before a corrected retry when access permits. Do not blindly
-repeat the same destructive request or require a universal read-back that the
-current access level may not permit. Load
-[Extended Contacts Patterns](references/contacts-patterns.md) for multi-select,
-vCard, and optimized-search workflows.
-
-## Contact Picker
-
-`CNContactPickerViewController` lets users pick contacts without granting full
-Contacts access. The app receives only the selected contact data.
-
-### SwiftUI Wrapper
-
-```swift
-import SwiftUI
-import ContactsUI
-
-struct ContactPicker: UIViewControllerRepresentable {
-    @Binding var selectedContact: CNContact?
-
-    func makeUIViewController(context: Context) -> CNContactPickerViewController {
-        let picker = CNContactPickerViewController()
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: CNContactPickerViewController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    final class Coordinator: NSObject, CNContactPickerDelegate {
-        let parent: ContactPicker
-
-        init(_ parent: ContactPicker) {
-            self.parent = parent
-        }
-
-        func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
-            parent.selectedContact = contact
-        }
-
-        func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
-            parent.selectedContact = nil
-        }
-    }
-}
-```
-
-### Using the Picker
-
-```swift
-struct ContactSelectionView: View {
-    @State private var selectedContact: CNContact?
-    @State private var showPicker = false
-
-    var body: some View {
-        VStack {
-            if let contact = selectedContact {
-                Text("\(contact.givenName) \(contact.familyName)")
-            }
-            Button("Select Contact") {
-                showPicker = true
-            }
-        }
-        .sheet(isPresented: $showPicker) {
-            ContactPicker(selectedContact: $selectedContact)
-        }
-    }
-}
-```
-
-### Filtering the Picker
-
-Use predicates to control which contacts appear and what the user can select.
-
-```swift
-let picker = CNContactPickerViewController()
-// Only show contacts that have an email address
-picker.predicateForEnablingContact = NSPredicate(format: "emailAddresses.@count > 0")
-// Selecting a contact returns it directly (no detail card)
-picker.predicateForSelectionOfContact = NSPredicate(value: true)
-```
-
-## Observing Changes
-
-Listen for external contact database changes to refresh cached data.
-
-```swift
-func observeContactChanges() {
-    NotificationCenter.default.addObserver(
-        forName: .CNContactStoreDidChange,
-        object: nil,
-        queue: .main
-    ) { _ in
-        // Refetch contacts -- cached CNContact objects are stale
-        refreshContacts()
-    }
-}
-```
-
-## Common Mistakes
-
-### DON'T: Fetch all keys when you only need a name
-
-Over-fetching wastes memory and slows queries, especially for contacts with
-large photos.
-
-```swift
-// WRONG: Fetches far more than the UI displays, including full-resolution photos
 let keys: [CNKeyDescriptor] = [
     CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-    CNContactImageDataKey as CNKeyDescriptor,
-    CNContactPhoneNumbersKey as CNKeyDescriptor,
-    CNContactEmailAddressesKey as CNKeyDescriptor,
-    CNContactPostalAddressesKey as CNKeyDescriptor,
-    CNContactBirthdayKey as CNKeyDescriptor
-]
-
-// CORRECT: Fetch only what you display
-let keys: [CNKeyDescriptor] = [
-    CNContactGivenNameKey as CNKeyDescriptor,
-    CNContactFamilyNameKey as CNKeyDescriptor
-]
-```
-
-### DON'T: Access unfetched properties
-
-Accessing a property that was not in `keysToFetch` throws
-`CNContactPropertyNotFetchedException` at runtime.
-
-```swift
-// WRONG: Only fetched name keys, now accessing phone
-let keys: [CNKeyDescriptor] = [CNContactGivenNameKey as CNKeyDescriptor]
-let contact = try store.unifiedContact(withIdentifier: id, keysToFetch: keys)
-let phone = contact.phoneNumbers.first // CRASH
-
-// CORRECT: Include the key you need
-let keys: [CNKeyDescriptor] = [
-    CNContactGivenNameKey as CNKeyDescriptor,
     CNContactPhoneNumbersKey as CNKeyDescriptor
 ]
-```
 
-### DON'T: Mutate a CNContact directly
-
-`CNContact` is immutable. You must call `mutableCopy()` to get a `CNMutableContact`.
-
-```swift
-// WRONG: CNContact has no setter
-let contact = try store.unifiedContact(withIdentifier: id, keysToFetch: keys)
-contact.givenName = "New Name" // Compile error
-
-// CORRECT: Create mutable copy
-guard let mutable = contact.mutableCopy() as? CNMutableContact else { return }
-mutable.givenName = "New Name"
-```
-
-### DON'T: Skip authorization and assume access
-
-Do not let fetch or save calls be the first place the user sees authorization.
-If status is `.notDetermined`, request access; if access was denied, contact
-operations fail with an authorization error.
-
-```swift
-// WRONG: Jump straight to fetch
-let contacts = try store.unifiedContacts(matching: predicate, keysToFetch: keys)
-
-// CORRECT: Check or request access first
-let granted = try await store.requestAccess(for: .contacts)
-guard granted else { return }
-let contacts = try store.unifiedContacts(matching: predicate, keysToFetch: keys)
-```
-
-### DON'T: Run heavy fetches on the main thread
-
-`enumerateContacts` performs I/O. Running it on the main thread blocks the UI.
-When strict concurrency checks complain about `CNContact` crossing task or actor
-boundaries, use `@preconcurrency import Contacts` in that file or map contacts
-into Sendable view models before returning them.
-
-```swift
-// WRONG: Main thread enumeration
-func loadContacts() {
-    try store.enumerateContacts(with: request) { contact, _ in ... }
-}
-
-// CORRECT: Run on a background thread
-func loadContacts() async throws -> [CNContact] {
-    try await Task.detached {
-        var results: [CNContact] = []
-        try store.enumerateContacts(with: request) { contact, _ in
-            results.append(contact)
-        }
-        return results
-    }.value
+let request = CNContactFetchRequest(keysToFetch: keys)
+try store.enumerateContacts(with: request) { contact, stop in
+    consume(contact)
 }
 ```
 
-## Review Checklist
+Use `unifiedContacts(matching:keysToFetch:)` for predicate queries,
+`unifiedContact(withIdentifier:keysToFetch:)` for known identifiers, and
+enumeration for the authorized address book. Avoid full-resolution image data
+unless the UI truly requires it. For large caches, fetch identifiers first and
+hydrate details in bounded batches.
 
-- [ ] `NSContactsUsageDescription` added to Info.plist
-- [ ] `requestAccess(for: .contacts)` called before fetch or save operations
-- [ ] `.limited` treated as usable access with selected-contact caveats
-- [ ] `ContactAccessButton` or `contactAccessPicker` offered when users need to expand limited access
-- [ ] Authorization denial handled gracefully (guide user to Settings)
-- [ ] Only needed `CNKeyDescriptor` keys included in fetch requests
-- [ ] `CNContactFormatter.descriptorForRequiredKeys(for:)` used when formatting names
-- [ ] Mutable copy created via `mutableCopy()` before modifying contacts
-- [ ] Every create/update/delete uses `CNSaveRequest`; app state advances only
-      after `execute(_:)` succeeds, and failures are surfaced before a corrected
-      request is constructed
-- [ ] Heavy fetches (`enumerateContacts`) run off the main thread
-- [ ] `CNContactStoreDidChange` observed to refresh cached contacts
-- [ ] `CNContactPickerViewController` used when full Contacts access is unnecessary
-- [ ] Picker predicates set before presenting the picker view controller
-- [ ] Single `CNContactStore` instance reused across the app
+## Mutation invariants
+
+- Create with `CNMutableContact` and `CNSaveRequest.add`.
+- Update or delete by fetching the required properties, creating
+  `mutableCopy()`, then adding the operation to a fresh save request.
+- `store.execute(request)` returning without throwing is the success boundary.
+  Advance app state or clear drafts only afterward.
+- On failure, preserve the user's intent, surface the error, correct known
+  authorization/container/input causes, refetch stale contacts when possible,
+  and construct a new request. Do not blindly replay a destructive request.
+- Serialize overlapping saves and never mutate a request while `execute` uses it.
+
+```swift
+let mutable = CNMutableContact()
+mutable.givenName = "Taylor"
+
+let request = CNSaveRequest()
+request.add(mutable, toContainerWithIdentifier: nil)
+try store.execute(request)
+```
+
+## Concurrency and cache invalidation
+
+Enumeration is I/O-heavy; keep it off the main actor. With strict concurrency,
+use `@preconcurrency import Contacts` only at the framework boundary or map
+`CNContact` values into app-owned `Sendable` models before crossing actors.
+
+Observe `.CNContactStoreDidChange`, invalidate cached `CNContact` objects, and
+refetch the authorized set. Reuse one store instead of constructing stores per
+row or query.
+
+## Common mistakes
+
+- Requesting full access when a picker satisfies the feature.
+- Treating `.limited` as denial or assuming it exposes the full address book.
+- Fetching every key, especially full image data.
+- Accessing a property not included in `keysToFetch`.
+- Attempting to mutate immutable `CNContact` directly.
+- Updating UI/cache before `execute` succeeds.
+- Enumerating contacts on the main actor or retaining stale contact objects.
+
+## Review checklist
+
+- [ ] Usage description and note entitlement requirements are correct.
+- [ ] Picker is preferred when broad access is unnecessary.
+- [ ] Every authorization state, including `.limited`, has product behavior.
+- [ ] Fetch descriptors include exactly the accessed properties.
+- [ ] Name formatting uses the formatter's required-key descriptor.
+- [ ] Create/update/delete use fresh `CNSaveRequest` values and mutable contacts.
+- [ ] App state changes only after a successful save; failures preserve intent.
+- [ ] Heavy reads run off the main actor and cross actors safely.
+- [ ] Store-change notification invalidates and refetches caches.
+- [ ] One long-lived `CNContactStore` is reused.
 
 ## References
 
-- Extended patterns (multi-select picker, vCard export, search optimization): [references/contacts-patterns.md](references/contacts-patterns.md)
-- [Contacts framework](https://sosumi.ai/documentation/contacts)
+- [Contacts extended patterns](references/contacts-patterns.md)
+- [Contacts documentation](https://sosumi.ai/documentation/contacts)
 - [CNContactStore](https://sosumi.ai/documentation/contacts/cncontactstore)
-- [CNContactFetchRequest](https://sosumi.ai/documentation/contacts/cncontactfetchrequest)
 - [CNSaveRequest](https://sosumi.ai/documentation/contacts/cnsaverequest)
-- [CNMutableContact](https://sosumi.ai/documentation/contacts/cnmutablecontact)
 - [CNContactPickerViewController](https://sosumi.ai/documentation/contactsui/cncontactpickerviewcontroller)
-- [CNContactPickerDelegate](https://sosumi.ai/documentation/contactsui/cncontactpickerdelegate)
-- [Accessing the contact store](https://sosumi.ai/documentation/contacts/accessing-the-contact-store)
-- [NSContactsUsageDescription](https://sosumi.ai/documentation/bundleresources/information-property-list/nscontactsusagedescription)
-- [ContactAccessButton](https://sosumi.ai/documentation/contactsui/contactaccessbutton)
-- [contactAccessPicker(isPresented:completionHandler:)](https://sosumi.ai/documentation/swiftui/view/contactaccesspicker(ispresented:completionhandler:))
-- [Contact Keys](https://sosumi.ai/documentation/contacts/contact-keys)
+- [Contact access controls](https://sosumi.ai/documentation/contactsui/contactaccessbutton)

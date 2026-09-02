@@ -11,8 +11,8 @@ body:
     id: skill-name
     attributes:
       label: Proposed Skill Name
-      description: "Lowercase, hyphenated folder name (e.g., `screen-time-api`, `core-haptics`)"
-      placeholder: "core-haptics"
+      description: "Lowercase, hyphenated folder name (e.g., `screen-time-api`, `watch-connectivity`)"
+      placeholder: "watch-connectivity"
     validations:
       required: true
 
@@ -22,8 +22,8 @@ body:
       label: What should the skill cover?
       description: Describe the framework, API surface, or topic area. What guidance would an agent need?
       placeholder: |
-        Core Haptics framework — designing custom haptic patterns, CHHapticEngine lifecycle,
-        AHAP file authoring, integration with UIKit and SwiftUI gesture handlers.
+        Watch Connectivity — WCSession activation, reachability-aware messaging,
+        background transfers, application context, and complication updates.
     validations:
       required: true
 
@@ -33,8 +33,8 @@ body:
       label: Why is this needed?
       description: Why isn't this covered by existing skills? What agent task would this unblock?
       placeholder: |
-        No existing skill covers haptic feedback beyond basic UIFeedbackGenerator.
-        Agents building immersive apps need guidance on custom haptic patterns and AHAP files.
+        No existing skill owns reliable iPhone–Apple Watch data transfer lifecycle.
+        Agents need clear boundaries between immediate messages and background delivery.
     validations:
       required: true
 
@@ -44,7 +44,7 @@ body:
       label: Key Apple Documentation
       description: Links to the primary Apple docs, WWDC sessions, or HIG pages for this topic.
       placeholder: |
-        - https://developer.apple.com/documentation/corehaptics
-        - WWDC19 "Introducing Core Haptics"
+        - https://developer.apple.com/documentation/watchconnectivity
+        - Current Watch Connectivity WWDC sessions
     validations:
       required: true

@@ -34,6 +34,7 @@ body:
         - contacts-framework
         - core-bluetooth
         - core-data
+        - core-haptics
         - core-motion
         - core-nfc
         - coreml
