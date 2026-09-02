@@ -34,13 +34,13 @@ final class HapticEngineController {
 
         let newEngine = try CHHapticEngine()
         newEngine.isAutoShutdownEnabled = true
-        newEngine.stoppedHandler = { reason in
-            Task { @MainActor [weak self] in
+        newEngine.stoppedHandler = { [weak self] reason in
+            Task { @MainActor in
                 self?.handleStop(reason)
             }
         }
-        newEngine.resetHandler = {
-            Task { @MainActor [weak self] in
+        newEngine.resetHandler = { [weak self] in
+            Task { @MainActor in
                 try? self?.recoverAfterReset()
             }
         }

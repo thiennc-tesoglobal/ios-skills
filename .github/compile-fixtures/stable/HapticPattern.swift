@@ -30,13 +30,13 @@ final class CompileFixtureHapticController {
 
         let newEngine = try CHHapticEngine()
         newEngine.isAutoShutdownEnabled = true
-        newEngine.stoppedHandler = { _ in
-            Task { @MainActor [weak self] in
+        newEngine.stoppedHandler = { [weak self] _ in
+            Task { @MainActor in
                 self?.player = nil
             }
         }
-        newEngine.resetHandler = {
-            Task { @MainActor [weak self] in
+        newEngine.resetHandler = { [weak self] in
+            Task { @MainActor in
                 guard let self, let engine = self.engine else { return }
                 self.player = nil
                 try? engine.start()
