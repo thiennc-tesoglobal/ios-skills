@@ -15,8 +15,8 @@ func makeVehicleLoadEvent(
     measurement: ElectricVehicleLoadEvent.ElectricalMeasurement,
     session: ElectricVehicleLoadEvent.Session,
     device: ElectricalLoadDevice
-) throws -> ElectricVehicleLoadEvent {
-    try ElectricVehicleLoadEvent(
+) -> ElectricVehicleLoadEvent {
+    ElectricVehicleLoadEvent(
         timestamp: .now,
         measurement: measurement,
         session: session,
