@@ -18,6 +18,15 @@ WidgetKit widgets and ActivityKit Live Activities are separate system
 experiences; route their implementation to those domains while keeping
 CarPlay-specific validation here.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Confirm the app category is eligible and obtain the exact CarPlay entitlement before building templates.

@@ -11,6 +11,15 @@ use vectorized plots or 3D plots when the data calls for them.
 
 Use the task-specific chart references routed below instead of loading every recipe.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Identify the analytical question, data shape, deployment target, and accessibility requirement before choosing marks.

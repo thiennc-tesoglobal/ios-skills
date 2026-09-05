@@ -413,3 +413,103 @@ for (index, item) in items.enumerated() {
     progress.completedUnitCount = Int64(index + 1)
 }
 ```
+
+
+## Canonical BGTaskScheduler Registration
+
+### UIKit Registration
+
+```swift
+import BackgroundTasks
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: "com.example.app.refresh",
+            using: nil  // nil = default background queue
+        ) { task in
+            self.handleAppRefresh(task: task as! BGAppRefreshTask)
+        }
+
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: "com.example.app.db-cleanup",
+            using: nil
+        ) { task in
+            self.handleDatabaseCleanup(task: task as! BGProcessingTask)
+        }
+
+        return true
+    }
+}
+```
+
+### SwiftUI Registration
+
+```swift
+import SwiftUI
+import BackgroundTasks
+
+@main
+struct MyApp: App {
+    init() {
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: "com.example.app.refresh",
+            using: nil
+        ) { task in
+            BackgroundTaskManager.shared.handleAppRefresh(
+                task: task as! BGAppRefreshTask
+            )
+        }
+    }
+
+    var body: some Scene {
+        WindowGroup { ContentView() }
+    }
+}
+```
+
+### Canonical App Refresh and Processing Handlers
+
+```swift
+func handleAppRefresh(task: BGAppRefreshTask) {
+    scheduleAppRefresh() // Re-schedule next execution
+
+    let fetchTask = Task {
+        do {
+            let data = try await APIClient.shared.fetchLatestFeed()
+            await FeedStore.shared.update(with: data)
+            task.setTaskCompleted(success: true)
+        } catch {
+            task.setTaskCompleted(success: false)
+        }
+    }
+
+    task.expirationHandler = {
+        fetchTask.cancel()
+        task.setTaskCompleted(success: false)
+    }
+}
+
+func handleDatabaseCleanup(task: BGProcessingTask) {
+    scheduleProcessingTask()
+
+    let cleanupTask = Task {
+        do {
+            try await DatabaseManager.shared.purgeExpiredRecords()
+            try await DatabaseManager.shared.rebuildIndexes()
+            task.setTaskCompleted(success: true)
+        } catch {
+            task.setTaskCompleted(success: false)
+        }
+    }
+
+    task.expirationHandler = {
+        cleanupTask.cancel()
+        task.setTaskCompleted(success: false)
+    }
+}
+```

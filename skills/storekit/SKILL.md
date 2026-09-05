@@ -133,7 +133,7 @@ When reviewing flawed StoreKit code, name the broken contract:
 - Legacy offer fields: use current `transaction.offer?.type` and `.id` APIs for the supported SDK.
 - Broad IAP/external-link claim: defer to current guideline, entitlement, region, and storefront evidence.
 
-## Common mistakes
+## Common Mistakes
 
 - Creating transaction listeners from paywalls or views.
 - Updating UI but not durable fulfillment before finish.
@@ -146,7 +146,7 @@ When reviewing flawed StoreKit code, name the broken contract:
 - Testing only the immediate happy-path purchase.
 - Mixing physical-goods checkout or full App Review work into StoreKit implementation.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Product types, IDs, groups, platforms, and deployment target are explicit.
 - [ ] Purchase surface matches the product and existing architecture.
@@ -163,7 +163,7 @@ When reviewing flawed StoreKit code, name the broken contract:
 - [ ] Server reconciliation uses signed transaction data when the server is authoritative.
 - [ ] App Review, ASO, and physical-goods work are routed to the correct skill.
 
-## Official references
+## References
 
 - [Choosing a StoreKit API](https://sosumi.ai/documentation/storekit/choosing-a-storekit-api-for-in-app-purchases)
 - [In-App Purchase](https://sosumi.ai/documentation/storekit/in-app-purchase)

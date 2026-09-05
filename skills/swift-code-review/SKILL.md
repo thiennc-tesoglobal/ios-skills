@@ -13,6 +13,19 @@ issues that can change correctness, safety, user-visible behavior, or maintenanc
 cost. Keep the review self-contained and use the references below only when their
 topics appear in the code.
 
+## Contents
+
+- [Scope and boundaries](#scope-and-boundaries)
+- [Review workflow](#review-workflow)
+- [Output contract](#output-contract)
+- [Review Summary](#review-summary)
+- [Issues](#issues)
+- [Good Patterns](#good-patterns)
+- [Verdict](#verdict)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and boundaries
 
 - Review changed `.swift` files and the directly related callers, parents, and
@@ -97,7 +110,15 @@ Every issue needs an exact `[FILE:LINE]` proof and a severity. If there are no
 issues, say `Protocol applied; no issues` and explain the scope checked. Do not
 invent findings to fill a section.
 
-## Cross-cutting checklist
+## Common Mistakes
+
+- Nitpicking minor formatting or whitespace details already enforced by SwiftLint.
+- Raising speculative or theoretical defects without inspecting callers and surrounding control flow.
+- Demanding `[weak self]` mechanically on closures that do not introduce a retain cycle.
+- Recommending newer language features without verifying the project's target deployment baseline.
+- Suggesting massive architectural refactors for small, localized bugfix diffs.
+
+## Review Checklist
 
 - [ ] Runtime optionals, indexing, casts, and `try!`/force unwraps have a proven
       invariant or an explicit failure path.

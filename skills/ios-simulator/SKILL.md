@@ -7,6 +7,18 @@ description: "Build, install, launch, inspect, and test iOS apps with Simulator 
 
 Use Simulator as a reproducible verification environment while keeping device selection and destructive operations explicit.
 
+## Contents
+
+- [Scope and Safety](#scope-and-safety)
+- [Workflow](#workflow)
+- [Core Commands](#core-commands)
+- [State and Diagnostics](#state-and-diagnostics)
+- [Recovery](#recovery)
+- [Verification Matrix](#verification-matrix)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Safety
 
 This skill owns Simulator discovery, boot/shutdown, app install/launch, screenshots, logs, permissions, locations, push simulation, containers, and CI lifecycle. It does not replace real-device verification for hardware, performance, networking conditions, push delivery, camera, Bluetooth, NFC, or other device-only behavior.
@@ -66,6 +78,14 @@ Choose checks proportional to the change:
 - focused logs for crashes or runtime warnings
 - real-device follow-up for unsupported hardware behavior
 
+## Common Mistakes
+
+- Hardcoding device names instead of targeting explicit simulator UDIDs.
+- Assuming APNs remote push behavior in Simulator is identical to production hardware.
+- Executing `erase all` or deleting CoreSimulator folders as a default troubleshooting step.
+- Leaving override states (status bar, location, appearance) active after test execution.
+- Testing Bluetooth Low Energy or camera capture on Simulator without mocked data or fallback.
+
 ## Review Checklist
 
 - [ ] Project, scheme, runtime, target, and bundle identifier are resolved
@@ -77,6 +97,6 @@ Choose checks proportional to the change:
 - [ ] Simulator-only results are not claimed as real-device proof
 - [ ] CI-created devices have deterministic teardown
 
-## Reference
+## References
 
 - [Complete simctl command reference](references/simctl-commands.md)

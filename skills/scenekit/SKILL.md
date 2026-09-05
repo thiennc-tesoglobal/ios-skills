@@ -7,6 +7,15 @@ description: "Maintains existing SceneKit scenes, nodes, materials, cameras, lig
 
 Maintain existing SceneKit scenes only. Apple deprecated SceneKit at WWDC 2025 and limits it to maintenance; route new projects, major modernization, and USD/USDZ pipelines to RealityKit. Existing apps continue to work.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Confirm the task is maintenance or extension of an existing SceneKit surface; prefer RealityKit for substantial new 3D work.

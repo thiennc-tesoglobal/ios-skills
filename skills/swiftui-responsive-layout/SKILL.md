@@ -7,6 +7,19 @@ description: "Diagnose and implement adaptive SwiftUI layouts across iPhone and 
 
 Make the interface respond to the space and content it actually receives, then verify the failing configurations instead of inferring behavior from a device name.
 
+## Contents
+
+- [Scope and Boundaries](#scope-and-boundaries)
+- [Diagnostic Workflow](#diagnostic-workflow)
+- [Choose the Adaptation Signal](#choose-the-adaptation-signal)
+- [Pattern Ladder](#pattern-ladder)
+- [Text, Localization, and Controls](#text-localization-and-controls)
+- [Safe Areas, Keyboard, and Layering](#safe-areas-keyboard-and-layering)
+- [Geometry and Stability](#geometry-and-stability)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Boundaries
 
 This skill owns cross-size adaptation and layout-failure diagnosis: clipping, unintended overlap, truncation, off-screen controls, unstable resizing, keyboard obstruction, safe-area mistakes, and layouts that fail under Dynamic Type or localization.

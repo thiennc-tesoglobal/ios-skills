@@ -1,11 +1,11 @@
 # Swift iOS Skills Community
 
-[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-90-2ea44f)](skills/)
+[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-94-2ea44f)](skills/)
 [![Swift](https://img.shields.io/badge/Swift-6.3-F05138?logo=swift&logoColor=white)](https://swift.org)
 [![Validation](https://github.com/thiennc-tesoglobal/ios-skills/actions/workflows/validate-repository.yml/badge.svg)](https://github.com/thiennc-tesoglobal/ios-skills/actions/workflows/validate-repository.yml)
 [![License](https://img.shields.io/badge/License-PolyForm%20Perimeter-blue)](LICENSE)
 
-**90 focused Agent Skills for modern Swift and Apple-platform development.**
+**94 focused Agent Skills for modern Swift and Apple-platform development.**
 
 The collection gives coding agents practical guidance for architecture,
 implementation, testing, performance, accessibility, security, Apple frameworks,
@@ -89,8 +89,8 @@ The collection covers:
 - Apple app, data, hardware, media, AI/ML, gaming, and platform frameworks
 - Networking, security, diagnostics, localization, App Review, and delivery workflows
 
-Current inventory: **90 skills**, **288 local evaluation cases**, and
-**268 published evaluation scenarios**.
+Current inventory: **94 skills**, **304 local evaluation cases**, and
+**272 published evaluation scenarios**.
 
 ## Quality
 

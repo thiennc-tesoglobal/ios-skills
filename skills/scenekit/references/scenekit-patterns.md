@@ -558,7 +558,7 @@ Update the overlay from the render loop:
 
 ```swift
 func renderer(_ renderer: any SCNSceneRenderer, updateAtTime time: TimeInterval) {
-    DispatchQueue.main.async {
+    Task { @MainActor in
         self.scoreLabel.text = "Score: \(self.score)"
     }
 }

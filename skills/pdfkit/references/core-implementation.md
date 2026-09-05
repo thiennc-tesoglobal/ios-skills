@@ -351,7 +351,7 @@ struct DocumentScreen: View {
 ```
 
 For interactive wrappers with page tracking, annotation hit detection, and
-coordinator patterns, see [references/pdfkit-patterns.md](pdfkit-patterns.md).
+coordinator patterns, see [references/pdf-viewing-and-annotations.md](pdf-viewing-and-annotations.md).
 
 ### Page Overlays
 
@@ -378,4 +378,4 @@ class PDFOverlayController: UIViewController {
 }
 ```
 
-`pageOverlayViewProvider` is weak, so keep the provider strongly owned. For overlay lifecycle and save handling, read [references/pdfkit-patterns.md](pdfkit-patterns.md).
+`pageOverlayViewProvider` is weak, so keep the provider strongly owned. For overlay lifecycle and save handling, read [references/pdf-viewing-and-annotations.md](pdf-viewing-and-annotations.md).

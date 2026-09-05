@@ -117,7 +117,7 @@ Use availability guards around each newer API. Read the lifecycle reference for
 complete request and payload examples rather than combining signatures from
 different OS branches.
 
-## Common mistakes
+## Common Mistakes
 
 - Using deprecated `contentState` request/update/end overloads instead of
   `ActivityContent`.
@@ -128,7 +128,7 @@ different OS branches.
 - Omitting stale UI, overloading compact regions, or exposing sensitive data.
 - Assuming frequent-update capability guarantees a fixed update frequency.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Static attributes and dynamic `ContentState` have a small, tested Codable contract.
 - [ ] Host app contains `NSSupportsLiveActivities = YES` and authorization is checked.

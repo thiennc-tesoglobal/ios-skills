@@ -7,6 +7,17 @@ description: "Implement or diagnose SwiftUI motion, including state animations, 
 
 Choose the narrowest animation mechanism that communicates state change without obscuring ownership, accessibility, or performance.
 
+## Contents
+
+- [Scope and Compatibility](#scope-and-compatibility)
+- [Triage](#triage)
+- [Mechanism Selection](#mechanism-selection)
+- [Core Rules](#core-rules)
+- [Accessibility](#accessibility)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Compatibility
 
 This skill owns SwiftUI timing, transitions, phase/keyframe choreography, matched geometry, navigation zoom visuals, symbol effects, and animation accessibility. Route layout to `swiftui-layout-components`, route/path ownership to `swiftui-navigation`, state ownership to `swiftui-patterns`, and evidence-based profiling to `swiftui-performance`.
@@ -38,7 +49,7 @@ Inspect deployment target, Swift mode, and SDK before selecting APIs. Preserve p
 | Custom interpolated shape/value | `Animatable` or a custom animation when synthesis is insufficient |
 | Layer-level or display-link work | Read [Core Animation Bridge](references/core-animation-bridge.md) |
 
-Use [Advanced Animation Patterns](references/animation-advanced.md) for spring parameter variants, custom transitions, transactions, keyframes, symbol catalogs, and advanced performance guidance.
+Use [Advanced Animation Patterns](references/animation-advanced.md) for spring parameter variants, custom transitions, transactions, and keyframes. Use [Symbol Effects and Accessible Motion](references/symbol-effects-and-accessibility.md) for symbol animation effects, Reduce Motion adaptation, and animation performance.
 
 ## Core Rules
 
@@ -57,6 +68,14 @@ Read `accessibilityReduceMotion` for motion that translates, scales, zooms, loop
 
 Indefinite symbol and timeline effects need a clear active condition and must stop when no longer visible or relevant.
 
+## Common Mistakes
+
+- Mutating state outside `withAnimation` when a transition depends on that state change.
+- Animating custom types that do not conform to `VectorArithmetic` or `Animatable`.
+- Creating render feedback loops by triggering another state mutation inside an animation completion block.
+- Forgetting to handle `accessibilityReduceMotion` for disorienting full-screen motion or zoom effects.
+- Using unconstrained repeating animations that run indefinitely while the view is off-screen.
+
 ## Review Checklist
 
 - [ ] The state owner and animation trigger are explicit
@@ -72,4 +91,5 @@ Indefinite symbol and timeline effects need a clear active condition and must st
 ## References
 
 - Advanced SwiftUI animations and transitions: [references/animation-advanced.md](references/animation-advanced.md)
+- Symbol effects and accessible motion: [references/symbol-effects-and-accessibility.md](references/symbol-effects-and-accessibility.md)
 - Core Animation and display-link bridging: [references/core-animation-bridge.md](references/core-animation-bridge.md)

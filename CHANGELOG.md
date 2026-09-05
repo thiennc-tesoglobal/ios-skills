@@ -2,13 +2,22 @@
 
 ## Unreleased
 
+## 1.3.0 - 2026-09-05
+
 ### Skills
 
+- Add `avfoundation-audio` for `AVAudioSession` configuration, route changes, interruptions, ducking, and `AVAudioEngine` node graphs and microphone buffer capture.
+- Add `family-controls` for Screen Time authorization, `FamilyActivityPicker`, `ManagedSettings` app and web domain shielding, and `DeviceActivity` schedule monitoring.
+- Add `shazamkit` for audio recognition with `SHManagedSession` (iOS 17+), `SHSession`, `SHCustomCatalog`, and `SHSignatureGenerator`.
+- Add `quicklook` for document and media previews via `QLPreviewController` and SwiftUI `.quickLookPreview`, and asynchronous thumbnail generation with `QLThumbnailGenerator`.
 - Add `core-haptics` for custom waveform composition, engine lifecycle, live parameter modulation, AHAP playback, capability fallback, and physical-device verification.
 - Route ordinary SwiftUI and UIKit feedback to system feedback APIs while reserving Core Haptics for custom tactile experiences.
 
 ### Quality and maintainability
 
+- Standardize structural sections (`## Contents`, `## Common Mistakes`, `## Review Checklist`, `## References`) across all 94 skills.
+- Compact all 40 oversized skill entrypoints below the 300-line advisory limit into progressive-disclosure routing guides, reducing validator warnings from 40 to 0.
+- Add extended pattern references for `core-data` and `natural-language`.
 - Compact the six largest remaining skill entrypoints—ActivityKit, Contacts, CryptoTokenKit, FinanceKit, RelevanceKit, and SharePlay—into progressive-disclosure routing guides.
 - Add required Xcode 26.6 and informational Xcode 27 compile lanes for MetricKit, EnergyKit, SwiftData, Swift concurrency, and Core Haptics fixtures.
 - Add four local Core Haptics evaluations and one published drag-modulation scenario.

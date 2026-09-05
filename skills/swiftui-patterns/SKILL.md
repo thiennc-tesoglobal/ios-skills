@@ -7,6 +7,19 @@ description: "Structure and refactor SwiftUI views using Observation, clear stat
 
 Build SwiftUI features whose state ownership, dependencies, lifecycle work, and view boundaries are easy to understand and verify.
 
+## Contents
+
+- [Scope](#scope)
+- [Compatibility Preflight](#compatibility-preflight)
+- [Workflow](#workflow)
+- [State Ownership](#state-ownership)
+- [Composition](#composition)
+- [Environment and Lifecycle](#environment-and-lifecycle)
+- [Previews](#previews)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope
 
 This skill owns:
@@ -74,6 +87,14 @@ Prefer `.task` or `.task(id:)` for async work tied to view lifetime because Swif
 Create deterministic previews for meaningful loaded, loading, empty, and error states as applicable. Install every required environment value and use in-memory or temporary persistence. Do not call live APIs, production authentication, Keychain state, or global databases from previews.
 
 Read [Isolated Preview Construction](references/preview-isolation.md) when a preview needs fixtures, persistence, or environment setup.
+
+## Common Mistakes
+
+- Initializing an `@Observable` model inside a view without `@State`, causing it to re-initialize on every render.
+- Executing side effects (network, persistence, mutation) directly inside the computed `body` property.
+- Using dynamic array indices (`\.self`) as `id` in `ForEach` for mutable, sortable collections.
+- Building monolithic views with dozens of local state properties instead of extracting focused components.
+- Starting unstructured background tasks in `.onAppear` without cancellation tracking or `.task`.
 
 ## Review Checklist
 

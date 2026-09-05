@@ -7,6 +7,20 @@ description: "Plan, build, refactor, and verify a complete iOS app or substantia
 
 Coordinate an end-to-end iOS delivery without loading unrelated framework guidance or silently changing the product contract.
 
+## Contents
+
+- [Trigger Boundary](#trigger-boundary)
+- [Project Preflight](#project-preflight)
+- [Select Specialist Skills](#select-specialist-skills)
+- [Delivery Contract](#delivery-contract)
+- [Structure and Naming](#structure-and-naming)
+- [Implementation](#implementation)
+- [Verification](#verification)
+- [Completion](#completion)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Trigger Boundary
 
 Use this skill for a new app, a substantial multi-file feature, a broad refactor, or a request to finish and verify an iOS experience. For a focused issue, use only the relevant specialist skill—for example `swift-concurrency` for one isolation diagnostic or `swiftdata` for one migration problem.
@@ -99,6 +113,14 @@ Simulator verification is not proof for device-only hardware or production APNs 
 
 Report the result first, then changed structure, verification performed, and any real limitation. Do not commit, push, publish, change signing, or mutate external systems unless the user authorized that action.
 
+## Common Mistakes
+
+- Verifying solely on the iOS Simulator when the feature involves Bluetooth, camera, or push notifications.
+- Delaying release-configuration builds and archive testing until the final submission step.
+- Overwriting existing project conventions or folder structures without following established patterns.
+- Loading every available skill into context rather than choosing only the relevant specialists.
+- Performing destructive git operations or modifying external signing credentials without approval.
+
 ## Review Checklist
 
 - [ ] Only relevant specialist skills were loaded
@@ -110,6 +132,6 @@ Report the result first, then changed structure, verification performed, and any
 - [ ] Simulator/device claims match the evidence collected
 - [ ] No external mutation exceeded user authorization
 
-## Reference
+## References
 
 - [Mode-specific delivery and verification checklist](references/delivery-checklist.md)

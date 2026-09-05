@@ -116,7 +116,7 @@ Guard `.orders` availability independently. Handle every `SaveOrderResult`
 archive is a server/merchant contract; do not fabricate or mutate it client-side.
 Use `AddOrderToWalletButton` when the system presentation fits the product.
 
-## Common mistakes
+## Common Mistakes
 
 - Calling authorization or queries before `isDataAvailable`.
 - Treating authorized status as proof that data exists or remains unrestricted.
@@ -127,7 +127,7 @@ Use `AddOrderToWalletButton` when the system presentation fits the product.
 - Adding the entitlement only to the app while the extension also uses FinanceKit.
 - Assuming background frequency is an exact delivery schedule.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Eligibility, managed entitlement, bundle ID, region, and usage string are verified.
 - [ ] Availability is checked before every data family and restriction errors are handled.
@@ -142,9 +142,10 @@ Use `AddOrderToWalletButton` when the system presentation fits the product.
 
 ## References
 
-- [FinanceKit extended patterns](references/financekit-patterns.md)
+- [FinanceKit data queries and formatting](references/financekit-patterns.md)
+- [FinanceKit sync manager and background lifecycle](references/financekit-sync-and-lifecycle.md)
 - [FinanceKit documentation](https://sosumi.ai/documentation/financekit)
 - [FinanceKitUI documentation](https://sosumi.ai/documentation/financekitui)
 - [FinanceKit entitlement](https://sosumi.ai/documentation/bundleresources/entitlements/com.apple.developer.financekit)
 - [Background delivery extension](https://sosumi.ai/documentation/financekit/implementing-a-background-delivery-extension)
-- [FinanceKit eligibility](https://developer.apple.com/financekit/)
+- [FinanceKit eligibility](https://sosumi.ai/documentation/financekit)

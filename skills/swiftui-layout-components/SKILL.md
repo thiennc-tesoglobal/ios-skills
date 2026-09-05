@@ -7,6 +7,18 @@ description: "Build SwiftUI stacks, grids, lists, scroll views, forms, controls,
 
 Choose containers and controls that preserve identity, adapt across sizes, and remain accessible without unnecessary custom layout code.
 
+## Contents
+
+- [Scope and Compatibility](#scope-and-compatibility)
+- [Container Selection](#container-selection)
+- [Identity and Laziness](#identity-and-laziness)
+- [Lists, Forms, and Controls](#lists-forms-and-controls)
+- [Search and Overlays](#search-and-overlays)
+- [Scroll-Driven Effects](#scroll-driven-effects)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Compatibility
 
 This skill owns ordinary stacks, grids, lists, scroll views, forms, controls, search UI, and overlays. Route clipping, unintended overlap, keyboard obstruction, and adaptation across window sizes, orientation, Dynamic Type, or localization to `swiftui-responsive-layout`. Route state ownership to `swiftui-patterns`, navigation and modal policy to `swiftui-navigation`, gestures to `swiftui-gestures`, motion to `swiftui-animation`, and measured performance problems to `swiftui-performance`.
@@ -60,6 +72,14 @@ Use overlays for transient UI that should not affect layout. Give banners and to
 Drive continuous effects from one normalized progress value and keep geometry observation in the narrowest subtree possible. Avoid parallel booleans that can disagree. Do not combine competing same-axis scroll and drag gestures without an explicit interaction policy.
 
 Route Liquid Glass scroll-edge styling to `swiftui-liquid-glass` and detailed animation curves/transitions to `swiftui-animation`.
+
+## Common Mistakes
+
+- Setting hardcoded frame heights inside scrollable containers, causing clipping on smaller screens.
+- Nesting two `ScrollView` instances on the same scroll axis without an explicit coordinate space.
+- Using `GeometryReader` inside every cell of a lazy grid or list, causing layout thrashing.
+- Forcing a `List` into a static container when a `VStack` or `Grid` better matches the semantics.
+- Omitting `.contentShape(Rectangle())` on rows with transparent backgrounds, making taps fail.
 
 ## Review Checklist
 

@@ -9,6 +9,15 @@ Build 2D games and interactive animations for iOS 26+ using SpriteKit and
 Swift 6.3. Covers scene lifecycle, node hierarchy, actions, physics, particles,
 camera, touch handling, and SwiftUI integration.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Establish scene size, scale mode, coordinate system, and ownership before adding gameplay nodes.

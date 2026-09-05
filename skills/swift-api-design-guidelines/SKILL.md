@@ -7,6 +7,17 @@ description: "Apply Swift API Design Guidelines to names, argument labels, mutat
 
 Design APIs that read clearly at the call site and communicate semantic roles rather than implementation details.
 
+## Contents
+
+- [Scope and Compatibility](#scope-and-compatibility)
+- [Call-Site Test](#call-site-test)
+- [Side Effects and Pairs](#side-effects-and-pairs)
+- [Names and Protocols](#names-and-protocols)
+- [Documentation](#documentation)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Compatibility
 
 This skill owns Swift declaration names, argument labels, mutating/nonmutating pairs, protocol naming, casing, overload clarity, and documentation comments. Route language/type-system mechanics to `swift-language`, concurrency semantics to `swift-concurrency`, lint configuration to `swiftlint`, and project/file naming to the relevant architecture or UI skill.
@@ -57,6 +68,14 @@ Public API should have concise documentation that states purpose, parameters, re
 Document non-constant complexity when callers could reasonably assume O(1). Use symbol links and parameter markup supported by DocC. Do not restate the declaration in prose.
 
 Read [Conventions and Special Rules](references/conventions-and-special-rules.md) for casing, complexity, tuples, closure labels, overloads, and documentation edge cases.
+
+## Common Mistakes
+
+- Omitting argument labels when the argument's role is not immediately obvious from the function base name.
+- Violating the mutating/non-mutating naming rule (e.g. using a noun for a mutating method instead of `form...`).
+- Repeating type information in parameter labels (e.g. `remove(element: item)` instead of `remove(item)`).
+- Naming boolean properties or methods as commands rather than assertions (e.g. `checkEmpty()` vs `isEmpty`).
+- Creating method overloads distinguishable only by return type, causing ambiguous type inference.
 
 ## Review Checklist
 

@@ -1,359 +1,123 @@
 ---
 name: sensorkit
-description: "Builds approved research data collection with SensorKit, including entitlement, authorization, reader/fetch workflows, and supported device or watch sensors. Use for research-grade SensorKit studies; route ordinary motion to Core Motion and health records or workouts to HealthKit."
+description: "Access ambient, motion, biometric, and interaction research data using SensorKit. Use when configuring sensor readers, handling authorization and study onboarding, fetching sample streams, managing user data deletion, or building research and clinical studies."
 ---
 
 # SensorKit
 
-Choose the exact `SRSensor` and verify its individual availability. Use
-CoreMotion for ordinary motion/activity features and HealthKit for health
-records and workouts.
+Access granular ambient, motion, biometric, and interaction sensor streams for approved research and clinical studies using `SRSensorReader`. Targets Swift 6.3 / iOS 26+.
+
+> **Entitlement Warning:** SensorKit requires Apple entitlement approval (`com.apple.developer.sensorkit.reader.allow`). SensorKit cannot be tested on standard consumer apps or simulators without approved research provisioning.
 
 ## Contents
 
-- [Overview and Requirements](#overview-and-requirements)
-- [Entitlements](#entitlements)
-- [Info.plist Configuration](#infoplist-configuration)
-- [Authorization](#authorization)
-- [Available Sensors](#available-sensors)
-- [SRSensorReader](#srsensorreader)
-- [Recording and Fetching Data](#recording-and-fetching-data)
-- [SRDevice](#srdevice)
+- [Setup & Entitlements](#setup--entitlements)
+- [Sensor Reader Lifecycle](#sensor-reader-lifecycle)
+- [Fetching Sensor Data](#fetching-sensor-data)
+- [Available Sensor Categories](#available-sensor-categories)
+- [Data Deletion & User Privacy](#data-deletion--user-privacy)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## Overview and Requirements
+## Setup & Entitlements
 
-SensorKit enables research apps to record and fetch sensor data across iPhone
-and Apple Watch. The framework requires:
-
-1. **Apple-approved research study** -- submit a proposal at
-   [researchandcare.org](https://www.researchandcare.org/resources/accessing-sensorkit-data/).
-2. **SensorKit entitlement** -- Apple grants `com.apple.developer.sensorkit.reader.allow`
-   only for approved studies.
-3. **Manual provisioning profile** -- Xcode requires an explicit App ID with the
-   SensorKit capability enabled.
-4. **User authorization** -- the system presents a Research Sensor & Usage Data
-   sheet that users approve per-sensor.
-5. **Delayed retrieval** -- design fetch timing around the canonical
-   [Data Holding Period](#data-holding-period).
-
-An app can access up to 7 days of prior recorded data for an active sensor.
-
-## Entitlements
-
-Add the SensorKit reader entitlement to a `.entitlements` file. List only the
-sensors Apple approved for the study. Common entitlement values include:
-
-```xml
-<key>com.apple.developer.sensorkit.reader.allow</key>
-<array>
-    <string>ambient-light-sensor</string>
-    <string>motion-accelerometer</string>
-    <string>device-usage</string>
-    <string>keyboard-metrics</string>
-</array>
-```
-
-Load the [Entitlement and Usage-Detail Catalog](references/setup-catalog-and-manager.md#entitlement-and-usage-detail-catalog)
-when selecting the exact entitlement string and `NSSensorKitUsageDetail` key
-for each approved sensor. Recheck specialized sensors against their individual
-`SRSensor` pages.
-
-For manual signing, set Code Signing Entitlements to the entitlements file,
-Code Signing Identity to `Apple Developer`, Code Signing Style to `Manual`,
-and Provisioning Profile to the explicit profile with SensorKit capability.
-
-## Info.plist Configuration
-
-Three keys are required:
-
-```xml
-<!-- Study purpose shown in the authorization sheet -->
-<key>NSSensorKitUsageDescription</key>
-<string>This study monitors activity patterns for sleep research.</string>
-
-<!-- Link to your study's privacy policy -->
-<key>NSSensorKitPrivacyPolicyURL</key>
-<string>https://example.com/privacy-policy</string>
-
-<!-- Per-sensor usage explanations -->
-<key>NSSensorKitUsageDetail</key>
-<dict>
-    <key>SRSensorUsageMotion</key>
-    <dict>
-        <key>Description</key>
-        <string>Measures physical activity levels during the study.</string>
-        <key>Required</key>
-        <true/>
-    </dict>
-    <key>SRSensorUsageAmbientLightSensor</key>
-    <dict>
-        <key>Description</key>
-        <string>Records ambient light to assess sleep environment.</string>
-    </dict>
-</dict>
-```
-
-If `Required` is `true` and the user denies that sensor, the system warns them
-that the study needs it and offers a chance to reconsider.
-
-Use the exact usage-detail dictionary for each requested sensor. Load the
-[Entitlement and Usage-Detail Catalog](references/setup-catalog-and-manager.md#entitlement-and-usage-detail-catalog)
-when mapping sensors beyond the motion and ambient-light examples above.
-
-## Authorization
-
-Request authorization for the sensors your study needs. The system shows the
-Research Sensor & Usage Data sheet on first request.
+1. Obtain the research entitlement `com.apple.developer.sensorkit.reader.allow` from Apple.
+2. Add sensor usage descriptions to Info.plist corresponding to each queried sensor (e.g. `NSSensorKitUsageDescription`, `NSSensorKitUsageDescriptionAmbientLightSensor`).
+3. Request authorization explicitly before instantiating readers:
 
 ```swift
 import SensorKit
 
-let reader = SRSensorReader(sensor: .ambientLightSensor)
-
-// Request authorization for multiple sensors at once
-SRSensorReader.requestAuthorization(
-    sensors: [.ambientLightSensor, .accelerometer, .keyboardMetrics]
-) { error in
-    if let error {
-        print("Authorization request failed: \(error)")
-    }
+func requestSensorAccess(for sensors: Set<SRSensor>) async {
+    let status = await SRSensorReader.requestAuthorization(for: sensors)
+    // Handle authorization response
 }
 ```
 
-Use one status handler both for the initial check and delegate changes:
+## Sensor Reader Lifecycle
+
+Create an `SRSensorReader` per sensor type and assign an `SRSensorReaderDelegate`:
 
 ```swift
-private func applyAuthorizationStatus(
-    _ status: SRAuthorizationStatus,
-    to reader: SRSensorReader
-) {
-    switch status {
-    case .authorized:
+final class AmbientLightCollector: NSObject, SRSensorReaderDelegate {
+    private let reader = SRSensorReader(sensor: .ambientLightSensor)
+
+    override init() {
+        super.init()
+        reader.delegate = self
+    }
+
+    func start() {
+        guard reader.authorizationStatus == .authorized else { return }
         reader.startRecording()
-    case .denied:
+    }
+
+    func stop() {
         reader.stopRecording()
-        // Direct the user to Settings > Privacy > Research Sensor & Usage Data.
-    case .notDetermined:
-        break // Request authorization first.
-    @unknown default:
-        break
     }
 }
+```
 
-applyAuthorizationStatus(reader.authorizationStatus, to: reader)
+## Fetching Sensor Data
 
-func sensorReader(_ reader: SRSensorReader, didChange authorizationStatus: SRAuthorizationStatus) {
-    applyAuthorizationStatus(authorizationStatus, to: reader)
+Query historical recorded samples by date interval:
+
+```swift
+func fetchSamples(from start: SRAbsoluteTime, to end: SRAbsoluteTime) {
+    let request = SRFetchRequest()
+    request.from = start
+    request.to = end
+
+    reader.fetch(request)
 }
-```
 
-## Available Sensors
-
-Load the [Sensor Catalog](references/setup-catalog-and-manager.md#sensor-catalog) to map
-each `SRSensor` to its sample type. Request only sensors approved for the study
-and recheck the selected sensor's availability and usage-detail key.
-
-## SRSensorReader
-
-`SRSensorReader` is the central class for accessing sensor data. Each instance
-reads from a single sensor.
-
-```swift
-import SensorKit
-
-// Create a reader for one sensor
-let lightReader = SRSensorReader(sensor: .ambientLightSensor)
-let keyboardReader = SRSensorReader(sensor: .keyboardMetrics)
-
-// Assign delegate to receive callbacks
-lightReader.delegate = self
-keyboardReader.delegate = self
-```
-
-The reader communicates through `SRSensorReaderDelegate`. Load the
-[Delegate Method Catalog](references/setup-catalog-and-manager.md#delegate-method-catalog)
-when wiring the complete authorization, recording, device-fetch, and
-sample-fetch lifecycle.
-
-## Recording and Fetching Data
-
-### Start and Stop Recording
-
-```swift
-// Begin recording -- sensor stays active as long as any app has a stake
-reader.startRecording()
-
-// Stop recording -- framework deactivates the sensor when
-// no app or system process is using it
-reader.stopRecording()
-```
-
-### Fetch Data
-
-Build an `SRFetchRequest` with a time range and target device, then pass it to
-the reader:
-
-```swift
-let request = SRFetchRequest()
-request.device = SRDevice.current
-request.from = SRAbsoluteTime(CFAbsoluteTimeGetCurrent() - 86400 * 2)  // 2 days ago
-request.to = SRAbsoluteTime.current()
-
-reader.fetch(request)
-```
-
-Receive results through the delegate:
-
-```swift
-func sensorReader(
-    _ reader: SRSensorReader,
-    fetching request: SRFetchRequest,
-    didFetchResult result: SRFetchResult<AnyObject>
-) -> Bool {
-    let timestamp = result.timestamp
-
-    switch reader.sensor {
-    case .ambientLightSensor:
-        if let sample = result.sample as? SRAmbientLightSample {
-            let lux = sample.lux
-            let chromaticity = sample.chromaticity
-            let placement = sample.placement
-            processSample(lux: lux, chromaticity: chromaticity, at: timestamp)
-        }
-    case .keyboardMetrics:
-        if let sample = result.sample as? SRKeyboardMetrics {
-            let words = sample.totalWords
-            let speed = sample.typingSpeed
-            processKeyboard(words: words, speed: speed, at: timestamp)
-        }
-    case .deviceUsageReport:
-        if let sample = result.sample as? SRDeviceUsageReport {
-            let wakes = sample.totalScreenWakes
-            let unlocks = sample.totalUnlocks
-            processUsage(wakes: wakes, unlocks: unlocks, at: timestamp)
-        }
-    default:
-        break
+// SRSensorReaderDelegate
+func sensorReader(_ reader: SRSensorReader, fetching request: SRFetchRequest, didFetchResult result: SRFetchResult) -> Bool {
+    if let sample = result.sample as? SRAmbientLightSample {
+        // Process sensor sample
     }
-
-    return true  // Return true to continue receiving results
+    return true // Return true to continue fetching remaining results
 }
 
 func sensorReader(_ reader: SRSensorReader, didCompleteFetch request: SRFetchRequest) {
-    print("Fetch complete for \(reader.sensor)")
-}
-
-func sensorReader(
-    _ reader: SRSensorReader,
-    fetching request: SRFetchRequest,
-    failedWithError error: any Error
-) {
-    print("Fetch failed: \(error)")
+    // Finished fetch
 }
 ```
 
-Cast `result.sample` to the sample shape for the reader's sensor. Some streams
-return one object per result, while recorded motion, ECG, PPG, and ambient
-pressure streams can return arrays of recorded samples.
+## Available Sensor Categories
 
-### Data Holding Period
+- **Motion & Environment**: `.ambientLightSensor`, `.accelerometer`, `.rotationRate`, `.elevation`.
+- **User Interactions**: `.keyboardMetrics`, `.deviceUsageReport`, `.messagesUsageReport`, `.phoneUsageReport`.
+- **Physiological & Health**: `.speechMetrics`, `.faceMetrics`, `.wristTemperature`, `.heartRate`.
 
-SensorKit imposes a **24-hour holding period** on newly recorded data. Fetch
-requests whose time range overlaps this period return no results. Design data
-collection workflows around this delay.
+## Data Deletion & User Privacy
 
-## SRDevice
-
-`SRDevice` identifies the hardware source for sensor samples. Use it to
-distinguish data from iPhone versus Apple Watch.
+Research participants can delete recorded data. Honor deletion requests via `SRSensorReader`:
 
 ```swift
-// Get the current device
-let currentDevice = SRDevice.current
-print("Model: \(currentDevice.model)")
-print("System: \(currentDevice.systemName) \(currentDevice.systemVersion)")
-
-// Fetch all available devices for a sensor
-reader.fetchDevices()
-```
-
-Handle fetched devices through the delegate:
-
-```swift
-func sensorReader(_ reader: SRSensorReader, didFetch devices: [SRDevice]) {
-    for device in devices {
-        let request = SRFetchRequest()
-        request.device = device
-        request.from = SRAbsoluteTime(CFAbsoluteTimeGetCurrent() - 86400)
-        request.to = SRAbsoluteTime.current()
-        reader.fetch(request)
-    }
-}
-
-func sensorReader(_ reader: SRSensorReader, fetchDevicesDidFailWithError error: any Error) {
-    print("Failed to fetch devices: \(error)")
+func purgeData(before timestamp: SRAbsoluteTime) async throws {
+    let request = SRDeletionRequest()
+    request.endTime = timestamp
+    try await reader.delete(request)
 }
 ```
-
-### SRDevice Properties
-
-| Property | Type | Description |
-|---|---|---|
-| `model` | `String` | User-defined device name |
-| `name` | `String` | Framework-defined device name |
-| `systemName` | `String` | OS name (iOS, watchOS) |
-| `systemVersion` | `String` | OS version |
-| `productType` | `String` | Hardware identifier |
-| `current` | `SRDevice` | Class property for the running device |
 
 ## Common Mistakes
 
-### DON'T: Attempt to use SensorKit without the entitlement
-
-Obtain Apple's study approval, the sensor-specific entitlement values, and a
-matching manual provisioning profile before constructing production readers.
-
-### DON'T: Expect immediate data access
-
-Apply the [Data Holding Period](#data-holding-period); a fetch overlapping the
-hold is not proof that recording failed.
-
-### DON'T: Forget to set the delegate before fetching
-
-Assign the delegate before `startRecording()` or `fetch(_:)`; results and
-failures arrive through delegate callbacks.
-
-### DON'T: Skip per-sensor Info.plist usage detail
-
-Add the exact [Info.plist Configuration](#infoplist-configuration) usage-detail
-entry for every requested sensor.
-
-### DON'T: Ignore SRError codes
-
-Distinguish at least `.invalidEntitlement`, `.noAuthorization`,
-`.dataInaccessible`, `.fetchRequestInvalid`, `.promptDeclined`, and unknown
-future codes. Load the [Full Delegate Implementation](references/setup-catalog-and-manager.md#full-delegate-implementation)
-for the complete switch and callback wiring.
+- **Shipping without Apple entitlement approval**: SensorKit APIs fail immediately unless signed with an approved provisioning profile.
+- **Returning false in fetch delegate prematurely**: Returning `false` from `didFetchResult` halts subsequent sample delivery.
+- **Forgetting per-sensor usage descriptions**: Each sensor type requires its dedicated Info.plist explanation key.
+- **Querying unbounded time intervals**: Always constrain `SRFetchRequest` to bounded start and end timestamps to avoid memory exhaustion.
+- **Assuming simulator support**: SensorKit does not record or simulate hardware sensor streams on iOS Simulator.
 
 ## Review Checklist
 
-- [ ] Apple-approved research study in place before development
-- [ ] `com.apple.developer.sensorkit.reader.allow` entitlement lists only needed sensors
-- [ ] Manual provisioning profile with explicit App ID and SensorKit capability
-- [ ] `NSSensorKitUsageDescription` in Info.plist with clear study purpose
-- [ ] `NSSensorKitPrivacyPolicyURL` in Info.plist with valid privacy policy URL
-- [ ] `NSSensorKitUsageDetail` entries for every requested sensor
-- [ ] `Required` key set appropriately for essential vs. optional sensors
-- [ ] Authorization requested before recording, status checked before fetching
-- [ ] Delegate assigned before calling `startRecording()` or `fetch(_:)`
-- [ ] Fetch request time ranges account for 24-hour data holding period
-- [ ] `SRError` codes handled in all failure delegate methods
-- [ ] `fetchDevices()` used to discover available devices before fetching
-- [ ] `stopRecording()` called when data collection is complete
-- [ ] `sensorReader(_:fetching:didFetchResult:)` returns `true` to continue or `false` to stop
+- [ ] `com.apple.developer.sensorkit.reader.allow` entitlement confirmed active
+- [ ] Required sensor usage descriptions declared in Info.plist
+- [ ] `requestAuthorization(for:)` called before starting reader recording
+- [ ] `didFetchResult` returns `true` while iterating batch samples
+- [ ] Deletion requests supported for participant privacy compliance
 
 ## References
 

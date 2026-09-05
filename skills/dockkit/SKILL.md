@@ -12,6 +12,15 @@ and 90-degree tilt tracking with no additional code. Apps can override
 system tracking to supply custom observations, control motors directly,
 or adjust framing. iOS 17+, Swift 6.3.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Gate the feature on DockKit availability and a connected compatible accessory; plan physical-device verification.
@@ -123,6 +132,7 @@ available.
 ## References
 
 - Extended patterns (Vision integration, service architecture, custom animations): [references/dockkit-patterns.md](references/dockkit-patterns.md)
+- Error handling and unit testing: [references/dockkit-errors-and-testing.md](references/dockkit-errors-and-testing.md)
 - [DockKit framework](https://sosumi.ai/documentation/dockkit)
 - [DockAccessoryManager](https://sosumi.ai/documentation/dockkit/dockaccessorymanager)
 - [DockAccessory](https://sosumi.ai/documentation/dockkit/dockaccessory)

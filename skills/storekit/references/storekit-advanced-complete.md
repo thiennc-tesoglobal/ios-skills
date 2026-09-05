@@ -778,42 +778,6 @@ the sweep as a recovery tool rather than a replacement for the listener.
 
 ## Common Advanced Mistakes
 
-### Missing a recovery path for unfinished transactions
-
-```swift
-// WRONG: No launch listener and no recovery sweep
-init() { }
-
-// CORRECT: Start updates at launch; sweep unfinished transactions when needed
-init() {
-    transactionListener = listenForTransactions()
-    Task { await processUnfinishedTransactions() }
-}
-```
-
-### Treating billing retry as expired
-
-```swift
-// WRONG: Revoking access during billing retry
-case .inBillingRetryPeriod: revokeAccess()
-
-// CORRECT: Grant limited access and prompt payment update
-case .inBillingRetryPeriod:
-    grantLimitedAccess()
-    showUpdatePaymentPrompt()
-```
-
-### Not handling Family Sharing revocation
-
-```swift
-// WRONG: Assuming family-shared access is permanent
-if transaction.ownershipType == .familyShared {
-    grantPermanentAccess()
-}
-
-// CORRECT: Check revocation status and listen for changes
-if transaction.ownershipType == .familyShared,
-   transaction.revocationDate == nil {
-    grantAccess()  // May be revoked later via Transaction.updates
-}
-```
+- **Missing recovery sweep for unfinished transactions:** Start `Transaction.updates` at launch and sweep `Transaction.unfinished` on recovery paths.
+- **Revoking access during billing retry:** Grant temporary/limited access during `.inBillingRetryPeriod` while prompting payment method update.
+- **Assuming Family Sharing is permanent:** Always check `transaction.revocationDate == nil` and observe revocations via `Transaction.updates`.

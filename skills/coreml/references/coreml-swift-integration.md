@@ -786,25 +786,9 @@ private func createTestPixelBuffer(width: Int, height: Int) throws -> CVPixelBuf
 
 ## Memory Management Best Practices
 
-1. **Unload on background.** Unload models when `scenePhase == .background`
-   and reload on return to foreground. iOS reclaims memory aggressively.
-2. **Choose compute units by context.** Use `.all` by default. Consider
-   `.cpuOnly` only when profiling or app policy shows accelerator contention,
-   thermal state, energy budget, deterministic testing, or a legitimate
-   background execution constraint makes CPU the right tradeoff.
-   Do not claim GPU or Neural Engine are categorically unavailable for every
-   background-adjacent task; background behavior depends on app mode, suspension,
-   system policy, thermal state, energy, and contention.
-3. **Prefer compiled models.** `.mlmodelc` loads faster and uses less transient
-   memory than compiling `.mlpackage` at runtime. If a model is downloaded as
-   `.mlmodel` or `.mlpackage`, compile once with `MLModel.compileModel(at:)`,
-   move the `.mlmodelc` out of Core ML's temporary location, and cache it by
-   model version. Do not call `compileModel(at:)` on every launch for the same
-   model.
-4. **Validate on physical devices.** Measure model load, first prediction,
-   repeated predictions, background/foreground transitions, and low-memory
-   behavior on the lowest-memory supported device.
-5. **Share model instances.** Use an actor (like `ModelManager` above) to
-   ensure only one instance of each model exists.
-6. **Release batch providers promptly.** Large `MLArrayBatchProvider` instances
-   hold references to all input data.
+- **Unload on background:** Unload large models when `scenePhase == .background` and reload on foreground to avoid low-memory terminations.
+- **Choose compute units by context:** Use `.all` by default. Reserve `.cpuOnly` for accelerator contention, thermal constraints, or deterministic testing.
+- **Prefer compiled models:** `.mlmodelc` loads faster than compiling `.mlpackage` at runtime. Compile once via `MLModel.compileModel(at:)` and cache the resulting artifact.
+- **Validate on physical devices:** Measure memory pressure, load latency, and background transitions on minimum-spec hardware.
+- **Share model instances:** Centralize model ownership within an actor to prevent duplicate weight copies in RAM.
+- **Release batch providers promptly:** Large `MLArrayBatchProvider` instances retain all input buffers; discard them immediately after inference.

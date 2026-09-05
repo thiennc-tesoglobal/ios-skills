@@ -479,10 +479,11 @@ actor BiometricKeychain {
 ### SwiftUI ViewModel Integration
 
 ```swift
+@Observable
 @MainActor
-class AuthViewModel: ObservableObject {
-    @Published var isAuthenticated = false
-    @Published var errorMessage: String?
+final class AuthViewModel {
+    var isAuthenticated = false
+    var errorMessage: String?
 
     private let keychain = BiometricKeychain()
 

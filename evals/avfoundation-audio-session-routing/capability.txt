@@ -1,0 +1,1 @@
+Configure AVAudioSession, handle route changes and interruptions, and manage AVAudioEngine lifecycle.

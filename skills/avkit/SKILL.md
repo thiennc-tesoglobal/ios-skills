@@ -9,6 +9,15 @@ High-level media playback UI built on AVFoundation. Provides system-standard
 video players, Picture-in-Picture, AirPlay routing, transport controls, and
 subtitle/caption display. Targets Swift 6.3 / iOS 26+.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Define playback ownership, media source, audio-session policy, background behavior, and supported system controls.

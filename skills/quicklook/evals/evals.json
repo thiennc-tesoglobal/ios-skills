@@ -1,0 +1,57 @@
+{
+  "skill_name": "quicklook",
+  "evals": [
+    {
+      "id": 1,
+      "name": "quicklook-swiftui-preview-modifier",
+      "prompt": "Create a SwiftUI view that displays a file list and presents full-screen document previews using the .quickLookPreview modifier bound to a local file URL.",
+      "expected_output": "A SwiftUI view binding an optional local URL to .quickLookPreview, ensuring remote URLs are not passed directly.",
+      "files": [],
+      "assertions": [
+        "Uses the .quickLookPreview($url) modifier in SwiftUI.",
+        "Binds to an optional local URL state property.",
+        "Ensures target files are verified as local file URLs before passing to the modifier.",
+        "Handles dismiss and state reset cleanly."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "quicklook-preview-controller-data-source",
+      "prompt": "Implement a QLPreviewController wrapper in Swift conforming to QLPreviewControllerDataSource and QLPreviewControllerDelegate to support paging through a multi-file collection with custom titles.",
+      "expected_output": "A coordinator or controller implementing numberOfPreviewItems(in:) and previewController(_:previewItemAt:) returning custom QLPreviewItem models.",
+      "files": [],
+      "assertions": [
+        "Adopts QLPreviewControllerDataSource protocol.",
+        "Implements numberOfPreviewItems(in:) returning item count.",
+        "Implements previewController(_:previewItemAt:) returning QLPreviewItem conforming items.",
+        "Provides custom preview titles via QLPreviewItem conformance."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "quicklook-thumbnail-generator-request",
+      "prompt": "Write an asynchronous thumbnail loader using QLThumbnailGenerator that takes a file URL, target point size, and display scale, generates a best representation, and caches it with NSCache.",
+      "expected_output": "A Swift actor or class using QLThumbnailGenerator.Request and generateBestRepresentation(for:) with NSCache storage.",
+      "files": [],
+      "assertions": [
+        "Initializes a QLThumbnailGenerator.Request specifying file URL, size, and display scale.",
+        "Calls QLThumbnailGenerator.shared.generateBestRepresentation(for:).",
+        "Caches generated UIImage instances in NSCache to avoid re-generating thumbnails.",
+        "Runs thumbnail generation off the main thread."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "quicklook-remote-download-preview-lifecycle",
+      "prompt": "Show how to safely preview a remote document (e.g. from an HTTPS URL) using QuickLook, including downloading to a temporary directory, presenting the preview, and cleaning up the temp file on dismissal.",
+      "expected_output": "A complete download-preview-teardown workflow ensuring remote URLs are saved locally before QL previewing and deleted after presentation.",
+      "files": [],
+      "assertions": [
+        "Downloads remote data or downloads file using URLSession before opening QuickLook.",
+        "Stores the file at a temporary local file URL.",
+        "Opens QuickLook preview using the local file URL.",
+        "Cleans up the temporary file when preview is dismissed."
+      ]
+    }
+  ]
+}

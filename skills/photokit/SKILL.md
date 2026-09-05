@@ -5,438 +5,98 @@ description: "Builds or reviews photo-library picking, image loading, camera cap
 
 # PhotoKit
 
-Modern patterns for photo picking, camera capture, image loading, and media permissions targeting iOS 26+ with Swift 6.3. Patterns are backward-compatible to iOS 16 unless noted. See [references/photokit-patterns.md](references/photokit-patterns.md) for complete picker recipes and [references/camera-capture.md](references/camera-capture.md) for AVCaptureSession patterns.
+Build media selection, camera capture, photo library queries, and image caching workflows with `PhotosUI` (`PhotosPicker`), `PhotoKit` (`PHPhotoLibrary`), and `AVFoundation`. Targets Swift 6.3 / iOS 26+.
 
 ## Contents
 
-- [PhotosPicker (SwiftUI, iOS 16+)](#photospicker-swiftui-ios-16)
+- [Picker Selection Strategy](#picker-selection-strategy)
 - [Privacy and Permissions](#privacy-and-permissions)
-- [Camera Capture Basics](#camera-capture-basics)
-- [Image Loading and Display](#image-loading-and-display)
+- [Image Loading and Caching](#image-loading-and-caching)
+- [Camera Capture Boundaries](#camera-capture-boundaries)
+- [Route by Task](#route-by-task)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## PhotosPicker (SwiftUI, iOS 16+)
+## Picker Selection Strategy
 
-`PhotosPicker` is the native SwiftUI replacement for `UIImagePickerController`. It runs out-of-process, requires no photo library permission for browsing, and supports single or multi-selection with media type filtering.
+| Approach | UI Framework | Permissions Needed | Use Case |
+|---|---|---|---|
+| `PhotosPicker` | SwiftUI | **None** (runs out-of-process) | User selects photos/videos for import |
+| `PHPickerViewController` | UIKit | **None** (runs out-of-process) | UIKit equivalent of PhotosPicker |
+| `PHPhotoLibrary` | Direct API | `NSPhotoLibraryUsageDescription` | Custom gallery, background sync, asset deletion |
+| `AVCaptureSession` | Custom UI | `NSCameraUsageDescription` | Real-time camera viewfinder, photo/video capture |
 
-### Single Selection
-
-```swift
-import SwiftUI
-import PhotosUI
-
-struct SinglePhotoPicker: View {
-    @State private var selectedItem: PhotosPickerItem?
-    @State private var selectedImage: Image?
-
-    var body: some View {
-        VStack {
-            if let selectedImage {
-                selectedImage
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxHeight: 300)
-            }
-
-            PhotosPicker("Select Photo", selection: $selectedItem, matching: .images)
-        }
-        .onChange(of: selectedItem) { _, newItem in
-            Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data) {
-                    selectedImage = Image(uiImage: uiImage)
-                }
-            }
-        }
-    }
-}
-```
-
-### Multi-Selection
-
-```swift
-struct MultiPhotoPicker: View {
-    @State private var selectedItems: [PhotosPickerItem] = []
-    @State private var selectedImages: [Image] = []
-
-    var body: some View {
-        VStack {
-            ScrollView(.horizontal) {
-                HStack {
-                    ForEach(selectedImages.indices, id: \.self) { index in
-                        selectedImages[index]
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(.rect(cornerRadius: 8))
-                    }
-                }
-            }
-
-            PhotosPicker(
-                "Select Photos",
-                selection: $selectedItems,
-                maxSelectionCount: 5,
-                matching: .images
-            )
-        }
-        .onChange(of: selectedItems) { _, newItems in
-            Task {
-                selectedImages = []
-                for item in newItems {
-                    if let data = try? await item.loadTransferable(type: Data.self),
-                       let uiImage = UIImage(data: data) {
-                        selectedImages.append(Image(uiImage: uiImage))
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-### Media Type Filtering
-
-Filter with `PHPickerFilter` composites to restrict selectable media:
-
-```swift
-// Images only
-PhotosPicker(selection: $items, matching: .images)
-
-// Videos only
-PhotosPicker(selection: $items, matching: .videos)
-
-// Live Photos only
-PhotosPicker(selection: $items, matching: .livePhotos)
-
-// Screenshots only
-PhotosPicker(selection: $items, matching: .screenshots)
-
-// Images and videos combined
-PhotosPicker(selection: $items, matching: .any(of: [.images, .videos]))
-
-// Images excluding screenshots
-PhotosPicker(selection: $items, matching: .all(of: [.images, .not(.screenshots)]))
-```
-
-### Loading Selected Items with Transferable
-
-`PhotosPickerItem` loads content asynchronously via `loadTransferable(type:)`. Define a `Transferable` type for automatic decoding:
-
-```swift
-struct PickedImage: Transferable {
-    let data: Data
-    let image: Image
-
-    static var transferRepresentation: some TransferRepresentation {
-        DataRepresentation(importedContentType: .image) { data in
-            guard let uiImage = UIImage(data: data) else {
-                throw TransferError.importFailed
-            }
-            return PickedImage(data: data, image: Image(uiImage: uiImage))
-        }
-    }
-}
-
-enum TransferError: Error {
-    case importFailed
-}
-
-// Usage
-if let picked = try? await item.loadTransferable(type: PickedImage.self) {
-    selectedImage = picked.image
-}
-```
-
-Always load in a `Task` to avoid blocking the main thread. Handle `nil` returns and thrown errors -- the user may select a format that cannot be decoded.
+Prefer `PhotosPicker` for standard media selection. It preserves user privacy and eliminates permission friction.
 
 ## Privacy and Permissions
 
-### Photo Library Access Levels
-
-iOS provides two access levels for the photo library. The system automatically presents the limited-library picker when an app requests `.readWrite` access -- users choose which photos to share.
-
-| Access Level | Description | Info.plist Key |
-|-------------|-------------|----------------|
-| Add-only | Write photos to the library without reading | `NSPhotoLibraryAddUsageDescription` |
-| Read-write | Full or limited read access plus write | `NSPhotoLibraryUsageDescription` |
-
-`PhotosPicker` requires no permission to browse -- it runs out-of-process and only grants access to selected items. Request explicit permission only when you need to read the full library (e.g., a custom gallery) or save photos.
-
-### Checking and Requesting Photo Library Permission
+When accessing `PHPhotoLibrary` directly, request authorization and handle `.limited` access:
 
 ```swift
-import Photos
-
-func requestPhotoLibraryAccess() async -> PHAuthorizationStatus {
-    let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-
-    switch status {
-    case .notDetermined:
-        return await PHPhotoLibrary.requestAuthorization(for: .readWrite)
-    case .authorized, .limited:
-        return status
-    case .denied, .restricted:
-        return status
-    @unknown default:
-        return status
-    }
+let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+switch status {
+case .authorized:
+    // Full photo library access granted
+case .limited:
+    // User selected specific photos (present PHPhotoLibrary.shared().presentLimitedLibraryPicker)
+case .denied, .restricted:
+    // Direct user to Settings
+case .notDetermined:
+    break
+@unknown default:
+    break
 }
 ```
 
-### Camera Permission
+Include `NSPhotoLibraryUsageDescription` (read/write) or `NSPhotoLibraryAddUsageDescription` (write-only save) in `Info.plist`.
 
-Add `NSCameraUsageDescription` to Info.plist. Check and request access before configuring a capture session:
+## Image Loading and Caching
 
-```swift
-import AVFoundation
+Use `PHCachingImageManager` for fast grid thumbnail generation:
+1. **Prepare caching**: Call `startCachingImages(for:targetSize:contentMode:options:)` when scrolling into view.
+2. **Reuse options**: Use `PHImageRequestOptions` with `deliveryMode = .opportunistic` for quick thumbnails followed by high-res data.
+3. **Cancel obsolete requests**: Cancel pending request IDs when cells scroll out of viewport.
 
-func requestCameraAccess() async -> Bool {
-    let status = AVCaptureDevice.authorizationStatus(for: .video)
+## Camera Capture Boundaries
 
-    switch status {
-    case .notDetermined:
-        return await AVCaptureDevice.requestAccess(for: .video)
-    case .authorized:
-        return true
-    case .denied, .restricted:
-        return false
-    @unknown default:
-        return false
-    }
-}
-```
+For custom camera viewfinders using `AVCaptureSession`:
+- Configure sessions on a dedicated serial background queue, never on `@MainActor`.
+- Balance every transaction with `session.beginConfiguration()` and `defer { session.commitConfiguration() }`.
+- Embed viewfinders in SwiftUI using `UIViewRepresentable` backed by `AVCaptureVideoPreviewLayer`.
 
-### Handling Denied Permissions
+## Route by Task
 
-When the user denies access, guide them to Settings. Never repeatedly prompt or hide functionality silently.
-
-```swift
-struct PermissionDeniedView: View {
-    let message: String
-    @Environment(\.openURL) private var openURL
-
-    var body: some View {
-        ContentUnavailableView {
-            Label("Access Denied", systemImage: "lock.shield")
-        } description: {
-            Text(message)
-        } actions: {
-            Button("Open Settings") {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    openURL(url)
-                }
-            }
-        }
-    }
-}
-```
-
-### Required Info.plist Keys
-
-| Key | When Required |
-|-----|--------------|
-| `NSPhotoLibraryUsageDescription` | Reading photos from the library |
-| `NSPhotoLibraryAddUsageDescription` | Saving photos/videos to the library |
-| `NSCameraUsageDescription` | Accessing the camera |
-| `NSMicrophoneUsageDescription` | Recording audio (video with sound) |
-
-Omitting a required key causes a runtime crash when the permission dialog would appear.
-
-## Camera Capture Basics
-
-Own each capture session in a dedicated controller and serialize configuration, `startRunning()`, and `stopRunning()` on the same non-main executor. Never mix main-actor configuration with detached start/stop tasks: `beginConfiguration()`/`commitConfiguration()` and session state changes must not race. The representable view only displays the preview.
-
-### Minimal Camera Manager
-
-Load [Camera Capture](references/camera-capture.md) for the serialized-controller pattern, photo/video delegates, focus, torch, orientation, and scanning. The critical lifecycle is:
-
-1. Request access outside the session configuration transaction.
-2. On the capture executor, call `beginConfiguration()` and immediately install `defer { commitConfiguration() }` so every early exit balances the transaction.
-3. Add inputs and outputs only after `canAddInput`/`canAddOutput` checks.
-4. Start or stop on that same executor, then publish UI state on the main actor only after the synchronous call returns.
-5. On failure, stop, restore a fresh session fixture, fix the configuration, and rerun authorization, background/foreground, interruption, and capture checks.
-
-### Camera Preview in SwiftUI
-
-Wrap `AVCaptureVideoPreviewLayer` in a `UIViewRepresentable`. Override `layerClass` for automatic resizing:
-
-```swift
-import SwiftUI
-import AVFoundation
-
-struct CameraPreview: UIViewRepresentable {
-    let session: AVCaptureSession
-
-    func makeUIView(context: Context) -> PreviewView {
-        let view = PreviewView()
-        view.previewLayer.session = session
-        view.previewLayer.videoGravity = .resizeAspectFill
-        return view
-    }
-
-    func updateUIView(_ uiView: PreviewView, context: Context) {
-        if uiView.previewLayer.session !== session {
-            uiView.previewLayer.session = session
-        }
-    }
-}
-
-final class PreviewView: UIView {
-    override class var layerClass: AnyClass { AVCaptureVideoPreviewLayer.self }
-    var previewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
-}
-```
-
-### Using the Camera in a View
-
-```swift
-struct CameraScreen: View {
-    @State private var cameraManager = CameraManager()
-
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            CameraPreview(session: cameraManager.session)
-                .ignoresSafeArea()
-
-            Button {
-                // Capture photo -- see references/camera-capture.md
-            } label: {
-                Circle()
-                    .fill(.white)
-                    .frame(width: 72, height: 72)
-                    .overlay(Circle().stroke(.gray, lineWidth: 3))
-            }
-            .padding(.bottom)
-        }
-        .task {
-            await cameraManager.configure()
-            cameraManager.start()
-        }
-        .onDisappear {
-            cameraManager.stop()
-        }
-    }
-}
-```
-
-Always call `stop()` in `onDisappear`. A running capture session holds the camera exclusively and drains battery.
-
-## Image Loading and Display
-
-### AsyncImage for Remote Images
-
-```swift
-AsyncImage(url: imageURL) { phase in
-    switch phase {
-    case .empty:
-        ProgressView()
-    case .success(let image):
-        image
-            .resizable()
-            .scaledToFill()
-    case .failure:
-        Image(systemName: "photo")
-            .foregroundStyle(.secondary)
-    @unknown default:
-        EmptyView()
-    }
-}
-.frame(width: 200, height: 200)
-.clipShape(.rect(cornerRadius: 12))
-```
-
-`AsyncImage` does not cache images across view redraws. For production apps with many images, use a dedicated image loading library or `URLCache`-based caching.
-
-### Downsampling Large Images
-
-Load full-resolution photos from the library into a display-sized `CGImage` to avoid memory spikes. A 48MP photo can consume over 200 MB uncompressed.
-
-```swift
-import ImageIO
-import UIKit
-
-func downsample(data: Data, to pointSize: CGSize, scale: CGFloat = UITraitCollection.current.displayScale) -> UIImage? {
-    let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale
-
-    let options: [CFString: Any] = [
-        kCGImageSourceCreateThumbnailFromImageAlways: true,
-        kCGImageSourceShouldCacheImmediately: true,
-        kCGImageSourceCreateThumbnailWithTransform: true,
-        kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
-    ]
-
-    guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-          let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
-        return nil
-    }
-
-    return UIImage(cgImage: cgImage)
-}
-```
-
-Use this whenever displaying user-selected photos in lists, grids, or thumbnails. Pass the raw `Data` from `PhotosPickerItem` directly to the downsampler before creating a `UIImage`.
-
-### Image Rendering Modes
-
-```swift
-// Original: display the image as-is with its original colors
-Image("photo")
-    .renderingMode(.original)
-
-// Template: treat the image as a mask, colored by foregroundStyle
-Image(systemName: "heart.fill")
-    .renderingMode(.template)
-    .foregroundStyle(.red)
-```
-
-Use `.original` for photos and artwork. Use `.template` for icons that should adopt the current tint color.
+- For SwiftUI `PhotosPicker` single/multi-selection and media filtering recipes, read [PhotosPicker Recipes](references/photokit-patterns.md).
+- For complete camera controllers, photo capture, video recording, and barcode scanning, read [Camera Capture Patterns](references/camera-capture.md).
+- For asset fetching, thumbnail caching with `PHCachingImageManager`, and memory management, read [Image Loading and Caching](references/image-loading-caching.md). For format conversion and compression, read [Image Formats and Compression](references/image-formats-compression.md).
+- For video playback, custom player UI, and AVPlayer integration, read [AV Playback Reference](references/av-playback.md).
 
 ## Common Mistakes
 
-**DON'T:** Use `UIImagePickerController` for photo picking.
-**DO:** Use `PhotosPicker` (SwiftUI) or `PHPickerViewController` (UIKit).
-*Why:* `UIImagePickerController` is legacy API with limited functionality. `PhotosPicker` runs out-of-process, supports multi-selection, and requires no library permission for browsing.
-
-**DON'T:** Request full photo library access when you only need the user to pick photos.
-**DO:** Use `PhotosPicker` which requires no permission, or request `.readWrite` and let the system handle limited access.
-*Why:* Full access is unnecessary for most pick-and-use workflows. The system's limited-library picker respects user privacy and still grants access to selected items.
-
-**DON'T:** Load full-resolution images into memory for thumbnails.
-**DO:** Use `CGImageSource` with `kCGImageSourceThumbnailMaxPixelSize` to downsample. A 48MP image is over 200 MB uncompressed.
-
-**DON'T:** Block the main thread loading `PhotosPickerItem` data.
-**DO:** Use `async loadTransferable(type:)` in a `Task`.
-
-**DON'T:** Forget to stop `AVCaptureSession` when the view disappears.
-**DO:** Call `session.stopRunning()` in `onDisappear` or `dismantleUIView`.
-
-**DON'T:** Assume camera access is granted without checking.
-**DO:** Check `AVCaptureDevice.authorizationStatus(for: .video)` and handle `.denied`/`.restricted`.
-
-**DON'T:** Call `session.startRunning()` on the main thread.
-**DO:** Run it on the same dedicated serial executor that owns configuration and stop operations.
-*Why:* `startRunning()` is a synchronous blocking call that can take hundreds of milliseconds while the hardware initializes.
-
-**DON'T:** Create `AVCaptureSession` inside a `UIViewRepresentable`.
-**DO:** Own the session in a separate `@Observable` model.
+- Requesting full photo library permissions when `PhotosPicker` would suffice without any permissions.
+- Hardcoding `.highQualityFormat` on `PHImageRequestOptions` for fast-scrolling grids, causing dropped frames.
+- Running `AVCaptureSession.startRunning()` or configuration changes on `@MainActor`.
+- Forgetting to handle `.limited` photo library access on iOS 14+.
+- Loading full-resolution `UIImage` into memory for multiple items simultaneously without downsampling.
 
 ## Review Checklist
 
-- [ ] `PhotosPicker` used instead of deprecated `UIImagePickerController`
-- [ ] Privacy descriptions in Info.plist for camera/photo library
-- [ ] Loading states handled for async image/video loading
-- [ ] Large images downsampled with `CGImageSource` before display
-- [ ] Camera session started on background thread; stopped in `onDisappear`
-- [ ] Permission denial handled with Settings deep link
-- [ ] `AVCaptureSession` owned by model, not created inside `UIViewRepresentable`
-- [ ] Media asset types and picker results are `Sendable` across concurrency boundaries
+- [ ] `PhotosPicker` preferred over custom library enumeration where appropriate
+- [ ] `NSPhotoLibraryUsageDescription` provided when using `PHPhotoLibrary`
+- [ ] `NSCameraUsageDescription` provided when using `AVCaptureSession`
+- [ ] `.limited` photo library authorization handled gracefully
+- [ ] `PHCachingImageManager` used with preheating for asset collections
+- [ ] `AVCaptureSession` configured and started on a serial background queue
+- [ ] Photo picker item loading handles cancellation and errors asynchronously
+- [ ] Image assets downsampled to target display size to prevent memory spikes
 
 ## References
 
-- [references/photokit-patterns.md](references/photokit-patterns.md) — Picker patterns, media loading, HEIC handling
-- [references/camera-capture.md](references/camera-capture.md) — AVCaptureSession, photo/video capture, QR scanning
-- [references/image-loading-caching.md](references/image-loading-caching.md) — AsyncImage, caching, downsampling
-- [references/av-playback.md](references/av-playback.md) — AVPlayer, streaming, audio
+- [PhotoKit patterns and picker recipes](references/photokit-patterns.md)
+- [Camera capture and AVCaptureSession reference](references/camera-capture.md)
+- [Image loading, caching, and downsampling](references/image-loading-caching.md)
+- [Image formats and compression](references/image-formats-compression.md)
+- [AV Playback reference](references/av-playback.md)
+- [PhotoKit documentation](https://sosumi.ai/documentation/photokit)
+- [PhotosUI documentation](https://sosumi.ai/documentation/photosui)

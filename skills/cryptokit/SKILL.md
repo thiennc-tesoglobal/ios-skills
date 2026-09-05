@@ -13,6 +13,15 @@ availability for HPKE (iOS 17+) and SHA-3 / post-quantum APIs (iOS 26+).
 Prefer CryptoKit over CommonCrypto or raw Security framework APIs for new
 cryptographic primitive code targeting Swift 6.3+.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Define the security property: hashing, authentication, authenticated encryption, signing, key agreement, or envelope encryption.

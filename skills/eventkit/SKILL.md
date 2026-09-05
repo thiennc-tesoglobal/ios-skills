@@ -8,6 +8,15 @@ description: "Creates, reads, edits, and presents calendar events or reminders w
 Use EventKit for calendar and reminder authorization, CRUD, recurrence, alarms,
 and system editors.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Determine whether the app needs event write-only access, full event access, or reminder access and declare the matching usage descriptions.

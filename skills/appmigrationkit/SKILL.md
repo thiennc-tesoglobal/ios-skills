@@ -19,6 +19,15 @@ transfer between devices. The app provides an extension conforming to export
 and import protocols, and the system calls that extension at the appropriate
 time. The app itself never manages the network connection between devices.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Confirm platform availability, migration entitlement, extension target, and shared-container layout.

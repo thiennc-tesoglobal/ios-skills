@@ -73,7 +73,7 @@ SwiftUI does not expose `UIFocusDebugger` directly. Strategies:
 
 | Anti-Pattern | Problem | Fix |
 |-------------|---------|-----|
-| Programmatically setting focus in `viewDidLoad` | Focus engine hasn't completed initial update | Use `viewDidAppear` or `DispatchQueue.main.async` |
+| Programmatically setting focus in `viewDidLoad` | Focus engine hasn't completed initial update | Use `viewDidAppear` or `Task { @MainActor in }` |
 | Calling `setNeedsFocusUpdate()` without `updateFocusIfNeeded()` | Focus update is deferred indefinitely | Pair both calls: `setNeedsFocusUpdate(); updateFocusIfNeeded()` |
 | Overriding `preferredFocusEnvironments` with stale references | Focus targets a deallocated or off-screen view | Return currently valid, on-screen environments |
 | Using `isHidden = true` to disable focus on a view | Removes the view from layout entirely | Use `canBecomeFocused` override or `focusable(false)` |

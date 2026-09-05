@@ -7,6 +7,18 @@ description: "Write, review, or migrate Swift unit tests using Swift Testing, wh
 
 Write deterministic tests around observable behavior and keep the framework choice proportional to the target and API under test.
 
+## Contents
+
+- [Scope and Preflight](#scope-and-preflight)
+- [Framework Choice](#framework-choice)
+- [Core Patterns](#core-patterns)
+- [Async and Failure Behavior](#async-and-failure-behavior)
+- [Advanced and Version-Gated APIs](#advanced-and-version-gated-apis)
+- [Migration](#migration)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Preflight
 
 This skill owns Swift Testing syntax, suite organization, traits, parameterization, async tests, known issues, attachments, exit tests, and XCTest migration boundaries. Route UI implementation to UI skills and concurrency design—not merely async test syntax—to `swift-concurrency`.
@@ -59,6 +71,14 @@ Map behavior, not assertion spelling:
 - `setUp`/`tearDown` state usually becomes suite initialization and scoped cleanup
 
 Keep XCTest cases that rely on APIs without a Swift Testing equivalent. Run both frameworks in the same test plan during incremental migration.
+
+## Common Mistakes
+
+- Using XCTest expectations (`XCTestExpectation`) inside `@Test` functions instead of async/await or `confirmation`.
+- Forgetting to `await` asynchronous assertions or tasks, resulting in prematurely passing tests.
+- Duplicating test logic with copy-paste instead of using `@Test(arguments:)` parameterization.
+- Sharing mutable state across test cases without isolation, causing flakiness during parallel test runs.
+- Relying on arbitrary `Task.sleep` durations instead of deterministic test clocks or async notifications.
 
 ## Review Checklist
 

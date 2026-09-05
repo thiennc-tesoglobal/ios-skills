@@ -7,6 +7,17 @@ description: "Implement or audit accessibility for SwiftUI, UIKit, and AppKit, i
 
 Make essential content and actions perceivable, operable, understandable, and testable across supported assistive technologies.
 
+## Contents
+
+- [Scope and Compatibility](#scope-and-compatibility)
+- [Audit Workflow](#audit-workflow)
+- [Semantic Rules](#semantic-rules)
+- [Layout and Preferences](#layout-and-preferences)
+- [Verification](#verification)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Compatibility
 
 This skill owns semantic labels/values/traits, grouping and traversal, custom actions, focus, Dynamic Type, contrast, motion/transparency preferences, Voice Control, keyboard access, and accessibility verification. Route visual layout implementation to the relevant UI skill and App Store declaration policy to `app-store-review` when submission readiness is the main request.
@@ -47,6 +58,14 @@ Media work should read [Media Accessibility](references/media-accessibility.md) 
 Automated accessibility audits and identifier-based UI tests catch regressions but do not prove usability. Manually test the core task with VoiceOver and the relevant input methods. Use Accessibility Inspector to inspect element hierarchy, names, values, actions, and contrast.
 
 Do not claim App Store accessibility support from implementation alone. Read [Accessibility Nutrition Labels](references/nutrition-labels.md), gather test evidence, and scope declarations to the platforms and features actually verified.
+
+## Common Mistakes
+
+- Using icon-only buttons without an explicit `.accessibilityLabel`.
+- Implementing custom tap or swipe gestures without an equivalent `.accessibilityAction`.
+- Hardcoding fixed frame heights or widths that truncate text when Dynamic Type is scaled.
+- Conveying essential status or validation solely through color without text or symbol indicators.
+- Setting misleading accessibility traits (e.g. marking a non-interactive view as a `.isButton`).
 
 ## Review Checklist
 
