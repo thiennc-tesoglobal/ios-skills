@@ -1,0 +1,31 @@
+{
+  "context": "Tests whether the agent correctly sets up Screen Time FamilyControls authorization, FamilyActivityPicker selection, ManagedSettingsStore shielding, and App Group persistence.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "FamilyControls Authorization",
+      "description": "Requests authorization using AuthorizationCenter.shared.requestAuthorization(for: .individual) before attempting to access Screen Time APIs.",
+      "max_score": 25
+    },
+    {
+      "name": "Activity Picker & App Group Persistence",
+      "description": "Presents familyActivityPicker in SwiftUI and persists FamilyActivitySelection using PropertyListEncoder into an App Group UserDefaults container.",
+      "max_score": 25
+    },
+    {
+      "name": "ManagedSettings Store Shielding",
+      "description": "Uses ManagedSettingsStore to assign application and web domain shields based on selected tokens.",
+      "max_score": 25
+    },
+    {
+      "name": "Shield Release & Lifecycle",
+      "description": "Implements clearAllSettings() on ManagedSettingsStore to cleanly remove active shields when focus concludes.",
+      "max_score": 15
+    },
+    {
+      "name": "Entitlement & Privacy Awareness",
+      "description": "References the com.apple.developer.family-controls entitlement and notes that ApplicationToken and WebDomainToken are opaque privacy tokens.",
+      "max_score": 10
+    }
+  ]
+}

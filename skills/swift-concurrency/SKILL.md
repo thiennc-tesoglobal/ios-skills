@@ -7,6 +7,17 @@ description: "Diagnoses and implements data-race-safe Swift concurrency with act
 
 Apply the smallest change that makes isolation and ownership correct while preserving observable behavior.
 
+## Contents
+
+- [Scope and Toolchain Preflight](#scope-and-toolchain-preflight)
+- [Diagnostic Workflow](#diagnostic-workflow)
+- [Isolation Decisions](#isolation-decisions)
+- [Safety Rules](#safety-rules)
+- [Interop and Streams](#interop-and-streams)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Toolchain Preflight
 
 This skill owns compiler concurrency diagnostics, actor isolation, `Sendable`, task structure, cancellation, reentrancy, async sequences, continuations, and synchronization. Route routine SwiftUI `.task` ownership to `swiftui-patterns`, app architecture to `swift-architecture`, and test syntax to `swift-testing`.
@@ -63,6 +74,14 @@ Read [Synchronization Primitives](references/synchronization-primitives.md) for 
 Use checked continuations for one-shot callbacks and resume exactly once on every terminal path. Use `AsyncStream`/`AsyncThrowingStream` for multiple values and install termination cleanup for delegates, observers, or underlying operations.
 
 Read [Bridging and Interop](references/bridging-interop.md) before adapting delegates, GCD, unsafe buffers, or synchronous parallel loops. Read [Async Algorithms](references/async-algorithms.md) for debounce, throttle, merge, and related sequence operations.
+
+## Common Mistakes
+
+- Silencing compiler concurrency errors with `@unchecked Sendable` or removing isolation without an invariant.
+- Holding an unfair lock or `NSLock` across an `await` suspension point.
+- Spawning detached tasks (`Task.detached`) instead of structured child tasks (`async let`, `TaskGroup`).
+- Assuming actor state is unchanged after `await` without revalidating invariants.
+- Blocking cooperative executor threads with synchronous disk/network I/O or `Thread.sleep`.
 
 ## Review Checklist
 

@@ -1,0 +1,31 @@
+{
+  "context": "Tests whether the agent correctly configures AVAudioSession for audio playback, handles interruptions and route changes, and adheres to lifecycle best practices.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Session Category & Mode",
+      "description": "Configures AVAudioSession with .playback category and an appropriate mode such as .spokenAudio.",
+      "max_score": 25
+    },
+    {
+      "name": "Deferred Activation & Clean Deactivation",
+      "description": "Defers setActive(true) until playback begins and uses setActive(false, options: .notifyOthersOnDeactivation) upon teardown.",
+      "max_score": 20
+    },
+    {
+      "name": "Interruption Handling",
+      "description": "Handles AVAudioSession.interruptionNotification, pausing on .began and verifying .shouldResume before auto-resuming on .ended.",
+      "max_score": 25
+    },
+    {
+      "name": "Route Change Protection",
+      "description": "Listens for AVAudioSession.routeChangeNotification and pauses playback when reason is .oldDeviceUnavailable.",
+      "max_score": 20
+    },
+    {
+      "name": "Concurrency Safety",
+      "description": "Annotates controller or service with @MainActor or encapsulates state within an actor for Swift 6 thread safety.",
+      "max_score": 10
+    }
+  ]
+}

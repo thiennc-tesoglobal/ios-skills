@@ -7,6 +7,15 @@ description: "Builds multiplayer spatial board games with TabletopKit on visionO
 
 Build visionOS board games whose synchronized state changes flow through `TabletopAction` and render with RealityKit. The availability matrix below owns version details.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Confirm visionOS availability, TabletopKit capability, and whether the experience needs local, shared, or SharePlay-backed play.
@@ -69,7 +78,8 @@ Build visionOS board games whose synchronized state changes flow through `Tablet
 
 ## References
 
-- [references/tabletopkit-patterns.md](references/tabletopkit-patterns.md) -- extended patterns for observer implementation, custom actions, dice simulation, card overlap, and network coordination
+- [TabletopKit patterns](references/tabletopkit-patterns.md) -- extended patterns for observer implementation, custom actions, dice simulation, and card overlap
+- [TabletopKit networking and state](references/tabletop-networking-and-state.md) -- multiplayer GroupActivities coordination, bookmarks, undo, and debugging
 - [Apple Documentation: TabletopKit](https://sosumi.ai/documentation/tabletopkit), [Creating tabletop games](https://sosumi.ai/documentation/tabletopkit/creating-tabletop-games), [Synchronizing group gameplay](https://sosumi.ai/documentation/tabletopkit/synchronizing-group-gameplay-with-tabletopkit)
 - [Simulating dice rolls](https://sosumi.ai/documentation/tabletopkit/simulating-dice-rolls-as-a-component-for-your-game), [Implementing playing card overlap](https://sosumi.ai/documentation/tabletopkit/implementing-playing-card-overlap-and-physical-characteristics)
 - [WWDC24 session 10091: Build a spatial board game](https://sosumi.ai/videos/play/wwdc2024/10091/)

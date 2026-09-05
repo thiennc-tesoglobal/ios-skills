@@ -55,6 +55,46 @@ SCENARIOS: tuple[dict[str, str], ...] = (
         "skill": "carplay",
         "prompt": "Review a CarPlay plan that draws arbitrary SwiftUI in the car window, pushes a CPTabBarTemplate, instantiates CPNowPlayingTemplate directly, ignores category entitlement limits, and may skip template completion handlers. Correct the template and lifecycle boundaries.",
     },
+    {
+        "id": "avfoundation-audio-session-activation",
+        "skill": "avfoundation-audio",
+        "prompt": "Review an iOS audio podcast player that activates AVAudioSession at app launch, ignores interruption notifications, does not pause on route loss (.oldDeviceUnavailable), and connects mismatched formats in AVAudioEngine. Provide corrected Swift 6 code and lifecycle guidance.",
+    },
+    {
+        "id": "family-controls-shield-privacy",
+        "skill": "family-controls",
+        "prompt": "Review a proposed parental control architecture that tries to inspect bundle identifiers directly from ApplicationToken, modifies ManagedSettingsStore from within the main app process on a timer instead of using DeviceActivityMonitor, and omits the Family Controls entitlement. Correct the architecture and state boundaries.",
+    },
+    {
+        "id": "shazamkit-managed-session-flow",
+        "skill": "shazamkit",
+        "prompt": "Review an ambient music recognition implementation for iOS 18 that creates an AVAudioEngine tap manually for standard song matching instead of using SHManagedSession, treats .noMatch as a fatal error, and omits microphone permissions in Info.plist. Provide corrected modern guidance.",
+    },
+    {
+        "id": "quicklook-remote-file-safety",
+        "skill": "quicklook",
+        "prompt": "Review a file browser that passes remote HTTPS URLs directly to QLPreviewController, calls QLThumbnailGenerator synchronously on the main actor with a 1.0 point scale on Retina screens, and leaves temporary downloaded files uncleaned. Correct the preview and thumbnail pipeline.",
+    },
+    {
+        "id": "swiftui-responsive-adaptive-ladder",
+        "skill": "swiftui-responsive-layout",
+        "prompt": "Review an adaptive media bar that uses hardcoded width frames and raw offsets to fit buttons on iPhone and iPad. Large Dynamic Type sizes cause buttons to overlap and clip. Correct the layout using the pattern ladder with AnyLayout and ViewThatFits while preserving view state.",
+    },
+    {
+        "id": "swiftdata-model-actor-isolation",
+        "skill": "swiftdata",
+        "prompt": "Review a SwiftData background sync service that passes live @Model instances across background Tasks, mutates ModelContext concurrently without @ModelActor, and wipes SQLite stores on lightweight schema migration failure. Provide corrected actor and migration guidance.",
+    },
+    {
+        "id": "swift-concurrency-sendable-boundary",
+        "skill": "swift-concurrency",
+        "prompt": "Review an async data loader that captures mutable non-Sendable state in Task.detached closures, assumes actor isolation prevents suspension-point reentrancy bugs, and uses raw DispatchQueue.main.async to update UI. Correct the concurrency design for Swift 6.",
+    },
+    {
+        "id": "core-haptics-hardware-lifecycle",
+        "skill": "core-haptics",
+        "prompt": "Review a tactile feedback controller that calls CHHapticEngine without checking CHHapticEngine.capabilitiesForHardware().supportsHaptics, assumes haptics work in the iOS Simulator, and fails to handle engine stopped or reset notification handlers. Correct the lifecycle and capability fallback.",
+    },
 )
 
 

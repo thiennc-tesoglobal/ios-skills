@@ -110,7 +110,7 @@ Handle `TKError` according to recovery semantics:
 Preserve smart-card-specific status information in app errors without exposing
 secrets. Avoid blind retries of PIN or destructive card commands.
 
-## Common mistakes
+## Common Mistakes
 
 - Treating framework availability as proof that the manager, reader, or NFC
   capability exists.
@@ -120,7 +120,7 @@ secrets. Avoid blind retries of PIN or destructive card commands.
 - Declaring signing/decryption/login capabilities not supported by hardware.
 - Reusing macOS extension setup in an iOS app target.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Exact platform, extension point, entitlement, and hardware requirements are documented.
 - [ ] Optional manager/slot/card objects are guarded.

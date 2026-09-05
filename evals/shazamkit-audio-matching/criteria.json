@@ -1,0 +1,31 @@
+{
+  "context": "Tests whether the agent configures ShazamKit using SHManagedSession, handles matches and misses cleanly, demonstrates custom catalog usage, and respects microphone privacy.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "SHManagedSession Implementation",
+      "description": "Utilizes SHManagedSession and iterates over session.results using async/await sequence for iOS 17+ ambient audio recognition.",
+      "max_score": 30
+    },
+    {
+      "name": "Match Result & Metadata Extraction",
+      "description": "Extracts SHMatchedMediaItem metadata such as title and artist on match, and safely handles noMatch without treating it as an error.",
+      "max_score": 20
+    },
+    {
+      "name": "Custom Catalog Workflow",
+      "description": "Demonstrates creating, loading, or matching against an SHCustomCatalog with custom reference signatures.",
+      "max_score": 20
+    },
+    {
+      "name": "On-Device Signature Generation",
+      "description": "Explains or implements SHSignatureGenerator showing that compact acoustic signatures are produced locally rather than sending raw audio.",
+      "max_score": 15
+    },
+    {
+      "name": "Privacy & Microphone Entitlement",
+      "description": "Specifies NSMicrophoneUsageDescription in Info.plist and requests recording permission where applicable.",
+      "max_score": 15
+    }
+  ]
+}

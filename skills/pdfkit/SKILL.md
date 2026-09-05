@@ -7,6 +7,15 @@ description: "Display and manipulate PDF documents using PDFKit. Use when embedd
 
 Display, navigate, search, annotate, and manipulate PDF documents with `PDFView`, `PDFDocument`, `PDFPage`, `PDFAnnotation`, and `PDFSelection`.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Load the document safely, handle password/invalid data, and define who owns mutations and saves.
@@ -18,7 +27,8 @@ Display, navigate, search, annotate, and manipulate PDF documents with `PDFView`
 ## Route by Task
 
 - Read [core implementation details](references/core-implementation.md) for loading, viewing, navigation, search, annotations, thumbnails, SwiftUI integration, and page overlays.
-- Read [extended PDFKit patterns](references/pdfkit-patterns.md) for forms, watermarks, merging, printing, outlines, custom drawing, and overlay lifecycle recipes.
+- Read [PDF generation and forms](references/pdf-generation-and-forms.md) for forms, watermarks, merging, and printing recipes.
+- Read [PDF viewing and annotations](references/pdf-viewing-and-annotations.md) for outlines, custom drawing, and overlay lifecycle recipes.
 
 ## Core Decisions
 
@@ -71,14 +81,17 @@ let bounds = CGRect(x: 50, y: pdfY, width: 200, height: 30)
 
 ### DON'T: Modify annotations on a background thread
 
-PDFKit classes are not thread-safe.
+PDFKit classes are not thread-safe. All mutations must occur on `@MainActor`.
 
 ```swift
-// WRONG
-DispatchQueue.global().async { page.addAnnotation(annotation) }
+// WRONG: Modifying PDFKit objects from background tasks
+Task.detached { page.addAnnotation(annotation) }
 
-// CORRECT
-DispatchQueue.main.async { page.addAnnotation(annotation) }
+// CORRECT: Perform mutations on @MainActor
+@MainActor
+func addNote(to page: PDFPage, annotation: PDFAnnotation) {
+    page.addAnnotation(annotation)
+}
 ```
 
 ### DON'T: Compare PDFDocument with == in UIViewRepresentable
@@ -116,7 +129,8 @@ func updateUIView(_ pdfView: PDFView, context: Context) {
 
 ## References
 
-- Extended patterns (forms, watermarks, merging, printing, overlays, outlines, custom drawing): [references/pdfkit-patterns.md](references/pdfkit-patterns.md)
+- PDF generation, forms, and printing: [references/pdf-generation-and-forms.md](references/pdf-generation-and-forms.md)
+- PDF viewing, annotations, and overlays: [references/pdf-viewing-and-annotations.md](references/pdf-viewing-and-annotations.md)
 - [PDFKit framework](https://sosumi.ai/documentation/pdfkit)
 - [PDFView](https://sosumi.ai/documentation/pdfkit/pdfview)
 - [PDFDocument](https://sosumi.ai/documentation/pdfkit/pdfdocument)

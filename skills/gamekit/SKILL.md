@@ -9,6 +9,15 @@ Use GameKit for Game Center authentication, competition, matchmaking, social
 surfaces, and saved-game handoffs; keep rendering, board logic, and full
 SharePlay group-activity design in their owning framework skills.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Authenticate `GKLocalPlayer` once, present authentication UI when supplied, and inspect restrictions before enabling features.

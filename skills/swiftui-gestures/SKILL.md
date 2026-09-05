@@ -5,31 +5,19 @@ description: "Builds or reviews SwiftUI tap, press, drag, magnify, and rotate in
 
 # SwiftUI Gestures (iOS 26+)
 
-Review, write, and fix SwiftUI gesture interactions. Apply modern gesture APIs
-with correct composition, state management, and conflict resolution using
-Swift 6.3 patterns.
+Review, write, and fix SwiftUI gesture interactions. Apply modern gesture APIs with correct composition, state management, and conflict resolution using Swift 6.3 patterns.
 
-**Scope boundary:** This skill owns SwiftUI gesture recognition, composition,
-gesture state, and gesture-specific accessibility alternatives. Broader
-SwiftUI architecture/state ownership belongs in `swiftui-patterns`; list,
-scroll, form, and control layout belongs in `swiftui-layout-components`; broad
-UIKit bridging belongs in `swiftui-uikit-interop`.
+**Scope boundary:** This skill owns SwiftUI gesture recognition, composition, gesture state, and gesture-specific accessibility alternatives. Broader SwiftUI architecture/state ownership belongs in `swiftui-patterns`; list, scroll, form, and control layout belongs in `swiftui-layout-components`; broad UIKit bridging belongs in `swiftui-uikit-interop`.
 
-When correcting Apple API availability, deprecation, or behavior claims, cite
-the relevant Sosumi or official Apple documentation URL in the response.
+When correcting Apple API availability, deprecation, or behavior claims, cite the relevant Sosumi or official Apple documentation URL in the response.
 
 ## Contents
 
 - [Gesture Overview](#gesture-overview)
-- [TapGesture](#tapgesture)
-- [LongPressGesture](#longpressgesture)
-- [DragGesture](#draggesture)
-- [MagnifyGesture (iOS 17+)](#magnifygesture-ios-17)
-- [RotateGesture (iOS 17+)](#rotategesture-ios-17)
+- [Core Gestures](#core-gestures)
 - [Gesture Composition](#gesture-composition)
-- [`@GestureState`](#gesturestate)
-- [Adding Gestures to Views](#adding-gestures-to-views)
-- [Custom Gesture Protocol](#custom-gesture-protocol)
+- [Transient vs Persisted State](#transient-vs-persisted-state)
+- [Hierarchy and Precedence](#hierarchy-and-precedence)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
@@ -39,379 +27,102 @@ the relevant Sosumi or official Apple documentation URL in the response.
 | Gesture | Type | Value | Since |
 |---|---|---|---|
 | `TapGesture` | Discrete | `Void` | iOS 13 |
+| `SpatialTapGesture` | Discrete | `SpatialTapGesture.Value` | iOS 16 |
 | `LongPressGesture` | Discrete | `Bool` | iOS 13 |
 | `DragGesture` | Continuous | `DragGesture.Value` | iOS 13 |
 | `MagnifyGesture` | Continuous | `MagnifyGesture.Value` | iOS 17 |
 | `RotateGesture` | Continuous | `RotateGesture.Value` | iOS 17 |
-| `SpatialTapGesture` | Discrete | `SpatialTapGesture.Value` | iOS 16 |
 
-**Discrete** gestures fire once (`.onEnded`). **Continuous** gestures stream
-updates (`.onChanged`, `.onEnded`, `.updating`).
+**Discrete** gestures fire once (`.onEnded`). **Continuous** gestures stream updates (`.onChanged`, `.onEnded`, `.updating`).
 
-## TapGesture
-
-Recognizes one or more taps. Use the `count` parameter for multi-tap.
+## Core Gestures
 
 ```swift
-// Single, double, and triple tap
-TapGesture()            .onEnded { tapped.toggle() }
-TapGesture(count: 2)    .onEnded { handleDoubleTap() }
-TapGesture(count: 3)    .onEnded { handleTripleTap() }
+// Tap: Use Button for standard actions; reserve TapGesture for multi-tap or location tracking
+Text("Double tap").onTapGesture(count: 2) { handleDoubleTap() }
 
-// Shorthand modifier
-Text("Tap me").onTapGesture(count: 2) { handleDoubleTap() }
-```
-
-## LongPressGesture
-
-Succeeds after the user holds for `minimumDuration`. Fails if finger moves
-beyond `maximumDistance`.
-
-```swift
-// Basic long press (0.5s default)
-LongPressGesture()
-    .onEnded { _ in showMenu = true }
-
-// Custom duration and distance tolerance
-LongPressGesture(minimumDuration: 1.0, maximumDistance: 10)
-    .onEnded { _ in triggerHaptic() }
-```
-
-With visual feedback via `@GestureState` + `.updating()`:
-
-```swift
+// Long press with transient pressing feedback
 @GestureState private var isPressing = false
-
 Circle()
     .fill(isPressing ? .red : .blue)
-    .scaleEffect(isPressing ? 1.2 : 1.0)
     .gesture(
         LongPressGesture(minimumDuration: 0.8)
             .updating($isPressing) { current, state, _ in state = current }
-            .onEnded { _ in completedLongPress = true }
+            .onEnded { _ in triggerAction() }
     )
-```
 
-Shorthand: `.onLongPressGesture(minimumDuration:perform:onPressingChanged:)`.
-
-## DragGesture
-
-Tracks finger movement. `Value` provides `startLocation`, `location`,
-`translation`, `velocity`, and `predictedEndTranslation`.
-`DragGesture.Value.velocity` is available with `DragGesture` from iOS 13+;
-do not confuse it with iOS 17+ gesture types such as `MagnifyGesture` and
-`RotateGesture`.
-
-```swift
-@State private var offset = CGSize.zero
-
+// Drag with translation tracking
+@State private var offset: CGSize = .zero
 RoundedRectangle(cornerRadius: 16)
-    .fill(.blue)
-    .frame(width: 100, height: 100)
     .offset(offset)
     .gesture(
-        DragGesture()
+        DragGesture(minimumDistance: 10, coordinateSpace: .local)
             .onChanged { value in offset = value.translation }
             .onEnded { _ in withAnimation(.spring) { offset = .zero } }
     )
+
+// Magnify and Rotate (iOS 17+; replaces deprecated MagnificationGesture / RotationGesture)
+MagnifyGesture().onChanged { value in currentScale = value.magnification }
+RotateGesture().onChanged { value in currentAngle = value.rotation }
 ```
-
-Configure minimum distance and coordinate space:
-
-```swift
-DragGesture(minimumDistance: 20, coordinateSpace: .global)
-```
-
-## MagnifyGesture (iOS 17+)
-
-Replaces the deprecated `MagnificationGesture`. Tracks pinch-to-zoom scale.
-
-```swift
-@GestureState private var magnifyBy = 1.0
-
-Image("photo")
-    .resizable().scaledToFit()
-    .scaleEffect(magnifyBy)
-    .gesture(
-        MagnifyGesture()
-            .updating($magnifyBy) { value, state, _ in
-                state = value.magnification
-            }
-    )
-```
-
-## RotateGesture (iOS 17+)
-
-`RotateGesture` is the newer alternative to `RotationGesture`. Tracks two-finger rotation angle.
-
-```swift
-@State private var angle = Angle.zero
-
-Rectangle()
-    .fill(.blue).frame(width: 200, height: 200)
-    .rotationEffect(angle)
-    .gesture(
-        RotateGesture(minimumAngleDelta: .degrees(1))
-            .onChanged { value in angle = value.rotation }
-    )
-```
-
-For persisted, clamped magnification and combined rotation examples, load
-[references/gesture-patterns.md](references/gesture-patterns.md).
 
 ## Gesture Composition
 
-### `.simultaneously(with:)` — both gestures recognized at the same time
+Combine gestures using the three composition operators:
+
+- **`.simultaneously(with:)`**: Both gestures evaluate together (e.g. pinch-to-zoom + rotate).
+- **`.sequenced(before:)`**: First gesture must succeed before second starts (e.g. long press before drag).
+- **`.exclusively(before:)`**: Only one succeeds; first has precedence (e.g. double tap before long press).
 
 ```swift
-let magnify = MagnifyGesture()
-    .onChanged { value in scale = value.magnification }
-
-let rotate = RotateGesture()
-    .onChanged { value in angle = value.rotation }
-
-Image("photo")
-    .scaleEffect(scale)
-    .rotationEffect(angle)
-    .gesture(magnify.simultaneously(with: rotate))
-```
-
-The value is `SimultaneousGesture.Value` with `.first` and `.second` optionals.
-
-### `.sequenced(before:)` — first must succeed before second begins
-
-```swift
-let longPressBeforeDrag = LongPressGesture(minimumDuration: 0.5)
-    .sequenced(before: DragGesture())
-    .onEnded { value in
-        guard case .second(true, let drag?) = value else { return }
-        finalOffset.width += drag.translation.width
-        finalOffset.height += drag.translation.height
+let combined = MagnifyGesture()
+    .simultaneously(with: RotateGesture())
+    .onChanged { value in
+        if let mag = value.first { currentScale = mag.magnification }
+        if let rot = value.second { currentAngle = rot.rotation }
     }
 ```
 
-### `.exclusively(before:)` — only one succeeds (first has priority)
+## Transient vs Persisted State
+
+- **`@GestureState`**: Automatically resets to initial value when gesture ends or cancels. Always use with `.updating(&$state)`.
+- **`@State`**: Persists values between interactions. Update in `.onChanged` (keep lightweight) and `.onEnded`.
 
 ```swift
-let doubleTapOrLongPress = TapGesture(count: 2)
-    .exclusively(before:
-        LongPressGesture()
-    )
-    .onEnded { result in
-        switch result {
-        case .first(_): handleDoubleTap()
-        case .second(_): handleLongPress()
-        }
-    }
+@GestureState private var dragOffset = CGSize.zero // resets on release
+@State private var accumulatedOffset = CGSize.zero // persists across gestures
 ```
 
-## `@GestureState`
+## Hierarchy and Precedence
 
-`@GestureState` is a property wrapper that **automatically resets** to its
-initial value when the gesture ends. Use for transient feedback; use `@State`
-for values that persist.
+Control gesture arbitration across view hierarchy layers:
 
-```swift
-@GestureState private var dragOffset = CGSize.zero  // resets to .zero
-@State private var position = CGSize.zero            // persists
-
-Circle()
-    .offset(
-        x: position.width + dragOffset.width,
-        y: position.height + dragOffset.height
-    )
-    .gesture(
-        DragGesture()
-            .updating($dragOffset) { value, state, _ in
-                state = value.translation
-            }
-            .onEnded { value in
-                position.width += value.translation.width
-                position.height += value.translation.height
-            }
-    )
-```
-
-Custom reset with animation: `@GestureState(resetTransaction: Transaction(animation: .spring))`
-
-## Adding Gestures to Views
-
-Three modifiers control gesture priority in the view hierarchy:
-
-| Modifier | Behavior |
-|---|---|
-| `.gesture()` | Lower precedence than gestures already defined by the view or its children. |
-| `.highPriorityGesture()` | Added gesture takes precedence over existing gestures. |
-| `.simultaneousGesture()` | Added gesture processes at the same priority as existing gestures. |
-
-```swift
-let parentTap = TapGesture().onEnded { handleParent() }
-
-VStack {
-    Image(systemName: "star.fill")
-        .onTapGesture { handleChild() }
-}
-.simultaneousGesture(parentTap) // Both handlers run on child content.
-```
-
-Use `.gesture(parentTap)` for the default lower-precedence parent gesture, or
-`.highPriorityGesture(parentTap)` when the added parent gesture should win.
-
-### GestureMask
-
-Control which gestures participate when using `.gesture(_:including:)`:
-
-```swift
-.gesture(drag, including: .gesture)   // added gesture; disables subview gestures
-.gesture(drag, including: .subviews)  // subview gestures; disables added gesture
-.gesture(drag, including: .all)       // default: added + subview gestures
-.gesture(drag, including: .none)      // disables added + subview gestures
-```
-
-## Custom Gesture Protocol
-
-Create reusable gestures by conforming to `Gesture`:
-
-```swift
-struct SwipeGesture: Gesture {
-    enum Direction { case left, right, up, down }
-    typealias Value = Direction
-
-    let minimumDistance: CGFloat
-
-    init(minimumDistance: CGFloat = 50) {
-        self.minimumDistance = minimumDistance
-    }
-
-    var body: AnyGesture<Direction> {
-        AnyGesture(
-            DragGesture(minimumDistance: minimumDistance)
-                .map { value in
-                    let h = value.translation.width, v = value.translation.height
-                    if abs(h) > abs(v) {
-                        return h > 0 ? .right : .left
-                    } else {
-                        return v > 0 ? .down : .up
-                    }
-                }
-        )
-    }
-}
-
-// Usage
-Rectangle().gesture(SwipeGesture().onEnded { print("Swiped \($0)") })
-```
-
-Wrap in a `View` extension for ergonomic API:
-
-```swift
-extension View {
-    func onSwipe(perform action: @escaping (SwipeGesture.Direction) -> Void) -> some View {
-        gesture(SwipeGesture().onEnded(action))
-    }
-}
-```
+- **`.gesture(_:)`**: Lower precedence than child gestures.
+- **`.highPriorityGesture(_:)`**: Parent gesture takes precedence over child gestures.
+- **`.simultaneousGesture(_:)`**: Runs alongside child gestures without blocking them.
+- **`GestureMask`**: Pass to `.gesture(g, including: mask)` (`.all`, `.gesture`, `.subviews`, `.none`).
 
 ## Common Mistakes
 
-### 1. Misreading parent/child gesture precedence
-
-Do not assume a parent `.gesture()` overrides child gestures. Choose the
-relationship explicitly as shown in [Adding Gestures to Views](#adding-gestures-to-views).
-
-### 2. Using `@State` instead of `@GestureState` for transient state
-
-Use `@GestureState` for values that should reset when recognition ends; keep
-persistent results in `@State`. See [`@GestureState`](#gesturestate).
-
-### 3. Not using .updating() for intermediate feedback
-
-```swift
-// DON'T: No visual feedback during long press
-LongPressGesture(minimumDuration: 2.0)
-    .onEnded { _ in showResult = true }
-
-// DO: Provide feedback while pressing
-@GestureState private var isPressing = false
-
-LongPressGesture(minimumDuration: 2.0)
-    .updating($isPressing) { current, state, _ in
-        state = current
-    }
-    .onEnded { _ in showResult = true }
-```
-
-### 4. Using deprecated gesture types on iOS 17+
-
-```swift
-// DON'T: Deprecated since iOS 17
-MagnificationGesture()   // deprecated — use MagnifyGesture()
-
-// DO: Use newer gesture types
-MagnifyGesture()         // iOS 17+
-RotateGesture()          // iOS 17+ (newer alternative to RotationGesture)
-```
-
-### 5. Heavy computation in onChanged
-
-```swift
-// DON'T: Expensive work called every frame (~60-120 Hz)
-DragGesture()
-    .onChanged { value in
-        let result = performExpensiveHitTest(at: value.location)
-        let filtered = applyComplexFilter(result)
-        updateModel(filtered)
-    }
-
-// DO: Throttle or defer expensive work
-DragGesture()
-    .onChanged { value in
-        dragPosition = value.location  // lightweight state update only
-    }
-    .onEnded { value in
-        performExpensiveHitTest(at: value.location)  // once at end
-    }
-```
-
-### 6. Using onTapGesture for actions that should be a Button
-
-```swift
-// DON'T: onTapGesture has no accessibility traits, VoiceOver role,
-// Voice Control targeting, Switch Control scanning, or keyboard activation
-Text("Delete")
-    .onTapGesture { deleteItem() }
-
-// DO: Button provides all of these automatically
-Button("Delete", role: .destructive) { deleteItem() }
-
-// DO: For custom visuals, use ButtonStyle instead of onTapGesture
-Button { toggleExpanded() } label: {
-    CardView()
-}
-.buttonStyle(.plain)
-```
-
-Reserve `onTapGesture` for multi-tap (`count: 2+`), tap-location-dependent
-behavior, or adding tap recognition to non-interactive content that already
-has appropriate accessibility traits.
+- **Using `onTapGesture` instead of `Button`**: `onTapGesture` lacks VoiceOver accessibility traits, focus, and keyboard activation. Use `Button` with `.buttonStyle(.plain)` for custom visuals.
+- **Using deprecated gesture names**: Use `MagnifyGesture` and `RotateGesture` on iOS 17+, not `MagnificationGesture` or `RotationGesture`.
+- **Heavy computation in `onChanged`**: Keep `onChanged` closures frame-rate lightweight (60-120Hz). Defer heavy work or hit testing to `.onEnded`.
+- **Missing visual feedback for `LongPressGesture`**: Always pair long-press with `@GestureState` and `.updating()` to provide visual indication of press progress.
+- **Assuming parent gestures override child gestures by default**: Use `.highPriorityGesture()` explicitly when parent gestures should win.
 
 ## Review Checklist
 
-- [ ] Correct gesture type: `MagnifyGesture`/`RotateGesture` (not deprecated `Magnification`/`Rotation` variants)
-- [ ] `@GestureState` used for transient values that should reset; `@State` for persisted values
-- [ ] `.updating()` provides intermediate visual feedback during continuous gestures
-- [ ] Parent/child conflicts resolved with `.highPriorityGesture()` or `.simultaneousGesture()`
-- [ ] `onChanged` closures are lightweight — no heavy computation every frame
-- [ ] Composed gestures use correct combinator: `simultaneously`, `sequenced`, or `exclusively`
-- [ ] Persisted scale/rotation clamped to reasonable bounds in `onEnded`
-- [ ] Custom `Gesture` conformances return a gesture body; use `AnyGesture<Value>` when mapping to a custom `Value`
-- [ ] Gesture-driven animations use `.spring` or similar for natural deceleration
-- [ ] `GestureMask` considered when mixing gestures across view hierarchy levels
-- [ ] `onTapGesture` only used where `count > 1`, tap location, or coordinate space matters — plain single-tap actions use `Button` instead
+- [ ] Correct modern gesture types used (`MagnifyGesture` / `RotateGesture` on iOS 17+)
+- [ ] Accessible `Button` preferred over `onTapGesture` for single-tap actionable controls
+- [ ] `@GestureState` used for transient offset/scale that resets automatically
+- [ ] Continuous `onChanged` updates are lightweight without allocations or heavy queries
+- [ ] Parent/child gesture conflicts resolved using `.highPriorityGesture` or `.simultaneousGesture`
+- [ ] Composed gestures correctly handle enum results (`.first`, `.second`)
+- [ ] Bounds clamped on persisted pinch/rotation values in `.onEnded`
 
 ## References
 
-- Read [references/gesture-patterns.md](references/gesture-patterns.md) when the task needs full drag-to-reorder, pinch-to-zoom, combined rotate+scale, velocity/projection, sequenced gesture state-machine, or gesture-specific UIKit interop examples.
+- Full recipes, pinch-zoom-pan, drag-to-reorder, and UIKit interop: [references/gesture-patterns.md](references/gesture-patterns.md)
 - [Gesture protocol](https://sosumi.ai/documentation/swiftui/gesture)
 - [TapGesture](https://sosumi.ai/documentation/swiftui/tapgesture)
 - [LongPressGesture](https://sosumi.ai/documentation/swiftui/longpressgesture)

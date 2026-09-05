@@ -1,0 +1,57 @@
+{
+  "skill_name": "shazamkit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "shazamkit-managed-session-listening",
+      "prompt": "Implement an audio recognition service in Swift using ShazamKit's SHManagedSession on iOS 17+, handling the results async sequence to extract matched song title and artist.",
+      "expected_output": "A Swift class or actor initializing SHManagedSession, iterating over session.results, and handling .match and .noMatch enum cases.",
+      "files": [],
+      "assertions": [
+        "Instantiates SHManagedSession for ambient audio recognition.",
+        "Iterates over session.results using for-await-in async stream.",
+        "Handles .match case and extracts SHMatchedMediaItem details like title and artist.",
+        "Provides cancellation with session.cancel() when stopping recognition."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "shazamkit-custom-catalog-creation",
+      "prompt": "Write a Swift service that creates an SHCustomCatalog, adds reference signatures with custom SHMediaItem metadata, and exports the catalog to a .shazamcatalog file.",
+      "expected_output": "Code initializing SHCustomCatalog, calling addReferenceSignature(_:representing:), and exporting with catalog.write(to:).",
+      "files": [],
+      "assertions": [
+        "Initializes an SHCustomCatalog instance.",
+        "Creates SHMediaItem with custom properties like .title and .artist.",
+        "Adds reference signatures using catalog.addReferenceSignature(_:representing:).",
+        "Exports the catalog using catalog.write(to: fileURL)."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "shazamkit-microphone-stream-matching",
+      "prompt": "Show how to set up an AVAudioEngine input tap that streams audio PCM buffers into an SHSession with SHSessionDelegate to perform continuous recognition.",
+      "expected_output": "Code attaching an audio tap to engine.inputNode, passing buffers to session.matchStreamingBuffer(_:at:), and implementing SHSessionDelegate.",
+      "files": [],
+      "assertions": [
+        "Instantiates an SHSession and assigns an SHSessionDelegate.",
+        "Installs an audio tap on engine.inputNode to capture PCM buffers.",
+        "Forwards buffers using session.matchStreamingBuffer(buffer, at: audioTime).",
+        "Implements session(_:didFind:) and session(_:didNotFindMatchFor:error:) delegate methods."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "shazamkit-offline-signature-generation",
+      "prompt": "Demonstrate how to convert an audio file into an SHSignature using SHSignatureGenerator without sending raw audio across the network.",
+      "expected_output": "Code reading audio file buffers into SHSignatureGenerator and calling signature() to produce an SHSignature.",
+      "files": [],
+      "assertions": [
+        "Initializes an SHSignatureGenerator.",
+        "Reads audio buffers using AVAudioFile and appends them via generator.append(_:at:).",
+        "Generates the final signature by calling generator.signature().",
+        "Mentions or handles format requirements for audio PCM buffers."
+      ]
+    }
+  ]
+}

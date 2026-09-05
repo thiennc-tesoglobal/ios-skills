@@ -100,7 +100,7 @@ the exact read types in every target that supplies fitness or sleep relevance.
 - Finish on a physical watch; do not treat compilation or iOS preview behavior
   as proof of Smart Stack ranking.
 
-## Common mistakes
+## Common Mistakes
 
 - Expecting RelevanceKit calls to affect iOS widget ranking.
 - Creating a relevant widget when a normal timeline plus relevance is sufficient.
@@ -109,7 +109,7 @@ the exact read types in every target that supplies fitness or sleep relevance.
 - Omitting `associatedKind` and creating duplicate cards.
 - Assuming every point-of-interest category creates a context.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Provider model matches always-available versus condition-only content.
 - [ ] Relevance scope is separated from WidgetKit, HealthKit, and MapKit ownership.

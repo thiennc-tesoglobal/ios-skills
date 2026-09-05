@@ -1,0 +1,1 @@
+Preview local documents and generate high-performance file thumbnails using QuickLook and QLThumbnailGenerator.

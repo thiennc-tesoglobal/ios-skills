@@ -11,6 +11,7 @@ core APIs and common mistakes.
 - [Gesture Velocity Calculations](#gesture-velocity-calculations)
 - [Long-Press then Drag](#long-press-then-drag-sequenced-gesture-with-state-enum)
 - [SwiftUI + UIKit Gesture Interop](#swiftui--uikit-gesture-interop)
+- [Custom Gesture Protocol](#custom-gesture-protocol)
 - [Accessibility Considerations](#accessibility-considerations)
 
 ## Pinch-to-Zoom with MagnifyGesture
@@ -415,6 +416,44 @@ func gestureRecognizer(
     shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
 ) -> Bool {
     true  // allow both UIKit and SwiftUI gestures to fire
+}
+```
+
+## Custom Gesture Protocol
+
+Create reusable gestures by conforming to the `Gesture` protocol:
+
+```swift
+struct SwipeGesture: Gesture {
+    enum Direction { case left, right, up, down }
+    typealias Value = Direction
+
+    let minimumDistance: CGFloat
+
+    init(minimumDistance: CGFloat = 50) {
+        self.minimumDistance = minimumDistance
+    }
+
+    var body: AnyGesture<Direction> {
+        AnyGesture(
+            DragGesture(minimumDistance: minimumDistance)
+                .map { value in
+                    let h = value.translation.width, v = value.translation.height
+                    if abs(h) > abs(v) {
+                        return h > 0 ? .right : .left
+                    } else {
+                        return v > 0 ? .down : .up
+                    }
+                }
+        )
+    }
+}
+
+// Usage in SwiftUI View
+extension View {
+    func onSwipe(perform action: @escaping (SwipeGesture.Direction) -> Void) -> some View {
+        gesture(SwipeGesture().onEnded(action))
+    }
 }
 ```
 

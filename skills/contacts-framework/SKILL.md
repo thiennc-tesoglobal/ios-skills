@@ -109,7 +109,7 @@ Observe `.CNContactStoreDidChange`, invalidate cached `CNContact` objects, and
 refetch the authorized set. Reuse one store instead of constructing stores per
 row or query.
 
-## Common mistakes
+## Common Mistakes
 
 - Requesting full access when a picker satisfies the feature.
 - Treating `.limited` as denial or assuming it exposes the full address book.
@@ -119,7 +119,7 @@ row or query.
 - Updating UI/cache before `execute` succeeds.
 - Enumerating contacts on the main actor or retaining stale contact objects.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Usage description and note entitlement requirements are correct.
 - [ ] Picker is preferred when broad access is unnecessary.

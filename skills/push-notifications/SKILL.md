@@ -129,7 +129,7 @@ For flawed designs, name the violated contract rather than only showing replacem
 - Attachment from arbitrary remote URL: download a supported file to disk, then construct `UNNotificationAttachment`.
 - Extension missing fallback: call the content handler exactly once on success, failure, and `serviceExtensionTimeWillExpire()`.
 
-## Common mistakes
+## Common Mistakes
 
 - Setting the center delegate after launch or inside a transient SwiftUI view.
 - Treating a missing banner as proof that APNs didn't deliver.
@@ -140,7 +140,7 @@ For flawed designs, name the violated contract rather than only showing replacem
 - Using `removeAll…` for a feature that doesn't own every app notification.
 - Mixing Live Activity, VoIP, and ordinary alert payload rules.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Notification path and sibling-skill boundary are explicit.
 - [ ] Visible authorization is requested in context and current settings are respected.
@@ -155,7 +155,7 @@ For flawed designs, name the violated contract rather than only showing replacem
 - [ ] Simulator limitations and physical-device verification are distinguished.
 - [ ] Delivery evidence covers the actual provider/device/app boundary that changed.
 
-## Official references
+## References
 
 - [UserNotifications](https://sosumi.ai/documentation/usernotifications)
 - [Registering your app with APNs](https://sosumi.ai/documentation/usernotifications/registering-your-app-with-apns)

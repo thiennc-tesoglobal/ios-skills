@@ -5,384 +5,121 @@ description: "Control smart-home accessories and commission Matter devices using
 
 # HomeKit
 
-Control home automation accessories and commission Matter devices. HomeKit manages
-the home/room/accessory model, action sets, and triggers. MatterSupport handles device commissioning into your ecosystem.
+Control home automation accessories and commission Matter devices into an app ecosystem. HomeKit manages the home/room/accessory hierarchy, characteristics, and automation triggers; MatterSupport handles ecosystem device commissioning.
 
 ## Contents
 
-- [Setup](#setup)
+- [Setup & Framework Boundaries](#setup--framework-boundaries)
 - [HomeKit Data Model](#homekit-data-model)
-- [Managing Accessories](#managing-accessories)
-- [Reading and Writing Characteristics](#reading-and-writing-characteristics)
-- [Action Sets and Triggers](#action-sets-and-triggers)
-- [Matter Commissioning](#matter-commissioning)
-- [MatterAddDeviceExtensionRequestHandler](#matteradddeviceextensionrequesthandler)
+- [Accessories & Characteristics](#accessories--characteristics)
+- [Action Sets & Triggers](#action-sets--triggers)
+- [Matter Device Commissioning](#matter-device-commissioning)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## Setup
+## Setup & Framework Boundaries
 
-### HomeKit Configuration
+### Entitlements & Info.plist
+1. Enable the **HomeKit** capability in Xcode.
+2. Add `NSHomeKitUsageDescription` to Info.plist.
+3. For MatterSupport commissioning: add a MatterSupport Extension target, declare Bonjour services (`_matter._tcp`, `_matterc._udp`, `_matterd._udp`), and set the extension's principal class to `MatterAddDeviceExtensionRequestHandler`.
 
-1. Enable the **HomeKit** capability in Xcode (Signing & Capabilities)
-2. Add `NSHomeKitUsageDescription` to Info.plist:
-
-```xml
-<key>NSHomeKitUsageDescription</key>
-<string>This app controls your smart home accessories.</string>
-```
-
-### MatterSupport Configuration
-
-For Matter commissioning into your own ecosystem:
-
-1. Add a **MatterSupport Extension** target and set its principal class to a
-   `MatterAddDeviceExtensionRequestHandler` subclass
-2. Add `NSBonjourServices` entries for `_matter._tcp`, `_matterc._udp`, and
-   `_matterd._udp`
-3. Add `com.apple.developer.matter.allow-setup-payload` only if the caller
-   supplies a Matter setup payload programmatically
-
-### Framework Boundary
-
-| Need | Framework |
-|---|---|
-| Homes, rooms, accessories, characteristics, actions, triggers | HomeKit |
-| Commission Matter into the app ecosystem | MatterSupport |
-| Select and authorize a nearby Bluetooth or Wi-Fi accessory | AccessorySetupKit |
-| Exchange Bluetooth GATT data after selection | CoreBluetooth |
-| Join or configure an accessory's Wi-Fi network after selection | NetworkExtension |
+### Boundary Division
+- **HomeKit**: Homes, rooms, accessory control, characteristics, scenes, triggers.
+- **MatterSupport**: Commissioning Matter hardware into a third-party ecosystem.
+- **AccessorySetupKit**: Selecting/pairing nearby Bluetooth/Wi-Fi devices without broad permissions.
+- **CoreBluetooth / NetworkExtension**: Raw data transport after device authorization.
 
 ## HomeKit Data Model
 
-HomeKit organizes home automation in a hierarchy:
+HomeKit loads asynchronously. Maintain a single `HMHomeManager` instance and await the `homeManagerDidUpdateHomes(_:)` delegate callback before accessing `homes` or `primaryHome`.
 
 ```text
-HMHomeManager
-  -> HMHome (one or more)
-       -> HMRoom (rooms in the home)
-            -> HMAccessory (devices in a room)
-                 -> HMService (functions: light, thermostat, etc.)
-                      -> HMCharacteristic (readable/writable values)
-       -> HMZone (groups of rooms)
-       -> HMActionSet (grouped actions)
-       -> HMTrigger (time or event-based triggers)
+HMHomeManager -> HMHome -> HMRoom -> HMAccessory -> HMService -> HMCharacteristic
 ```
-
-### Initializing the Home Manager
-
-Create a single `HMHomeManager` and implement the delegate to know when
-data is loaded. HomeKit loads asynchronously -- do not access `homes` until
-the delegate fires.
 
 ```swift
 import HomeKit
 
 final class HomeStore: NSObject, HMHomeManagerDelegate {
-    let homeManager = HMHomeManager()
+    let manager = HMHomeManager()
 
     override init() {
         super.init()
-        homeManager.delegate = self
+        manager.delegate = self
     }
 
     func homeManagerDidUpdateHomes(_ manager: HMHomeManager) {
-        // Safe to access manager.homes now
-        let homes = manager.homes
-        let primaryHome = manager.primaryHome
-        print("Loaded \(homes.count) homes")
-    }
-
-    func homeManager(
-        _ manager: HMHomeManager,
-        didUpdate status: HMHomeManagerAuthorizationStatus
-    ) {
-        if status.contains(.authorized) {
-            print("HomeKit access granted")
-        }
+        // Safe to read homes and accessories
+        let primary = manager.primaryHome
     }
 }
 ```
 
-### Accessing Rooms
+## Accessories & Characteristics
+
+Interact with accessory services (e.g. lights, thermostats) via `HMCharacteristic`:
 
 ```swift
-guard let home = homeManager.primaryHome else { return }
+func setLightPower(_ characteristic: HMCharacteristic, isOn: Bool) async throws {
+    guard characteristic.characteristicType == HMCharacteristicTypePowerState else { return }
+    try await characteristic.writeValue(isOn)
+}
 
-let rooms = home.rooms
-let kitchen = rooms.first { $0.name == "Kitchen" }
-
-// Room for accessories not assigned to a specific room
-let defaultRoom = home.roomForEntireHome()
-```
-
-## Managing Accessories
-
-### Discovering and Adding Accessories
-
-Use the [Framework Boundary](#framework-boundary) table before adding an
-accessory; only HomeKit/MatterSupport work continues in this skill.
-
-```swift
-// System UI for accessory discovery
-home.addAndSetupAccessories { error in
-    if let error {
-        print("Setup failed: \(error)")
-    }
+func readTemperature(_ characteristic: HMCharacteristic) async throws -> Double? {
+    try await characteristic.readValue()
+    return characteristic.value as? Double
 }
 ```
 
-### Listing Accessories and Services
+## Action Sets & Triggers
+
+Group changes into scenes and automate execution:
 
 ```swift
-for accessory in home.accessories {
-    print("\(accessory.name) in \(accessory.room?.name ?? "unassigned")")
+// Create an action set (scene)
+func createNightScene(home: HMHome, lightAction: HMCharacteristicWriteAction<Bool>) async throws {
+    let actionSet = try await home.addActionSet(withName: "Good Night")
+    try await actionSet.addAction(lightAction)
+}
 
-    for service in accessory.services {
-        print("  Service: \(service.serviceType)")
-
-        for characteristic in service.characteristics {
-            print("    \(characteristic.characteristicType): \(characteristic.value ?? "nil")")
-        }
-    }
+// Event-based automation
+func addTrigger(home: HMHome, trigger: HMEventTrigger) async throws {
+    try await home.addTrigger(trigger)
+    try await trigger.enable(true)
 }
 ```
 
-### Moving an Accessory to a Room
+## Matter Device Commissioning
 
-```swift
-guard let accessory = home.accessories.first,
-      let bedroom = home.rooms.first(where: { $0.name == "Bedroom" }) else { return }
-
-home.assignAccessory(accessory, to: bedroom) { error in
-    if let error {
-        print("Failed to move accessory: \(error)")
-    }
-}
-```
-
-## Reading and Writing Characteristics
-
-### Reading a Value
-
-```swift
-let characteristic: HMCharacteristic = // obtained from a service
-
-characteristic.readValue { error in
-    guard error == nil else { return }
-    if let value = characteristic.value as? Bool {
-        print("Power state: \(value)")
-    }
-}
-```
-
-### Writing a Value
-
-```swift
-// Turn on a light
-characteristic.writeValue(true) { error in
-    if let error {
-        print("Write failed: \(error)")
-    }
-}
-```
-
-### Observing Changes
-
-Enable notifications for real-time updates:
-
-```swift
-characteristic.enableNotification(true) { error in
-    guard error == nil else { return }
-}
-
-// In HMAccessoryDelegate:
-func accessory(
-    _ accessory: HMAccessory,
-    service: HMService,
-    didUpdateValueFor characteristic: HMCharacteristic
-) {
-    print("Updated: \(characteristic.value ?? "nil")")
-}
-```
-
-## Action Sets and Triggers
-
-### Creating an Action Set
-
-An `HMActionSet` groups characteristic writes that execute together:
-
-```swift
-home.addActionSet(withName: "Good Night") { actionSet, error in
-    guard let actionSet, error == nil else { return }
-
-    // Turn off living room light
-    let lightChar = livingRoomLight.powerCharacteristic
-    let action = HMCharacteristicWriteAction(
-        characteristic: lightChar,
-        targetValue: false as NSCopying
-    )
-    actionSet.addAction(action) { error in
-        guard error == nil else { return }
-        print("Action added to Good Night scene")
-    }
-}
-```
-
-### Executing an Action Set
-
-```swift
-home.executeActionSet(actionSet) { error in
-    if let error {
-        print("Execution failed: \(error)")
-    }
-}
-```
-
-### Creating a Timer Trigger
-
-```swift
-var timeOfDay = DateComponents()
-timeOfDay.hour = 22
-timeOfDay.minute = 30
-
-let firstFireDate = Calendar.current.nextDate(
-    after: Date(),
-    matching: timeOfDay,
-    matchingPolicy: .nextTime
-)!
-
-let trigger = HMTimerTrigger(
-    name: "Nightly",
-    fireDate: firstFireDate,
-    recurrence: DateComponents(day: 1)  // Repeat every day after firstFireDate
-)
-
-home.addTrigger(trigger) { error in
-    guard error == nil else { return }
-
-    // Attach the action set to the trigger
-    trigger.addActionSet(goodNightActionSet) { error in
-        guard error == nil else { return }
-
-        trigger.enable(true) { error in
-            print("Trigger enabled: \(error == nil)")
-        }
-    }
-}
-```
-
-### Creating an Event Trigger
-
-```swift
-let motionDetected = HMCharacteristicEvent(
-    characteristic: motionSensorCharacteristic,
-    triggerValue: true as NSCopying
-)
-
-let eventTrigger = HMEventTrigger(
-    name: "Motion Lights",
-    events: [motionDetected],
-    predicate: nil
-)
-
-home.addTrigger(eventTrigger) { error in
-    // Add action sets as above
-}
-```
-
-## Matter Commissioning
-
-Use `MatterAddDeviceRequest` to commission a Matter device into your ecosystem.
-This is separate from the `HMHome` home-automation model; it handles the
-Matter setup flow and calls into your MatterSupport extension.
-
-### Basic Commissioning
+Use `MatterSupport` to onboard Matter devices into your ecosystem:
 
 ```swift
 import MatterSupport
 
-func addMatterDevice() async throws {
-    guard MatterAddDeviceRequest.isSupported else {
-        print("Matter not supported on this device")
-        return
-    }
-
-    let topology = MatterAddDeviceRequest.Topology(
-        ecosystemName: "My Smart Home",
-        homes: [
-            MatterAddDeviceRequest.Home(displayName: "Main House")
-        ]
-    )
-
-    let request = MatterAddDeviceRequest(
-        topology: topology,
-        setupPayload: nil,
-        showing: .allDevices
-    )
-
-    // Presents system UI for device pairing
-    try await request.perform()
-}
+let topology = MatterAddDeviceRequest.Topology(ecosystemName: "MyHome", homes: [home])
+let request = MatterAddDeviceRequest(topology: topology)
+try await request.perform()
 ```
 
-When providing a setup code directly, import Matter and pass an
-`MTRSetupPayload` as `setupPayload`; this is the case that requires the
-setup-payload entitlement.
-
-### Filtering Devices
-
-```swift
-// Only show devices from a specific vendor
-let criteria = MatterAddDeviceRequest.DeviceCriteria.vendorID(0x1234)
-
-let request = MatterAddDeviceRequest(
-    topology: topology,
-    setupPayload: nil,
-    showing: criteria
-)
-```
-
-Combine criteria with `.all([.vendorID(...), .not(.productID(...))])` or use
-`.any(...)` when any one criterion is enough.
-
-## MatterAddDeviceExtensionRequestHandler
-
-For full ecosystem support, create a MatterSupport Extension. The extension
-handles commissioning callbacks. Override the needed methods, but do not call
-`super` from those overrides.
-Load the complete [Advanced Matter Extension Handler](references/matter-commissioning.md#advanced-matter-extension-handler)
-for credential validation, room selection, configuration, commissioning, and
-network-association overrides.
+The system invokes your `MatterAddDeviceExtensionRequestHandler` subclass in the extension target to complete pairing.
 
 ## Common Mistakes
 
-| Mistake | Fix |
-|---|---|
-| Reading homes before the delegate update | Create one manager, set its delegate, and wait for `homeManagerDidUpdateHomes`. |
-| HomeKit setup is used for Matter ecosystem commissioning | Use `MatterAddDeviceRequest` plus the configured MatterSupport extension. |
-| Matter configuration is incomplete | Verify principal handler, Bonjour services, and the setup-payload entitlement only when applicable. |
-| Multiple `HMHomeManager` instances load the database | Share one retained manager/store. |
-| Characteristic write ignores metadata | Check permissions, format, min/max/step, and allowed values before writing. |
+- **Accessing `homes` synchronously at launch**: `manager.homes` is empty until `homeManagerDidUpdateHomes` fires.
+- **Missing Bonjour services for Matter**: Commissioning fails silently without `_matter._tcp`, `_matterc._udp`, and `_matterd._udp` in `NSBonjourServices`.
+- **Directly modifying characteristic values**: Always call asynchronous `characteristic.writeValue(_:)` rather than mutating state locally.
+- **Creating multiple HMHomeManager instances**: Instantiate one shared manager to prevent duplicate notifications and sync conflicts.
+- **Confusing HomeKit with AccessorySetupKit**: Use HomeKit for smart-home accessories; use AccessorySetupKit for proprietary BLE/Wi-Fi peripherals.
 
 ## Review Checklist
 
-- [ ] HomeKit capability enabled in Xcode
-- [ ] `NSHomeKitUsageDescription` present in Info.plist
-- [ ] Single `HMHomeManager` instance shared across the app
-- [ ] `HMHomeManagerDelegate` implemented; homes not accessed before `homeManagerDidUpdateHomes`
-- [ ] `HMHomeDelegate` set on homes to receive accessory and room changes
-- [ ] `HMAccessoryDelegate` set on accessories to receive characteristic updates
-- [ ] Characteristic metadata checked before writing values
-- [ ] Error handling in all completion handlers
-- [ ] MatterSupport extension target and principal handler configured
-- [ ] Matter discovery `NSBonjourServices` entries added
-- [ ] `com.apple.developer.matter.allow-setup-payload` used only when providing setup codes
-- [ ] `MatterAddDeviceRequest.isSupported` checked before performing requests
-- [ ] Matter extension handler implements `commissionDevice(in:onboardingPayload:commissioningID:)`
-- [ ] Action sets tested with the HomeKit Accessory Simulator before shipping
-- [ ] Triggers enabled after creation (`trigger.enable(true)`)
+- [ ] `NSHomeKitUsageDescription` present in target Info.plist
+- [ ] `HMHomeManager` instantiated once and guarded until `homeManagerDidUpdateHomes` fires
+- [ ] Characteristic mutations performed via `writeValue(_:)` with error handling
+- [ ] MatterSupport extension target configured with Bonjour service declarations
+- [ ] Triggers explicitly enabled via `trigger.enable(true)` after creation
 
 ## References
 

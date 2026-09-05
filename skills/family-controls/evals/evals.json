@@ -1,0 +1,57 @@
+{
+  "skill_name": "family-controls",
+  "evals": [
+    {
+      "id": 1,
+      "name": "family-controls-authorization-and-picker",
+      "prompt": "Create an iOS SwiftUI view and manager that requests FamilyControls authorization for an individual user, presents the FamilyActivityPicker modal, and saves the opaque FamilyActivitySelection to shared App Group UserDefaults.",
+      "expected_output": "SwiftUI code integrating AuthorizationCenter.shared.requestAuthorization(for: .individual), familyActivityPicker, and App Group persistence using PropertyListEncoder.",
+      "files": [],
+      "assertions": [
+        "Calls AuthorizationCenter.shared.requestAuthorization(for: .individual) before presenting activity picker.",
+        "Uses the .familyActivityPicker(isPresented:selection:) view modifier to allow app and domain selection.",
+        "Encodes FamilyActivitySelection with PropertyListEncoder for persistence.",
+        "Stores the serialized selection in an App Group suite of UserDefaults so extensions can access it."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "managed-settings-shield-application",
+      "prompt": "Write a Swift service that uses ManagedSettings to apply shields to selected applications, categories, and web domains, and provides a method to clear all applied restrictions.",
+      "expected_output": "A ManagedSettings service creating a named ManagedSettingsStore, assigning shielded application, category, and web domain tokens, and exposing clearAllSettings.",
+      "files": [],
+      "assertions": [
+        "Initializes a ManagedSettingsStore with an optional identifier.",
+        "Sets store.shield.applications to the selected application tokens.",
+        "Sets store.shield.webDomains to the selected web domain tokens.",
+        "Provides a clear method calling store.clearAllSettings() to unshield apps."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "device-activity-schedule-monitoring",
+      "prompt": "Show how to set up a DeviceActivitySchedule with warningTime, create a threshold event for app usage, and start background monitoring with DeviceActivityCenter.",
+      "expected_output": "Code defining a DeviceActivitySchedule with start and end DateComponents, configuring a DeviceActivityEvent with threshold, and calling startMonitoring.",
+      "files": [],
+      "assertions": [
+        "Initializes a DeviceActivitySchedule specifying intervalStart and intervalEnd DateComponents.",
+        "Defines a DeviceActivityEvent with application tokens and a duration threshold.",
+        "Starts monitoring via DeviceActivityCenter.startMonitoring(_:during:events:).",
+        "Provides a corresponding stopMonitoring call to cease monitoring."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "shield-action-and-configuration-extension",
+      "prompt": "Implement a custom ShieldConfigurationExtension subclassing ShieldConfigurationDataSource and a ShieldActionExtension subclassing ShieldActionDelegate to provide custom shield branding and handle button actions.",
+      "expected_output": "Subclasses of ShieldConfigurationDataSource returning custom ShieldConfiguration styling and ShieldActionDelegate responding to primary/secondary button presses.",
+      "files": [],
+      "assertions": [
+        "Subclasses ShieldConfigurationDataSource and overrides configuration(shielding: Application).",
+        "Returns a ShieldConfiguration with title, subtitle, and button styling.",
+        "Subclasses ShieldActionDelegate and overrides handle(action:for:completionHandler:).",
+        "Calls completionHandler with appropriate ShieldActionResponse like .close or .defer."
+      ]
+    }
+  ]
+}

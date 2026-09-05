@@ -19,6 +19,15 @@ security requirements for browser apps. Development and testing can occur
 anywhere. The companion frameworks BrowserEngineCore (low-level primitives) and
 BrowserKit (eligibility checks, data transfer) support the overall workflow.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Verify regional eligibility, default-browser requirements, device capability, and approved entitlements before implementation.

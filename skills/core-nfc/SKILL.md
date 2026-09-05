@@ -5,358 +5,124 @@ description: "Read and write NFC tags using CoreNFC. Use when scanning NDEF tags
 
 # CoreNFC
 
-Read and write NFC tags on iPhone using the CoreNFC framework. Covers NDEF
-reader sessions, tag reader sessions, NDEF message construction, entitlements,
-and background tag reading.
+Read and write NFC tags on iPhone using CoreNFC. Supports NDEF tag reader sessions, native ISO 7816/15693/FeliCa/MIFARE tag communication, and background tag reading.
 
 ## Contents
 
-- [Setup](#setup)
+- [Setup & Entitlements](#setup--entitlements)
 - [NDEF Reader Session](#ndef-reader-session)
-- [Tag Reader Session](#tag-reader-session)
-- [Writing NDEF Messages](#writing-ndef-messages)
-- [NDEF Payload Types](#ndef-payload-types)
+- [Tag Reader Session & Writing](#tag-reader-session--writing)
+- [NDEF Message Construction](#ndef-message-construction)
 - [Background Tag Reading](#background-tag-reading)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## Setup
+## Setup & Entitlements
 
-### Project Configuration
+1. Enable **Near Field Communication Tag Reading** capability in Xcode.
+2. Add `NFCReaderUsageDescription` to Info.plist.
+3. Configure the entitlement `com.apple.developer.nfc.readersession.formats` with array value `["TAG"]` (do not use legacy `NDEF`).
+4. For ISO 7816 tags, add application identifiers to `com.apple.developer.nfc.readersession.iso7816.select-identifiers`.
+5. For FeliCa tags, specify exact system codes in `com.apple.developer.nfc.readersession.felica.systemcodes` (no wildcards).
 
-1. Add the **Near Field Communication Tag Reading** capability in Xcode
-2. Add `NFCReaderUsageDescription` to Info.plist with a user-facing reason string
-3. Add the `com.apple.developer.nfc.readersession.formats` entitlement with the current `TAG` value; do not add legacy `NDEF`
-4. For ISO 7816 tags, add supported application identifiers to `com.apple.developer.nfc.readersession.iso7816.select-identifiers` in Info.plist
-5. For FeliCa tags, add supported system codes to `com.apple.developer.nfc.readersession.felica.systemcodes`; do not use wildcard system codes
-
-### Device Requirements
-
-NFC reading requires iPhone 7 or later. Always check for reader session
-availability before creating NFC UI or sessions. Use the concrete reader
-session type you are about to create.
-
-```swift
-import CoreNFC
-
-guard NFCNDEFReaderSession.readingAvailable else {
-    // Device does not support NFC or feature is restricted
-    showUnsupportedMessage()
-    return
-}
-```
-
-### Key Types
-
-| Type | Role |
-|---|---|
-| `NFCNDEFReaderSession` | Scans for NDEF-formatted tags |
-| `NFCTagReaderSession` | Scans for ISO7816, ISO15693, FeliCa, MIFARE tags |
-| `NFCNDEFMessage` | Collection of NDEF payload records |
-| `NFCNDEFPayload` | Single record within an NDEF message |
-| `NFCNDEFTag` | Protocol for interacting with an NDEF-capable tag |
+Always verify `NFCNDEFReaderSession.readingAvailable` before presenting NFC UI.
 
 ## NDEF Reader Session
 
-Use `NFCNDEFReaderSession` to read NDEF-formatted data from tags. This is the
-simplest path for reading standard tag content like URLs, text, and MIME data.
+Read NDEF tags using `NFCNDEFReaderSession`:
 
 ```swift
 import CoreNFC
 
-final class NDEFReader: NSObject, NFCNDEFReaderSessionDelegate {
-    private var session: NFCNDEFReaderSession?
+final class NFCReader: NSObject, NFCNDEFReaderSessionDelegate {
+    var session: NFCNDEFReaderSession?
 
-    func beginScanning() {
+    func beginScan() {
         guard NFCNDEFReaderSession.readingAvailable else { return }
-
-        session = NFCNDEFReaderSession(
-            delegate: self,
-            queue: nil,
-            invalidateAfterFirstRead: false
-        )
-        session?.alertMessage = "Hold your iPhone near an NFC tag."
+        session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: true)
+        session?.alertMessage = "Hold iPhone near NFC tag."
         session?.begin()
     }
 
-    // MARK: - NFCNDEFReaderSessionDelegate
-
-    func readerSessionDidBecomeActive(_ session: NFCNDEFReaderSession) {
-        // Session is scanning
-    }
-
-    func readerSession(
-        _ session: NFCNDEFReaderSession,
-        didDetectNDEFs messages: [NFCNDEFMessage]
-    ) {
+    func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
         for message in messages {
             for record in message.records {
-                processRecord(record)
+                // Process payload
             }
         }
     }
 
-    func readerSession(
-        _ session: NFCNDEFReaderSession,
-        didInvalidateWithError error: Error
-    ) {
-        let nfcError = error as? NFCReaderError
-        if nfcError?.code != .readerSessionInvalidationErrorFirstNDEFTagRead,
-           nfcError?.code != .readerSessionInvalidationErrorUserCanceled {
-            print("Session invalidated: \(error.localizedDescription)")
-        }
-        self.session = nil
+    func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
+        // Handle session timeout, cancellation, or hardware error
     }
 }
 ```
 
-### Reading with Tag Connection
+## Tag Reader Session & Writing
 
-For read-write operations, use the tag-detection delegate method to connect
-to individual tags:
+Connect to tags and write NDEF messages using `NFCTagReaderSession`:
 
 ```swift
-func readerSession(
-    _ session: NFCNDEFReaderSession,
-    didDetect tags: [any NFCNDEFTag]
-) {
-    guard let tag = tags.first else {
-        session.restartPolling()
-        return
-    }
+func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
+    guard let tag = tags.first else { return }
 
     session.connect(to: tag) { error in
-        if let error {
-            session.invalidate(errorMessage: "Connection failed: \(error)")
-            return
-        }
+        guard error == nil else { session.invalidate(errorMessage: "Connection failed"); return }
 
-        tag.queryNDEFStatus { status, capacity, error in
-            guard error == nil else {
-                session.invalidate(errorMessage: "Query failed.")
-                return
-            }
+        guard case let .ndef(ndefTag) = tag else { return }
+        ndefTag.queryNDEFStatus { status, capacity, error in
+            guard status == .readWrite else { return }
 
-            switch status {
-            case .notSupported:
-                session.invalidate(errorMessage: "Tag is not NDEF compliant.")
-            case .readOnly:
-                tag.readNDEF { message, error in
-                    if let message {
-                        self.processMessage(message)
-                    }
+            let payload = NFCNDEFPayload.wellKnownTypeURIPayload(url: URL(string: "https://example.com")!)!
+            let message = NFCNDEFMessage(records: [payload])
+
+            ndefTag.writeNDEF(message) { error in
+                if error == nil {
+                    session.alertMessage = "Write successful!"
                     session.invalidate()
                 }
-            case .readWrite:
-                tag.readNDEF { message, error in
-                    if let message {
-                        self.processMessage(message)
-                    }
-                    session.alertMessage = "Tag read successfully."
-                    session.invalidate()
-                }
-            @unknown default:
-                session.invalidate()
             }
         }
     }
 }
 ```
 
-## Tag Reader Session
+## NDEF Message Construction
 
-Use `NFCTagReaderSession` when you need direct access to the native tag
-protocol (ISO 7816, ISO 15693, FeliCa, or MIFARE).
-
-| Polling option | Tags |
-|---|---|
-| `.iso14443` | ISO 7816-compatible and MIFARE |
-| `.iso15693` | ISO 15693 |
-| `.iso18092` | FeliCa |
-
-Do not use this session for payment-related AIDs. Load
-[nfc-patterns.md](references/nfc-patterns.md) for protocol-specific connection,
-APDU, command, and response handling.
-
-## Writing NDEF Messages
-
-Write NDEF data to a connected tag. Always check `readWrite` status first.
+Construct standardized NDEF payloads:
 
 ```swift
-func writeToTag(
-    tag: any NFCNDEFTag,
-    session: NFCNDEFReaderSession,
-    url: URL
-) {
-    tag.queryNDEFStatus { status, capacity, error in
-        guard status == .readWrite else {
-            session.invalidate(errorMessage: "Tag is read-only.")
-            return
-        }
+// URI Payload
+let uriPayload = NFCNDEFPayload.wellKnownTypeURIPayload(url: destinationURL)!
 
-        guard let payload = NFCNDEFPayload.wellKnownTypeURIPayload(
-            url: url
-        ) else {
-            session.invalidate(errorMessage: "Invalid URL.")
-            return
-        }
+// Text Payload
+let textPayload = NFCNDEFPayload.wellKnownTypeTextPayload(string: "Device-101", locale: Locale(identifier: "en"))!
 
-        let message = NFCNDEFMessage(records: [payload])
-
-        tag.writeNDEF(message) { error in
-            if let error {
-                session.invalidate(
-                    errorMessage: "Write failed: \(error.localizedDescription)"
-                )
-            } else {
-                session.alertMessage = "Tag written successfully."
-                session.invalidate()
-            }
-        }
-    }
-}
+let message = NFCNDEFMessage(records: [uriPayload, textPayload])
 ```
-
-## NDEF Payload Types
-
-### Creating Common Payloads
-
-```swift
-// URL payload
-let urlPayload = NFCNDEFPayload.wellKnownTypeURIPayload(
-    url: URL(string: "https://example.com")!
-)
-
-// Text payload
-let textPayload = NFCNDEFPayload.wellKnownTypeTextPayload(
-    string: "Hello NFC",
-    locale: Locale(identifier: "en")
-)
-
-// Custom payload
-let customPayload = NFCNDEFPayload(
-    format: .nfcExternal,
-    type: "com.example:mytype".data(using: .utf8)!,
-    identifier: Data(),
-    payload: "custom-data".data(using: .utf8)!
-)
-```
-
-### Parsing Payload Content
-
-Load [Parsing NDEF Payload Content](references/nfc-patterns.md#parsing-ndef-payload-content)
-for the complete type-name-format switch and multi-record handling.
 
 ## Background Tag Reading
 
-On iPhone XS and later, iOS can read NFC tags in the background without
-opening your app. The NDEF message must contain a URI record
-(`typeNameFormat == .nfcWellKnown`, type `U`). If there are multiple URI
-records, the system uses the first one.
-
-For app-specific routing, write a universal link to the tag and configure the
-Associated Domains capability for that domain. Background tag reading also
-supports specific system URL schemes such as web, email, SMS, telephone,
-FaceTime, Maps, and HomeKit setup. It does not support custom URL schemes, and
-the system does not route by bundle ID or arbitrary NDEF content type.
-
-When a user taps a compatible tag, iOS displays a notification that opens
-your app. Handle the tag data via `NSUserActivity`:
-
-```swift
-func scene(
-    _ scene: UIScene,
-    continue userActivity: NSUserActivity
-) {
-    guard userActivity.activityType ==
-        NSUserActivityTypeBrowsingWeb else { return }
-
-    let message = userActivity.ndefMessagePayload
-    guard message.records.first?.typeNameFormat != .empty else { return }
-
-    for record in message.records {
-        processRecord(record)
-    }
-}
-```
+Supported iPhones continuously scan for NDEF tags containing URL payloads when the screen is on:
+- Universal links open the app directly without showing an NFC scanner UI.
+- Handle background URLs via standard SwiftUI `.onOpenURL` or UIKit `scene(_:openURLContexts:)`.
 
 ## Common Mistakes
 
-### DON'T: Use stale or missing NFC entitlements
-
-Without the `com.apple.developer.nfc.readersession.formats` entitlement,
-reader sessions cannot access NFC hardware. Use the current `TAG` value for
-Core NFC reader sessions; do not copy older examples that add `NDEF`.
-
-### DON'T: Ignore session invalidation errors
-
-The session invalidates for multiple reasons. Distinguishing user cancellation
-from real errors prevents false error alerts.
-
-```swift
-// WRONG -- shows error when user cancels
-func readerSession(
-    _ session: NFCNDEFReaderSession,
-    didInvalidateWithError error: Error
-) {
-    showAlert("NFC Error: \(error.localizedDescription)")
-}
-
-// CORRECT -- filter expected invalidation reasons
-func readerSession(
-    _ session: NFCNDEFReaderSession,
-    didInvalidateWithError error: Error
-) {
-    let nfcError = error as? NFCReaderError
-    switch nfcError?.code {
-    case .readerSessionInvalidationErrorUserCanceled,
-         .readerSessionInvalidationErrorFirstNDEFTagRead:
-        break  // Normal termination
-    default:
-        showAlert("NFC Error: \(error.localizedDescription)")
-    }
-    self.session = nil
-}
-```
-
-### DON'T: Hold a strong reference to a stale session
-
-Once a session is invalidated, it cannot be restarted. Nil out your reference
-and create a new session for the next scan.
-
-```swift
-// WRONG -- reusing invalidated session
-func scanAgain() {
-    session?.begin()  // Does nothing, session is dead
-}
-
-// CORRECT -- create a new session
-func scanAgain() {
-    session = NFCNDEFReaderSession(
-        delegate: self, queue: nil, invalidateAfterFirstRead: false
-    )
-    session?.begin()
-}
-```
+- **Using legacy NDEF entitlement value**: Use `TAG` in `com.apple.developer.nfc.readersession.formats`.
+- **Failing to invalidate session on success**: The system NFC alert stays visible until `session.invalidate()` is explicitly called.
+- **Calling NFC APIs without checking availability**: Crashes or throws on unsupported hardware or simulator targets.
+- **Overlooking session timeout**: Sessions automatically time out after 60 seconds; handle `NFCReaderError.readerSessionInvalidationErrorSessionTimeout`.
+- **Writing to read-only tags**: Always query `ndefTag.queryNDEFStatus` and verify `.readWrite` status before attempting writes.
 
 ## Review Checklist
 
-- [ ] NFC capability added in Signing & Capabilities
-- [ ] `NFCReaderUsageDescription` set in Info.plist
-- [ ] `com.apple.developer.nfc.readersession.formats` entitlement uses `TAG`, not legacy `NDEF`
-- [ ] `NFCNDEFReaderSession.readingAvailable` or `NFCTagReaderSession.readingAvailable` checked before creating sessions
-- [ ] Session delegate set before calling `begin()`
-- [ ] Session reference set to nil after invalidation
-- [ ] `didInvalidateWithError` distinguishes user cancellation from actual errors
-- [ ] NDEF status queried before write operations
-- [ ] Tag capacity checked before writing large messages
-- [ ] ISO 7816 application identifiers listed in Info.plist if using `NFCTagReaderSession`
-- [ ] FeliCa system codes listed in Info.plist when polling `.iso18092`
-- [ ] Background tag reading uses a URI NDEF record and universal links or supported system URL schemes
-- [ ] Custom URL schemes, bundle IDs, or arbitrary NDEF content types are not used for background routing
-- [ ] Payment-related AIDs are routed away from `NFCTagReaderSession`
-- [ ] Only one reader session active at a time
+- [ ] `NFCReaderUsageDescription` configured in Info.plist
+- [ ] `com.apple.developer.nfc.readersession.formats` set to `["TAG"]`
+- [ ] Reader availability checked before session creation
+- [ ] Sessions properly invalidated upon successful read/write
+- [ ] Errors handled for user cancellation and timeout
 
 ## References
 

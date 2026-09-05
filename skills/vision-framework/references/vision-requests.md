@@ -132,7 +132,7 @@ func recognizeTextLegacy(
     request.usesLanguageCorrection = true
 
     let handler = VNImageRequestHandler(cgImage: cgImage)
-    DispatchQueue.global(qos: .userInitiated).async {
+    Task.detached(priority: .userInitiated) {
         try? handler.perform([request])
     }
 }

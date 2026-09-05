@@ -9,6 +9,15 @@ Sync data across devices using CloudKit, iCloud key-value storage, and iCloud
 Drive. Covers container setup, record CRUD, queries, subscriptions, CKSyncEngine,
 SwiftData integration, conflict resolution, and error handling.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Choose container, public/private/shared database, record ownership, zone strategy, and offline expectations.

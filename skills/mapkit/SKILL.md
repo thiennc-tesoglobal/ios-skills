@@ -15,6 +15,15 @@ routes, Look Around, snapshots, or iOS 26 place APIs. Read
 [references/mapkit-corelocation-patterns.md](references/mapkit-corelocation-patterns.md) when the task involves
 location update lifecycle, geofencing, background location, testing, or privacy keys.
 
+## Contents
+
+- [Workflow](#workflow)
+- [Route by Task](#route-by-task)
+- [Core Decisions](#core-decisions)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Workflow
 
 1. Define the exact map/location capability and request only the authorization it needs.

@@ -109,6 +109,14 @@ class BehavioralABTests(unittest.TestCase):
                 "cloudkit",
                 "swift-charts",
                 "carplay",
+                "avfoundation-audio",
+                "family-controls",
+                "shazamkit",
+                "quicklook",
+                "swiftui-responsive-layout",
+                "swiftdata",
+                "swift-concurrency",
+                "core-haptics",
             ],
         )
         self.assertIn(

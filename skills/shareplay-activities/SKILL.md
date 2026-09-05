@@ -106,7 +106,7 @@ Use the `shareplay` SF Symbol for custom controls and keep metadata title,
 subtitle, image, and type aligned with the entry point. A disabled activation
 can fall back to the local experience; it is not an error to force past.
 
-## Common mistakes
+## Common Mistakes
 
 - Receiving a session but never calling `join()`.
 - Leaving child observation tasks alive after invalidation.
@@ -116,7 +116,7 @@ can fall back to the local experience; it is not an error to force past.
 - Manually synchronizing AVPlayer transport after attaching its playback coordinator.
 - Presenting only a FaceTime-active path and omitting participant selection.
 
-## Review checklist
+## Review Checklist
 
 - [ ] Capability belongs to the app target only.
 - [ ] Activity payload is small, Codable, and has accurate metadata.

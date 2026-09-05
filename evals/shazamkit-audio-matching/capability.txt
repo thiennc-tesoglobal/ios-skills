@@ -1,0 +1,1 @@
+Recognize audio using ShazamKit SHManagedSession, custom catalogs, and signature generation.

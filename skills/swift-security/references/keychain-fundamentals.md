@@ -311,9 +311,10 @@ Every `SecItem*` function blocks the calling thread due to IPC to `securityd` an
 
 ```swift
 // ❌ WRONG — blocks main thread, freezes UI during securityd IPC
+@Observable
 @MainActor
-class SettingsViewModel: ObservableObject {
-    @Published var token: String = ""
+final class SettingsViewModel {
+    var token: String = ""
 
     func loadToken() {
         let query: [CFString: Any] = [
@@ -451,9 +452,10 @@ actor KeychainManager {
 **Calling from SwiftUI:**
 
 ```swift
+@Observable
 @MainActor
-class AuthViewModel: ObservableObject {
-    @Published var isAuthenticated = false
+final class AuthViewModel {
+    var isAuthenticated = false
 
     func loadToken() async {
         do {

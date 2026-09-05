@@ -1,0 +1,31 @@
+{
+  "context": "Tests whether the agent correctly implements document previews using SwiftUI .quickLookPreview, multi-file QLPreviewController, and asynchronous QLThumbnailGenerator with NSCache.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "SwiftUI QuickLook Preview",
+      "description": "Utilizes the .quickLookPreview($url) modifier bound to an optional local URL in SwiftUI.",
+      "max_score": 25
+    },
+    {
+      "name": "QLThumbnailGenerator Pipeline",
+      "description": "Configures QLThumbnailGenerator.Request with target size, scale, and fetches best representations asynchronously.",
+      "max_score": 25
+    },
+    {
+      "name": "Thumbnail Caching & Performance",
+      "description": "Caches loaded thumbnails with NSCache to avoid repetitive disk decodes and performs generation asynchronously.",
+      "max_score": 20
+    },
+    {
+      "name": "QLPreviewController & Multi-File Data Source",
+      "description": "Implements QLPreviewControllerDataSource to support multi-file carousels with custom QLPreviewItem models.",
+      "max_score": 20
+    },
+    {
+      "name": "Local File Handling & Remote Cleanup",
+      "description": "Highlights that QuickLook requires local file URLs, handling temporary storage and cleanup for remote downloads.",
+      "max_score": 10
+    }
+  ]
+}

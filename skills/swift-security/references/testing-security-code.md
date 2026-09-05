@@ -39,7 +39,6 @@ Key sources: Apple TN3137 "On Mac keychain APIs and implementations," WWDC19-413
   - [Performance Testing](#performance-testing)
   - [Mutation Testing](#mutation-testing)
   - [OWASP MASTG Keychain Validation](#owasp-mastg-keychain-validation)
-- [Conclusion](#conclusion)
 - [Summary Checklist](#summary-checklist)
 
 ## Protocol-Based Keychain Abstraction
@@ -151,21 +150,13 @@ final class AuthenticationManager {
 
 ## Seven Mistakes AI Generators Make in Keychain Tests
 
-Both research providers independently identified overlapping anti-patterns. This merged list covers the full set:
-
-**1. Tests that use the real keychain without cleanup.** Tests calling `SecItemAdd` directly leave state across runs. Second run fails with `errSecDuplicateItem` (-25299). AI generators rarely include `setUp`/`tearDown` cleanup.
-
-**2. Assuming Secure Enclave exists on simulator.** `SecureEnclave.isAvailable` returns `false` on every simulator. Tests calling `SecureEnclave.P256.Signing.PrivateKey()` directly throw `CryptoKitError` on simulator and crash CI.
-
-**3. Not testing error paths.** Real keychain code must handle `errSecDuplicateItem` (-25299), `errSecItemNotFound` (-25300), `errSecAuthFailed` (-25293), and `errSecInteractionNotAllowed` (-25308). AI generators almost never test these failure modes.
-
-**4. Assuming biometric hardware.** Tests instantiating a real `LAContext` and asserting `canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics)` returns `true` fail on simulator where no biometric hardware exists.
-
-**5. Missing test host app.** Since Xcode 9, test bundles on iOS simulator require a host app to access the keychain. Without one, `SecItemAdd` returns `-25300` or `-34018`. AI generators never mention this requirement.
-
-**6. No service/account scoping.** Tests omitting `kSecAttrService` match items from other tests or even other apps. Every keychain operation in tests must use a unique, test-specific service identifier.
-
-**7. Confusing data protection keychain with file-based keychain.** Per Apple TN3137, macOS has two keychain implementations. The `security` CLI works with the file-based keychain; iOS apps use the data protection keychain. CI scripts using `security create-keychain` create the wrong type for `SecItemAdd` targets.
+- **1. Tests that use the real keychain without cleanup:** Calling `SecItemAdd` directly leaves state across runs; subsequent runs fail with `errSecDuplicateItem` (-25299). Always include `setUp`/`tearDown` cleanup.
+- **2. Assuming Secure Enclave exists on simulator:** `SecureEnclave.isAvailable` returns `false` on simulators. Calling `SecureEnclave.P256.Signing.PrivateKey()` throws `CryptoKitError`.
+- **3. Not testing error paths:** Real keychain code must handle `errSecDuplicateItem`, `errSecItemNotFound`, `errSecAuthFailed`, and `errSecInteractionNotAllowed`.
+- **4. Assuming biometric hardware:** Asserting `canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics)` returns `true` fails on simulators.
+- **5. Missing test host app:** Test bundles on iOS simulator require a host app to access the keychain, otherwise `SecItemAdd` returns `-25300` or `-34018`.
+- **6. No service/account scoping:** Tests omitting `kSecAttrService` match items from other tests. Use a unique test-specific service identifier.
+- **7. Confusing data protection keychain with file-based keychain:** Per Apple TN3137, macOS `security` CLI operates on file-based keychains, while iOS apps use data protection keychains.
 
 ---
 
@@ -787,14 +778,6 @@ static func handleFreshInstall(keychain: KeychainServiceProtocol) {
     }
 }
 ```
-
----
-
-## Conclusion
-
-Protocol-abstraction is non-negotiable for testable keychain code. Every `SecItem` call should be behind `KeychainServiceProtocol` so that 95%+ of your test suite runs against `MockKeychainService` with zero entitlement requirements and zero CI flakiness. Reserve real-keychain integration tests for a dedicated test plan on physical devices.
-
-Three insights most guides miss: (1) the simulator silently returns biometric-protected items without prompting — tests appear to validate biometric gates but test nothing; (2) TN3137's distinction between file-based and data protection keychains means `security create-keychain` in CI creates the wrong keychain type; (3) mutation testing reveals that even high-coverage suites fail to catch inverted conditionals and removed side effects — the exact mutations that create real vulnerabilities.
 
 ---
 

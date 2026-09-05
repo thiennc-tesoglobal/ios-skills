@@ -1,0 +1,57 @@
+{
+  "skill_name": "avfoundation-audio",
+  "evals": [
+    {
+      "id": 1,
+      "name": "audio-session-category-and-activation",
+      "prompt": "We are building an iOS podcast playback app with audio ducking and background audio support. Provide a Swift implementation configuring AVAudioSession with appropriate category, mode, and options, deferring activation until playback starts, and deactivating properly when playback stops.",
+      "expected_output": "A Swift service configuring AVAudioSession with category .playback, mode .spokenAudio, handling activation timing cleanly and notifying other apps on deactivation.",
+      "files": [],
+      "assertions": [
+        "Configures AVAudioSession with .playback category and suitable mode such as .spokenAudio.",
+        "Defers AVAudioSession setActive(true) until playback initiates rather than during app launch.",
+        "Deactivates the session using setActive(false, options: .notifyOthersOnDeactivation) when stopping playback.",
+        "Ensures UIBackgroundModes audio is mentioned or configured for background playback."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "audio-interruption-and-route-change-handling",
+      "prompt": "Show how to handle audio interruptions (like phone calls) and audio route changes (like disconnecting Bluetooth or wired headphones) in a modern Swift 6 app using AVAudioSession notifications.",
+      "expected_output": "An actor or controller observing AVAudioSession.interruptionNotification and AVAudioSession.routeChangeNotification with pause on route loss and resume checking.",
+      "files": [],
+      "assertions": [
+        "Subscribes to AVAudioSession.interruptionNotification and checks for .began and .ended interruption types.",
+        "Checks AVAudioSessionInterruptionOptionKey for .shouldResume before auto-resuming playback after an interruption ends.",
+        "Subscribes to AVAudioSession.routeChangeNotification and checks AVAudioSessionRouteChangeReasonKey for .oldDeviceUnavailable.",
+        "Pauses playback immediately when the output route becomes unavailable rather than continuing through device speakers."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "audio-engine-node-graph-and-mixer-setup",
+      "prompt": "Construct an AVAudioEngine graph that attaches multiple AVAudioPlayerNode instances, routes them into a custom AVAudioMixerNode for independent volume control, connects to the main mixer node, and schedules audio playback.",
+      "expected_output": "A clean Swift implementation creating an AVAudioEngine, attaching players and mixer node, connecting nodes with appropriate processing formats, and managing engine lifecycle.",
+      "files": [],
+      "assertions": [
+        "Attaches player nodes and a sub-mixer node to AVAudioEngine.",
+        "Connects player nodes to the mixer node using the audio file processingFormat.",
+        "Connects the sub-mixer node to engine.mainMixerNode.",
+        "Starts AVAudioEngine before initiating playback on player nodes."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "live-microphone-tap-and-buffer-capture",
+      "prompt": "Implement a microphone capture manager in Swift using AVAudioEngine's inputNode to capture real-time PCM buffers for audio analysis. Include permission checking and clean teardown avoiding crashes from duplicate taps.",
+      "expected_output": "A manager that checks microphone permission with AVAudioApplication, removes any existing taps on bus 0 before installing a new tap, processes PCM buffers, and cleans up on stop.",
+      "files": [],
+      "assertions": [
+        "Requests microphone permission using AVAudioApplication.requestRecordPermission() before starting.",
+        "Configures AVAudioSession with .record or .playAndRecord category.",
+        "Removes existing tap on inputNode bus 0 before calling installTap to avoid runtime crashes.",
+        "Cleans up by removing tap and stopping engine on termination."
+      ]
+    }
+  ]
+}

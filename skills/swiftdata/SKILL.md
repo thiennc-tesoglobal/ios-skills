@@ -7,6 +7,18 @@ description: "Implement or review SwiftData models, containers, queries, relatio
 
 Design persistence so model identity, relationships, query cost, migration, and context ownership remain explicit.
 
+## Contents
+
+- [Scope and Compatibility](#scope-and-compatibility)
+- [Workflow](#workflow)
+- [Models and Relationships](#models-and-relationships)
+- [Containers and Contexts](#containers-and-contexts)
+- [Queries](#queries)
+- [Migration and Coexistence](#migration-and-coexistence)
+- [Common Mistakes](#common-mistakes)
+- [Review Checklist](#review-checklist)
+- [References](#references)
+
 ## Scope and Compatibility
 
 This skill owns `@Model`, `ModelContainer`, `ModelContext`, `@Query`, predicates, fetch descriptors, schema migration, `@ModelActor`, and SwiftData/CloudKit constraints. Route pure Core Data work to `core-data`, UI state wiring to `swiftui-patterns`, and general actor diagnostics to `swift-concurrency`.
@@ -52,6 +64,14 @@ Read [Queries](references/swiftdata-queries.md) for `@Query`, `FetchDescriptor`,
 Treat schema evolution as a product-data change. Test lightweight and custom stages from the actual previous schema, including failure and rollback/recovery expectations. Never delete the user's store merely to make a migration pass unless the user has explicitly accepted data loss.
 
 Read [Core Data Coexistence](references/core-data-coexistence.md) when both frameworks share a product or when planning an incremental migration.
+
+## Common Mistakes
+
+- Passing live `@Model` objects across actor isolation boundaries instead of `PersistentIdentifier`.
+- Accessing or mutating a `ModelContext` concurrently from background tasks without `@ModelActor`.
+- Mutating model properties directly during SwiftUI view body computation.
+- Performing unbounded `@Query` fetches without predicate or fetch limit on large tables.
+- Wiping or resetting the user's persistent SQLite database to resolve migration errors without authorization.
 
 ## Review Checklist
 

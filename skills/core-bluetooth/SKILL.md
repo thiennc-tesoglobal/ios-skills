@@ -1,426 +1,95 @@
 ---
 name: core-bluetooth
-description: "Build direct Bluetooth Low Energy central or peripheral workflows with Core Bluetooth, including GATT discovery, reads, writes, subscriptions, background modes, and restoration. Use for BLE communication; use accessorysetupkit first for privacy-preserving system setup and picker flows."
+description: "Build direct Bluetooth Low Energy central or peripheral workflows with Core Bluetooth, including GATT discovery, state restoration, MTU sizing, and background modes. Use for BLE scanning, peripheral connection, characteristic reads/writes/notifications, or peripheral advertisement."
 ---
 
 # Core Bluetooth
 
-Scan for, connect to, and exchange data with Bluetooth Low Energy (BLE) devices.
-Covers the central role (scanning and connecting to peripherals), the peripheral
-role (advertising services), background modes, and state restoration.
-Use `accessorysetupkit` for privacy-preserving accessory discovery and setup;
-use this skill for direct Core Bluetooth GATT communication.
+Implement Bluetooth Low Energy (BLE) communication on iOS using `CBCentralManager` (connecting to accessories) and `CBPeripheralManager` (advertising as an accessory). Targets Swift 6.3 / iOS 26+.
 
 ## Contents
 
-- [Setup](#setup)
-- [Central Role: Scanning](#central-role-scanning)
-- [Central Role: Connecting](#central-role-connecting)
-- [Discovering Services and Characteristics](#discovering-services-and-characteristics)
-- [Reading, Writing, and Notifications](#reading-writing-and-notifications)
-- [Peripheral Role: Advertising](#peripheral-role-advertising)
-- [Background BLE](#background-ble)
-- [State Restoration](#state-restoration)
+- [Permissions and Background Modes](#permissions-and-background-modes)
+- [Central vs Peripheral Roles](#central-vs-peripheral-roles)
+- [Core Communication Contract](#core-communication-contract)
+- [State Restoration and MTU](#state-restoration-and-mtu)
+- [Route by Task](#route-by-task)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## Setup
+## Permissions and Background Modes
 
-### Info.plist Keys
+Declare `NSBluetoothAlwaysUsageDescription` in `Info.plist`. For background execution, enable capabilities in Signing & Capabilities > Background Modes:
+- **Uses Bluetooth LE accessories**: Central role in background (`bluetooth-central`)
+- **Acts as a Bluetooth LE accessory**: Peripheral role in background (`bluetooth-peripheral`)
 
-| Key | Purpose |
-|---|---|
-| `NSBluetoothAlwaysUsageDescription` | Required. Explains why the app uses Bluetooth |
-| `UIBackgroundModes` with `bluetooth-central` | Background scanning and connecting |
-| `UIBackgroundModes` with `bluetooth-peripheral` | Background advertising |
-
-### Bluetooth Authorization
-
-Core Bluetooth has no explicit permission request API. Add
-`NSBluetoothAlwaysUsageDescription`, create the manager when the app is ready for
-Bluetooth access, then check `manager.authorization` and `manager.state`.
-Treat `.denied` and `.restricted` as terminal until the user changes Settings;
-wait for `.poweredOn` before scanning, connecting, advertising, or publishing
-services.
-
-## Central Role: Scanning
-
-### Creating the Central Manager
-
-Always wait for the `poweredOn` state before scanning.
-
-```swift
-import CoreBluetooth
-
-final class BluetoothManager: NSObject, CBCentralManagerDelegate {
-    private var centralManager: CBCentralManager!
-    private var discoveredPeripheral: CBPeripheral?
-
-    override init() {
-        super.init()
-        centralManager = CBCentralManager(delegate: self, queue: nil)
-    }
-
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        guard central.state == .poweredOn else { return }
-        startScanning()
-    }
-}
+```xml
+<key>NSBluetoothAlwaysUsageDescription</key>
+<string>This app requires Bluetooth to connect to external fitness sensors.</string>
+<key>UIBackgroundModes</key>
+<array>
+    <string>bluetooth-central</string>
+</array>
 ```
 
-### Scanning for Peripherals
+## Central vs Peripheral Roles
 
-Scan for specific service UUIDs to save power. Pass `nil` to discover all
-peripherals (not recommended in production).
+| Feature | Central (`CBCentralManager`) | Peripheral (`CBPeripheralManager`) |
+|---|---|---|
+| Primary Task | Scans, connects, and consumes GATT services | Publishes services, advertises, responds to requests |
+| Discovery | `scanForPeripherals(withServices:options:)` | `startAdvertising(_:)` |
+| Data Read/Write | `readValue(for:)` / `writeValue(_:for:type:)` | `respond(to:withResult:)` |
+| Updates | Subscribes with `setNotifyValue(true, for:)` | `updateValue(_:for:onSubscribedCentrals:)` |
+| Queue | Dedicated serial `DispatchQueue` | Dedicated serial `DispatchQueue` |
 
-```swift
-let heartRateServiceUUID = CBUUID(string: "180D")
+## Core Communication Contract
 
-func startScanning() {
-    centralManager.scanForPeripherals(
-        withServices: [heartRateServiceUUID],
-        options: [CBCentralManagerScanOptionAllowDuplicatesKey: false]
-    )
-}
+1. **Wait for `.poweredOn`**: Never call scan, connect, or advertise until `centralManagerDidUpdateState(_:)` reports `.poweredOn`.
+2. **Retain discovered peripherals**: You must store a strong reference to `CBPeripheral` instances returned in `didDiscover`. If released, connection drops immediately.
+3. **Scan with service UUIDs**: In background mode, scanning without explicit `CBUUID` filters is disabled by iOS to preserve battery.
+4. **Discover narrowly**: Pass specific `[CBUUID]` arrays to `discoverServices` and `discoverCharacteristics` rather than `nil` to avoid slow full-GATT enumeration.
+5. **Honor write types**: Use `.withResponse` for acknowledged writes (`peripheral(_:didWriteValueFor:error:)`); use `.withoutResponse` only when `canSendWriteWithoutResponse` is verified.
 
-func centralManager(
-    _ central: CBCentralManager,
-    didDiscover peripheral: CBPeripheral,
-    advertisementData: [String: Any],
-    rssi RSSI: NSNumber
-) {
-    guard RSSI.intValue > -70 else { return } // Filter weak signals
+## State Restoration and MTU
 
-    // IMPORTANT: Retain the peripheral -- it will be deallocated otherwise
-    discoveredPeripheral = peripheral
-    centralManager.stopScan()
-    centralManager.connect(peripheral, options: nil)
-}
-```
+- **State Restoration**: Pass `CBCentralManagerOptionRestoreIdentifierKey` during manager initialization to allow iOS to relaunch the app in the background when a Bluetooth event occurs. Handle restoration in `centralManager(_:willRestoreState:)`.
+- **MTU & Packet Sizing**: Check `peripheral.maximumWriteValueLength(for:)` before sending large payloads. The default BLE MTU is 23 bytes (20 payload bytes). Do not assume 512-byte MTU without checking.
 
-## Central Role: Connecting
+## Route by Task
 
-```swift
-func centralManager(
-    _ central: CBCentralManager,
-    didConnect peripheral: CBPeripheral
-) {
-    peripheral.delegate = self
-    peripheral.discoverServices([heartRateServiceUUID])
-}
-
-func centralManager(
-    _ central: CBCentralManager,
-    didDisconnectPeripheral peripheral: CBPeripheral,
-    timestamp: CFAbsoluteTime,
-    isReconnecting: Bool,
-    error: Error?
-) {
-    if isReconnecting {
-        // System is automatically reconnecting
-        return
-    }
-    // Handle disconnection -- optionally reconnect
-    discoveredPeripheral = nil
-}
-```
-
-## Discovering Services and Characteristics
-
-Implement `CBPeripheralDelegate` to walk the service/characteristic tree.
-
-```swift
-extension BluetoothManager: CBPeripheralDelegate {
-    func peripheral(
-        _ peripheral: CBPeripheral,
-        didDiscoverServices error: Error?
-    ) {
-        guard let services = peripheral.services else { return }
-        for service in services {
-            peripheral.discoverCharacteristics(nil, for: service)
-        }
-    }
-
-    func peripheral(
-        _ peripheral: CBPeripheral,
-        didDiscoverCharacteristicsFor service: CBService,
-        error: Error?
-    ) {
-        guard let characteristics = service.characteristics else { return }
-        for characteristic in characteristics {
-            if characteristic.properties.contains(.notify) {
-                peripheral.setNotifyValue(true, for: characteristic)
-            }
-            if characteristic.properties.contains(.read) {
-                peripheral.readValue(for: characteristic)
-            }
-        }
-    }
-}
-```
-
-## Reading, Writing, and Notifications
-
-### Reading a Value
-
-```swift
-func peripheral(
-    _ peripheral: CBPeripheral,
-    didUpdateValueFor characteristic: CBCharacteristic,
-    error: Error?
-) {
-    guard let data = characteristic.value else { return }
-
-    switch characteristic.uuid {
-    case CBUUID(string: "2A37"):
-        if let heartRate = parseHeartRate(data) {
-            print("Heart rate: \(heartRate) bpm")
-        }
-    case CBUUID(string: "2A19"):
-        let batteryLevel = data.first.map { Int($0) } ?? 0
-        print("Battery: \(batteryLevel)%")
-    default:
-        break
-    }
-}
-
-private func parseHeartRate(_ data: Data) -> Int? {
-    guard data.count >= 2 else { return nil }
-    let flags = data[0]
-    let is16Bit = (flags & 0x01) != 0
-    if is16Bit {
-        guard data.count >= 3 else { return nil }
-        return Int(data[1]) | (Int(data[2]) << 8)
-    } else {
-        return Int(data[1])
-    }
-}
-```
-
-### Writing a Value
-
-```swift
-func writeValue(_ data: Data, to characteristic: CBCharacteristic,
-                on peripheral: CBPeripheral,
-                preferResponse: Bool = true) {
-    let type: CBCharacteristicWriteType
-    if preferResponse, characteristic.properties.contains(.write) {
-        type = .withResponse
-    } else if characteristic.properties.contains(.writeWithoutResponse),
-              peripheral.canSendWriteWithoutResponse {
-        type = .withoutResponse
-    } else if characteristic.properties.contains(.write) {
-        type = .withResponse
-    } else {
-        return
-    }
-
-    guard data.count <= peripheral.maximumWriteValueLength(for: type) else { return }
-    peripheral.writeValue(data, for: characteristic, type: type)
-}
-
-// Confirmation callback for .withResponse writes.
-func peripheral(
-    _ peripheral: CBPeripheral,
-    didWriteValueFor characteristic: CBCharacteristic,
-    error: Error?
-) {
-    if let error {
-        print("Write failed: \(error.localizedDescription)")
-    }
-}
-
-// Resume queued .withoutResponse writes here.
-func peripheralIsReady(toSendWriteWithoutResponse peripheral: CBPeripheral) {}
-```
-
-### Subscribing to Notifications
-
-```swift
-// Subscribe
-peripheral.setNotifyValue(true, for: characteristic)
-
-// Unsubscribe
-peripheral.setNotifyValue(false, for: characteristic)
-
-// Confirmation
-func peripheral(
-    _ peripheral: CBPeripheral,
-    didUpdateNotificationStateFor characteristic: CBCharacteristic,
-    error: Error?
-) {
-    if characteristic.isNotifying {
-        print("Now receiving notifications for \(characteristic.uuid)")
-    }
-}
-```
-
-## Peripheral Role: Advertising
-
-Publish services from the local device using `CBPeripheralManager`.
-
-```swift
-final class BLEPeripheralManager: NSObject, CBPeripheralManagerDelegate {
-    private var peripheralManager: CBPeripheralManager!
-    private let serviceUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABC")
-    private let charUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABD")
-
-    override init() {
-        super.init()
-        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
-    }
-
-    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        guard peripheral.state == .poweredOn else { return }
-        setupService()
-    }
-
-    private func setupService() {
-        let characteristic = CBMutableCharacteristic(
-            type: charUUID,
-            properties: [.read, .notify],
-            value: nil,
-            permissions: [.readable]
-        )
-
-        let service = CBMutableService(type: serviceUUID, primary: true)
-        service.characteristics = [characteristic]
-        peripheralManager.add(service)
-    }
-
-    func peripheralManager(
-        _ peripheral: CBPeripheralManager,
-        didAdd service: CBService,
-        error: Error?
-    ) {
-        guard error == nil else { return }
-        peripheralManager.startAdvertising([
-            CBAdvertisementDataServiceUUIDsKey: [serviceUUID],
-            CBAdvertisementDataLocalNameKey: "MyDevice"
-        ])
-    }
-}
-```
-
-## Background BLE
-
-### Background Central Mode
-
-Add `bluetooth-central` to `UIBackgroundModes`. In the background:
-
-- Scanning must specify one or more service UUIDs; `nil` scans are foreground-only
-- Scan options, including `CBCentralManagerScanOptionAllowDuplicatesKey`, have no effect
-
-### Background Peripheral Mode
-
-Add `bluetooth-peripheral` to `UIBackgroundModes`. In the background:
-
-- Without this mode, published service contents are disabled while suspended
-- The local name is not advertised
-- Service UUIDs move to the overflow area and require explicit service scans
-
-## State Restoration
-
-State restoration allows the system to re-create your central or peripheral
-manager after your app is terminated and relaunched for a BLE event.
-
-### Central Manager State Restoration
-
-```swift
-// 1. Create with a restoration identifier
-centralManager = CBCentralManager(
-    delegate: self,
-    queue: nil,
-    options: [CBCentralManagerOptionRestoreIdentifierKey: "myCentral"]
-)
-
-// 2. Implement the restoration delegate method
-func centralManager(
-    _ central: CBCentralManager,
-    willRestoreState dict: [String: Any]
-) {
-    if let peripherals = dict[CBCentralManagerRestoredStatePeripheralsKey]
-        as? [CBPeripheral] {
-        for peripheral in peripherals {
-            // Re-assign delegate and retain
-            peripheral.delegate = self
-            discoveredPeripheral = peripheral
-        }
-    }
-    let restoredServices = dict[CBCentralManagerRestoredStateScanServicesKey]
-        as? [CBUUID]
-    let restoredOptions = dict[CBCentralManagerRestoredStateScanOptionsKey]
-        as? [String: Any]
-    // Resume scanning with restoredServices/restoredOptions if still needed.
-}
-```
-
-### Peripheral Manager State Restoration
-
-```swift
-peripheralManager = CBPeripheralManager(
-    delegate: self,
-    queue: nil,
-    options: [CBPeripheralManagerOptionRestoreIdentifierKey: "myPeripheral"]
-)
-
-func peripheralManager(
-    _ peripheral: CBPeripheralManager,
-    willRestoreState dict: [String: Any]
-) {
-    let services = dict[CBPeripheralManagerRestoredStateServicesKey]
-        as? [CBMutableService]
-    let advertisement = dict[CBPeripheralManagerRestoredStateAdvertisementDataKey]
-        as? [String: Any]
-    // Reconnect app state to restored services/advertisement as needed.
-}
-```
+- For a complete SwiftUI-ready `@Observable` BLE manager, read [SwiftUI BLE Integration](references/ble-patterns.md#swiftui-ble-integration).
+- For exponential backoff and automatic peripheral reconnection, read [Reconnection Strategies](references/ble-patterns.md#reconnection-strategies).
+- For byte buffers and binary data parsing helpers, read [Data Parsing Helpers](references/ble-patterns.md#data-parsing-helpers).
+- For congestion control and packet flow management, read [Write Flow Control](references/ble-patterns.md#write-flow-control).
+- For managing multiple simultaneous peripherals, read [Multiple Peripheral Management](references/ble-patterns.md#multiple-peripheral-management).
+- For high-speed raw streaming without GATT overhead, read [L2CAP Channels](references/ble-patterns.md#l2cap-channels).
+- For peripheral role request handling and subscription updates, read [Peripheral Role: Responding to Requests](references/ble-patterns.md#peripheral-role-responding-to-requests).
 
 ## Common Mistakes
 
-| Mistake | Fix |
-|---|---|
-| Scan/connect before `.poweredOn` | Start BLE work from `centralManagerDidUpdateState`. |
-| Discovered peripheral is not retained | Hold a strong reference through connection and discovery. |
-| Production scan passes `nil` services | Filter by the service UUIDs the feature needs. |
-| Service discovery begins before `didConnect` | Advance only from delegate callbacks and handle failure/disconnect paths. |
-| Writes ignore characteristic properties or payload limits | Select the supported write type, respect `maximumWriteValueLength`, and gate `.withoutResponse` on `canSendWriteWithoutResponse`. |
+- Initiating Bluetooth scanning before `centralManagerDidUpdateState(_:)` transitions to `.poweredOn`.
+- Failing to retain the `CBPeripheral` reference during connection, leading to silent drops.
+- Scanning without explicit service `CBUUID`s in background mode (system ignores unfiltered background scans).
+- Ignoring `canSendWriteWithoutResponse`, causing silent packet drops during burst writes.
+- Performing heavy parsing or UI operations on the Core Bluetooth dispatch queue.
 
 ## Review Checklist
 
-- [ ] `NSBluetoothAlwaysUsageDescription` added to Info.plist
-- [ ] All BLE operations gated on `centralManagerDidUpdateState` returning `.poweredOn`
-- [ ] Discovered peripherals retained with a strong reference
-- [ ] Scanning uses specific service UUIDs (not `nil`) in production
-- [ ] `CBPeripheralDelegate` set before calling `discoverServices`
-- [ ] Characteristic properties checked before read/write/notify
-- [ ] Write payloads stay within `maximumWriteValueLength(for:)`
-- [ ] `.withoutResponse` writes honor `canSendWriteWithoutResponse`
-- [ ] Background mode (`bluetooth-central` or `bluetooth-peripheral`) added if needed
-- [ ] State restoration identifier set if app needs relaunch-on-BLE-event support
-- [ ] `willRestoreState` delegate method implemented when using state restoration
-- [ ] Scanning stopped after discovering the target peripheral
-- [ ] Disconnection handled with optional automatic reconnect logic
+- [ ] `NSBluetoothAlwaysUsageDescription` provided in `Info.plist`
+- [ ] Required `UIBackgroundModes` configured (`bluetooth-central` / `bluetooth-peripheral`)
+- [ ] State checked for `.poweredOn` before issuing commands
+- [ ] Connected peripherals strongly referenced by the manager
+- [ ] Service and characteristic discovery scoped to specific `[CBUUID]`
 - [ ] Write type matches characteristic properties (`.withResponse` vs `.withoutResponse`)
+- [ ] State restoration identifier configured and handled in `willRestoreState`
+- [ ] Core Bluetooth delegate runs on a dedicated serial queue, with UI updates dispatched to `@MainActor`
+- [ ] Maximum packet size validated with `maximumWriteValueLength`
 
 ## References
 
-- Extended patterns (reconnection strategies, data parsing, SwiftUI integration): [references/ble-patterns.md](references/ble-patterns.md)
-- [Core Bluetooth framework](https://sosumi.ai/documentation/corebluetooth)
+- [Core Bluetooth extended patterns and L2CAP guide](references/ble-patterns.md)
+- [Core Bluetooth documentation](https://sosumi.ai/documentation/corebluetooth)
 - [CBCentralManager](https://sosumi.ai/documentation/corebluetooth/cbcentralmanager)
 - [CBPeripheral](https://sosumi.ai/documentation/corebluetooth/cbperipheral)
 - [CBPeripheralManager](https://sosumi.ai/documentation/corebluetooth/cbperipheralmanager)
-- [CBService](https://sosumi.ai/documentation/corebluetooth/cbservice)
-- [CBCharacteristic](https://sosumi.ai/documentation/corebluetooth/cbcharacteristic)
-- [CBUUID](https://sosumi.ai/documentation/corebluetooth/cbuuid)
-- [CBCentralManagerDelegate](https://sosumi.ai/documentation/corebluetooth/cbcentralmanagerdelegate)
-- [CBPeripheralDelegate](https://sosumi.ai/documentation/corebluetooth/cbperipheraldelegate)
-- [NSBluetoothAlwaysUsageDescription](https://sosumi.ai/documentation/bundleresources/information-property-list/nsbluetoothalwaysusagedescription)
-- [CBManagerAuthorization](https://sosumi.ai/documentation/corebluetooth/cbmanagerauthorization)
-- [scanForPeripherals(withServices:options:)](https://sosumi.ai/documentation/corebluetooth/cbcentralmanager/scanforperipherals(withservices:options:))
-- [startAdvertising(_:)](https://sosumi.ai/documentation/corebluetooth/cbperipheralmanager/startadvertising(_:))
-- [writeValue(_:for:type:)](https://sosumi.ai/documentation/corebluetooth/cbperipheral/writevalue(_:for:type:))
-- [maximumWriteValueLength(for:)](https://sosumi.ai/documentation/corebluetooth/cbperipheral/maximumwritevaluelength(for:))
-- [canSendWriteWithoutResponse](https://sosumi.ai/documentation/corebluetooth/cbperipheral/cansendwritewithoutresponse)
-- [Configuring background execution modes](https://sosumi.ai/documentation/xcode/configuring-background-execution-modes)
