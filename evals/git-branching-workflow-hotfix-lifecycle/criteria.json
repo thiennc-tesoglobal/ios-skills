@@ -1,0 +1,21 @@
+{
+  "context": "Evaluates correct hotfix branch targeting from release tags, scope confinement, and regression avoidance.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Base tag targeting",
+      "description": "Cuts the hotfix branch directly from the production release tag (v1.2.0) instead of HEAD of main.",
+      "max_score": 40
+    },
+    {
+      "name": "Hotfix naming and scope",
+      "description": "Uses hotfix/ prefix and confines changes strictly to the isolated bugfix without feature contamination.",
+      "max_score": 35
+    },
+    {
+      "name": "Dual-merge / cherry-pick back to main",
+      "description": "Explicitly accounts for merging or cherry-picking the patch back into main to prevent regression in future releases.",
+      "max_score": 25
+    }
+  ]
+}

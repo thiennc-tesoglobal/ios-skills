@@ -1,0 +1,21 @@
+{
+  "context": "Evaluates correct branch taxonomy, upstream sync, and isolation practices for feature branches.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Branch naming convention",
+      "description": "Uses lowercase kebab-case prefixed with feat/ (e.g., feat/apple-pay-checkout).",
+      "max_score": 40
+    },
+    {
+      "name": "Remote synchronization",
+      "description": "Explicitly fetches latest remote tracking refs (git fetch origin) before branching from origin/main.",
+      "max_score": 35
+    },
+    {
+      "name": "Integration hygiene",
+      "description": "Recommends rebasing over reverse merge commits to maintain linear project history.",
+      "max_score": 25
+    }
+  ]
+}
