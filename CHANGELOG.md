@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Skills
+
+- Add `git-branching-workflow` for standardized Git branch creation, naming taxonomies (`feat/`, `fix/`, `refactor/`, `hotfix/`, `release/`, `chore/`), trunk-based integration, and PR isolation lifecycles.
+
 ## 1.3.0 - 2026-09-05
 
 ### Skills

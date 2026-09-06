@@ -89,8 +89,8 @@ The collection covers:
 - Apple app, data, hardware, media, AI/ML, gaming, and platform frameworks
 - Networking, security, diagnostics, localization, App Review, and delivery workflows
 
-Current inventory: **94 skills**, **304 local evaluation cases**, and
-**272 published evaluation scenarios**.
+Current inventory: **95 skills**, **307 local evaluation cases**, and
+**274 published evaluation scenarios**.
 
 ## Quality
 

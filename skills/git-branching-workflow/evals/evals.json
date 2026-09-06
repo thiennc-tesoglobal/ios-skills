@@ -1,0 +1,44 @@
+{
+  "skill_name": "git-branching-workflow",
+  "evals": [
+    {
+      "id": 1,
+      "name": "feature-branch-creation",
+      "prompt": "Create a branch for implementing a new passkey authentication flow in our iOS application, ensuring it follows the team's branching conventions and starts from the latest main branch.",
+      "expected_output": "A clean branch checkout procedure that fetches the remote state, cuts a branch named feat/passkey-authentication (or ticket-bound equivalent) directly from origin/main, and ensures the working tree is clean without touching main directly.",
+      "files": [],
+      "assertions": [
+        "Fetches remote state from origin before branching rather than relying on stale local refs.",
+        "Uses the feat/ prefix with lowercase kebab-case naming.",
+        "Branches directly from origin/main or origin/develop.",
+        "Advises against committing directly to protected base branches."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "emergency-hotfix-isolation",
+      "prompt": "A critical crash on iOS 26 launch was reported in production version v1.2.0. We need to create a branch to fix this immediately without including unreleased features from main.",
+      "expected_output": "A targeted hotfix workflow that checks out a hotfix/ branch directly from the production release tag v1.2.0, preserves isolation from main development work, and outlines the dual-merge/cherry-pick path back to main.",
+      "files": [],
+      "assertions": [
+        "Cuts the branch directly from the production tag v1.2.0 rather than HEAD of main.",
+        "Uses the hotfix/ prefix with a descriptive slug.",
+        "Strictly limits changes to the minimal crash fix without feature contamination.",
+        "Notes that the hotfix must be merged into both the production release path and main."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "rebase-sync-conflict-hygiene",
+      "prompt": "My feature branch feat/apple-pay-checkout is 5 commits behind main and ready for review. How should I update it and prepare the pull request?",
+      "expected_output": "Instructions to fetch origin, rebase the feature branch onto origin/main to maintain linear history, verify that tests pass post-rebase, and push cleanly without merge bubbles.",
+      "files": [],
+      "assertions": [
+        "Recommends rebasing onto origin/main to keep history linear.",
+        "Warns against creating reverse merge commits from main into the feature branch.",
+        "Ensures automated tests and builds are verified after the rebase.",
+        "Advises using clean Conventional Commits or squash-merging."
+      ]
+    }
+  ]
+}
