@@ -2,14 +2,11 @@
 
 ## Unreleased
 
+## 1.3.0 - 2026-09-06
+
 ### Skills
 
 - Add `git-branching-workflow` for standardized Git branch creation, naming taxonomies (`feat/`, `fix/`, `refactor/`, `hotfix/`, `release/`, `chore/`), trunk-based integration, and PR isolation lifecycles.
-
-## 1.3.0 - 2026-09-05
-
-### Skills
-
 - Add `avfoundation-audio` for `AVAudioSession` configuration, route changes, interruptions, ducking, and `AVAudioEngine` node graphs and microphone buffer capture.
 - Add `family-controls` for Screen Time authorization, `FamilyActivityPicker`, `ManagedSettings` app and web domain shielding, and `DeviceActivity` schedule monitoring.
 - Add `shazamkit` for audio recognition with `SHManagedSession` (iOS 17+), `SHSession`, `SHCustomCatalog`, and `SHSignatureGenerator`.
@@ -19,7 +16,7 @@
 
 ### Quality and maintainability
 
-- Standardize structural sections (`## Contents`, `## Common Mistakes`, `## Review Checklist`, `## References`) across all 94 skills.
+- Standardize structural sections (`## Contents`, `## Common Mistakes`, `## Review Checklist`, `## References`) across all 95 skills.
 - Compact all 40 oversized skill entrypoints below the 300-line advisory limit into progressive-disclosure routing guides, reducing validator warnings from 40 to 0.
 - Add extended pattern references for `core-data` and `natural-language`.
 - Compact the six largest remaining skill entrypoints—ActivityKit, Contacts, CryptoTokenKit, FinanceKit, RelevanceKit, and SharePlay—into progressive-disclosure routing guides.
