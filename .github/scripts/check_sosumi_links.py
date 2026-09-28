@@ -7,6 +7,7 @@ import argparse
 import concurrent.futures
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -16,6 +17,9 @@ ROOT = Path(__file__).resolve().parents[2]
 SKILLS_DIR = ROOT / "skills"
 SOSUMI_URL_PATTERN = re.compile(r"https://sosumi\.ai/[^\s<>\"'\]]+")
 TRAILING_PUNCTUATION = ".,;:!?"
+# Two retries absorb brief outages without repeatedly requesting broken links.
+MAX_ATTEMPTS = 3
+RETRYABLE_HTTP_STATUSES = {408, 429, 500, 502, 503, 504}
 
 
 def normalize_url(raw_url: str) -> str:
@@ -40,16 +44,30 @@ def check_url(url: str, timeout: float) -> tuple[str, str | None]:
         url,
         headers={"User-Agent": "ios-skills-link-checker/1.0"},
     )
-    try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            status = response.status
-    except urllib.error.HTTPError as error:
-        return url, f"HTTP {error.code}"
-    except (urllib.error.URLError, TimeoutError) as error:
-        return url, str(error)
-    if status >= 400:
-        return url, f"HTTP {status}"
-    return url, None
+    for attempt in range(MAX_ATTEMPTS):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                status = response.status
+            if status < 400:
+                return url, None
+            message = f"HTTP {status}"
+            retryable = status in RETRYABLE_HTTP_STATUSES
+        except urllib.error.HTTPError as error:
+            message = f"HTTP {error.code}"
+            retryable = error.code in RETRYABLE_HTTP_STATUSES
+            error.close()
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+            message = str(error)
+            retryable = True
+        if not retryable or attempt == MAX_ATTEMPTS - 1:
+            return url, message
+        delay = 2 ** (attempt + 1)
+        print(
+            f"Retrying {url} after {message} in {delay}s "
+            f"(attempt {attempt + 2}/{MAX_ATTEMPTS})",
+            file=sys.stderr,
+        )
+        time.sleep(delay)
 
 
 def main() -> int:

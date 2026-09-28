@@ -108,7 +108,7 @@ Always profile in **Release configuration** outside the debugger (Product > Prof
 - [Diagnosing memory, thread, and crash issues early](https://sosumi.ai/documentation/xcode/diagnosing-memory-thread-and-crash-issues-early)
 - [Data races](https://sosumi.ai/documentation/xcode/data-races)
 - [Reducing your app's memory use](https://sosumi.ai/documentation/xcode/reducing-your-app-s-memory-use)
-- [Profiling apps using Instruments](https://sosumi.ai/tutorials/instruments)
+- [Improving your app's performance](https://sosumi.ai/documentation/xcode/improving-your-app-s-performance)
 - [Improving app responsiveness](https://sosumi.ai/documentation/xcode/improving-app-responsiveness)
 - [Analyzing your app's battery use](https://sosumi.ai/documentation/xcode/analyzing-your-app-s-battery-use)
 - [Analyzing the performance of your shipping app](https://sosumi.ai/documentation/xcode/analyzing-the-performance-of-your-shipping-app)

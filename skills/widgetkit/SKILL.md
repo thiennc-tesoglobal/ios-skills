@@ -90,5 +90,5 @@ Widgets support interactive buttons and toggles:
 - [Live Activity presentation and push](references/live-activity-presentation-and-push.md)
 - [Performance, setup, and lifecycle](references/performance-setup-and-lifecycle.md)
 - [WidgetKit documentation](https://sosumi.ai/documentation/widgetkit)
-- [Widget](https://sosumi.ai/documentation/widgetkit/widget)
+- [Widget](https://sosumi.ai/documentation/swiftui/widget)
 - [TimelineProvider](https://sosumi.ai/documentation/widgetkit/timelineprovider)

@@ -118,4 +118,4 @@ Coordinating `PKToolPicker`: Attach the picker with `toolPicker.setVisible(true,
 - [PencilKit documentation](https://sosumi.ai/documentation/pencilkit)
 - [PKCanvasView](https://sosumi.ai/documentation/pencilkit/pkcanvasview)
 - [PKToolPicker](https://sosumi.ai/documentation/pencilkit/pktoolpicker)
-- [PKDrawing](https://sosumi.ai/documentation/pencilkit/pkdrawing)
+- [PKDrawing](https://sosumi.ai/documentation/pencilkit/pkdrawing-swift.struct)
