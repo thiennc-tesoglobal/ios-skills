@@ -1,6 +1,12 @@
 name: Check Documentation Links
 
 on:
+  pull_request:
+    paths:
+      - 'skills/**/*.md'
+      - '.github/scripts/check_sosumi_links.py'
+      - '.github/workflows/check-documentation-links.yml'
+      - 'tests/test_sosumi_links.py'
   schedule:
     - cron: "23 3 * * 1"
   workflow_dispatch:
@@ -8,12 +14,20 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: documentation-links-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-sosumi-links:
     name: Sosumi Links
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
+
+      - name: Test link checker
+        run: python3 -m unittest discover -s tests -p 'test_sosumi_links.py' -v
 
       - name: Check public skill documentation links
         run: python3 .github/scripts/check_sosumi_links.py
