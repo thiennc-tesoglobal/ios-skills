@@ -25,6 +25,7 @@ body:
         - appmigrationkit
         - audioaccessorykit
         - authentication
+        - avfoundation-audio
         - avkit
         - background-processing
         - browserenginekit
@@ -45,9 +46,11 @@ body:
         - dockkit
         - energykit
         - eventkit
+        - family-controls
         - financekit
         - focus-engine
         - gamekit
+        - git-branching-workflow
         - healthkit
         - homekit
         - ios-accessibility
@@ -68,11 +71,13 @@ body:
         - permissionkit
         - photokit
         - push-notifications
+        - quicklook
         - realitykit
         - relevancekit
         - scenekit
         - sensorkit
         - shareplay-activities
+        - shazamkit
         - speech-recognition
         - spritekit
         - storekit
